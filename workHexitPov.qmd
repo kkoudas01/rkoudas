@@ -527,10 +527,10 @@ wilcox.test(data = couple, OBS_VALUE~SUBJECT)
 
 ```{r}
 #| echo = FALSE
-wilcox_effsize(data = couple, OBS_VALUE~SUBJECT)
+rstatix::wilcox_effsize(data = couple, OBS_VALUE~SUBJECT)
 ```
 
-Το r του Wilcoxon είναι `r wilcox_effsize(data = couple, OBS_VALUE~SUBJECT)$effsize`, το οποίο υποδηλώνει μικρό προς μεσαίο μέγεθος επίδρασης.
+Το r του Wilcoxon είναι `r rstatix::wilcox_effsize(data = couple, OBS_VALUE~SUBJECT)$effsize`, το οποίο υποδηλώνει μικρό προς μεσαίο μέγεθος επίδρασης.
 
 Τέλος, παρουσιάζουμε την εξέλιξη της διαφοροποίησης μεταξύ του έχειν ή όχι 2 παιδιά στην πορεία του χρόνου.
 
@@ -587,11 +587,11 @@ wilcox.test(data = single, OBS_VALUE~SUBJECT)
 
 ```{r}
 #| echo = FALSE
-wilcox_effsize(data = single, OBS_VALUE~SUBJECT)
+rstatix::wilcox_effsize(data = single, OBS_VALUE~SUBJECT)
 ```
 
 
-Το r του Wilcoxon (`r wilcox_effsize(data = single, OBS_VALUE~SUBJECT)$effsize`) πάλι διλώνει μικρό προς μεσαίο μέγεθος επίδρασης της ύπαρξης παιδιών στη δυσκολία εξόδου από τη φτώχεια. Βέβαια, είναι σαφώς μεγαλύτερο από την περίπτωση που μελετούσαμε ζευγάρια, κάτι που αντικατοπτρίζει και τις δυσκολίες που αντιμετωπίζει μια μονογονεϊκή οικογένεια.
+Το r του Wilcoxon (`r rstatix::wilcox_effsize(data = single, OBS_VALUE~SUBJECT)$effsize`) πάλι διλώνει μικρό προς μεσαίο μέγεθος επίδρασης της ύπαρξης παιδιών στη δυσκολία εξόδου από τη φτώχεια. Βέβαια, είναι σαφώς μεγαλύτερο από την περίπτωση που μελετούσαμε ζευγάρια, κάτι που αντικατοπτρίζει και τις δυσκολίες που αντιμετωπίζει μια μονογονεϊκή οικογένεια.
 
 Και πάλι κάνουμε μια οπτική παρουσίαση της εξέλιξης της επίδρασης του παράγοντα «έχω δύο παιδιά ή καθόλου» στη δυσκολία εξόδου από τη φτώχεια.
 
@@ -657,7 +657,7 @@ wilcox.test(data = child2, OBS_VALUE~SUBJECT)
 
 ```{r}
 #| echo = FALSE
-wilcox_effsize(data = child2, OBS_VALUE~SUBJECT)
+rstatix::wilcox_effsize(data = child2, OBS_VALUE~SUBJECT)
 ```
 
 Ακολουθεί για άλλη μια φορά η οπτική αναπαράσταση της εξέλιξης στο χρόνο του ζητήματος που μελετάμε.
@@ -718,7 +718,7 @@ wilcox.test(data = childNO, OBS_VALUE~SUBJECT)
 
 ```{r}
 #| echo = FALSE
-wilcox_effsize(data = childNO, OBS_VALUE~SUBJECT)
+rstatix::wilcox_effsize(data = childNO, OBS_VALUE~SUBJECT)
 ```
 
 Εν τέλει, την πορεία στο χρόνο της διαφοροποίησης μεταξύ του να είναι κανείς μόνος ή ζευγάρι.

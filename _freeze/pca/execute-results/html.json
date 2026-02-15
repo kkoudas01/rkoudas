@@ -2,7 +2,7 @@
   "hash": "333a4ca48e4c1ee6190cfdd75cde3840",
   "result": {
     "engine": "knitr",
-    "markdown": "---\ntitle: \"Ανάλυση κυρίων συνιστωσών\"\nauthor: \"Κώστας Κούδας\"\ncache: TRUE\ndate: \"2026-02-11\"\nformat:\n  html:\n    toc: true\n    number-sections: true\n    fig-cap: true\n---\n\n\n\n<div class=\"alert-danger\">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>\n",
+    "markdown": "---\ntitle: \"Ανάλυση κυρίων συνιστωσών\"\nauthor: \"Κώστας Κούδας\"\ncache: TRUE\ndate: \"2026-02-15\"\nformat:\n  html:\n    toc: true\n    number-sections: true\n    fig-cap: true\n---\n\n\n\n<div class=\"alert-danger\">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>\n",
     "supporting": [],
     "filters": [
       "rmarkdown/pagebreak.lua"

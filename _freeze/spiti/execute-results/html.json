@@ -2,7 +2,7 @@
   "hash": "daa4e89cb704b84f05473d7798839433",
   "result": {
     "engine": "knitr",
-    "markdown": "---\ntitle: \"Εξέταση τιμών ακινήτων\"\nauthor: \"Κώστας Κούδας\"\ntoc: true\ndate: \"2026-02-11\"\nformat:\n  html:\n    toc: true\n    number-sections: true\n    fig-cap: true\n---\n\n\n\n<div class=\"alert-danger\">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>\n\n\n# Εισαγωγή\n\n\n::: {.cell}\n\n:::\n\n\n\n::: {.cell}\n\n:::\n\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nRcrawler(Website = \"http://www.spitogatos.gr\",\n         crawlUrlfilter = \"/aggelia/\",\n         no_cores = 4,\n         no_conn = 4,\n         MaxDepth = 1,\n         saveOnDisk = FALSE\n         )\n```\n:::\n\n",
+    "markdown": "---\ntitle: \"Εξέταση τιμών ακινήτων\"\nauthor: \"Κώστας Κούδας\"\ntoc: true\ndate: \"2026-02-15\"\nformat:\n  html:\n    toc: true\n    number-sections: true\n    fig-cap: true\n---\n\n\n\n<div class=\"alert-danger\">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>\n\n\n# Εισαγωγή\n\n\n::: {.cell}\n\n:::\n\n\n\n::: {.cell}\n\n:::\n\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nRcrawler(Website = \"http://www.spitogatos.gr\",\n         crawlUrlfilter = \"/aggelia/\",\n         no_cores = 4,\n         no_conn = 4,\n         MaxDepth = 1,\n         saveOnDisk = FALSE\n         )\n```\n:::\n\n",
     "supporting": [],
     "filters": [
       "rmarkdown/pagebreak.lua"

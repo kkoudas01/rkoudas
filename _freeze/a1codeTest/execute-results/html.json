@@ -2,7 +2,7 @@
   "hash": "152beef48a08dbbc6321c6cf2f778a90",
   "result": {
     "engine": "knitr",
-    "markdown": "---\ntitle: \"Δέντρα και δάση\"\nauthor: \"Κώστας Κούδας\"\ncache: TRUE\ndate: \"2026-02-11\"\nformat:\n  html:\n    toc: true\n    number-sections: true\n    fig-cap: true\n---\n\n\n\n<div class=\"alert-danger\">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>\n\n\n::: {.cell}\n\n```{.r .cell-code}\nrm(list = ls())\n```\n:::\n\n",
+    "markdown": "---\ntitle: \"Δέντρα και δάση\"\nauthor: \"Κώστας Κούδας\"\ncache: TRUE\ndate: \"2026-02-15\"\nformat:\n  html:\n    toc: true\n    number-sections: true\n    fig-cap: true\n---\n\n\n\n<div class=\"alert-danger\">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>\n\n\n::: {.cell}\n\n```{.r .cell-code}\nrm(list = ls())\n```\n:::\n\n",
     "supporting": [],
     "filters": [
       "rmarkdown/pagebreak.lua"
