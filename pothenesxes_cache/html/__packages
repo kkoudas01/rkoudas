@@ -1,0 +1,16 @@
+kableExtra
+purrr
+dplyr
+tidyr
+ggplot2
+plotly
+reshape
+reshape2
+corrplot
+ape
+dendextend
+circlize
+pheatmap
+viridisLite
+viridis
+heatmaply

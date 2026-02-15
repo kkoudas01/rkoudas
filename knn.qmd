@@ -1,0 +1,24 @@
+---
+title: "randomForests"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+<div class="alert-danger">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>
+
+```{r}
+rm(list = ls())
+```

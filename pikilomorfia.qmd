@@ -1,0 +1,268 @@
+---
+title: "Μέτρηση ποικιλομορφίας"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+
+
+
+# Ποικιλότητα Shannon
+
+Στην παρούσα ενότητα θα προσπαθήσουμε να μετρήσουμε τον πλουραλισμό και την πολυφωνία σε μια ομάδα. Αρχικά, βέβαια, διαγράφουμε ό,τι έχουμε γράψει ως τώρα.
+
+```{r}
+rm(list = ls())
+```
+
+Ας υποθέσουμε ότι ένα σωματείο έχει συνέλευση, στην οποία παραβρίσκονται 150 άτομα που πρόσκεινται στη ΝΔ (*μπλε*), 120 άτομα που πρόσκεινται στον ΣΥΡΙΖΑ (*ροζ*), 100 άτομα στο ΠΑΣΟΚ (*πράσινο*) και 90 στο ΚΚΕ (*κόκκινο*). Αναπαριστούμε με την παρακάτω εικόνα την εν λόγω συνέλευση.
+
+```{r}
+#| echo = F,
+#| message = F
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+num_blue <- 150
+num_pink <- 120
+num_green <- 100
+num_red <- 90
+
+# Δημιουργία τυχαίων θέσεων για κάθε χρώμα
+blue_points <- data.frame(x = runif(num_blue), y = runif(num_blue))
+pink_points <- data.frame(x = runif(num_pink), y = runif(num_pink))
+green_points <- data.frame(x = runif(num_green), y = runif(num_green))
+red_points <- data.frame(x = runif(num_red), y = runif(num_red))
+
+# Δημιουργία του γραφήματος
+plot1 <- ggplot() +
+  geom_point(data = blue_points, aes(x, y), color = "blue") +
+  geom_point(data = pink_points, aes(x, y), color = "pink") +
+  geom_point(data = green_points, aes(x, y), color = "green") +
+  geom_point(data = red_points, aes(x, y), color = "red") +
+  xlim(0, 1) + ylim(0, 1) +  # Ορισμός των ορίων της ορθογώνιας περιοχής
+  theme(axis.text.x = element_blank(), axis.text.y = element_blank(),  # Αφαίρεση των αριθμών των άξονων
+        axis.title.x = element_blank(), axis.title.y = element_blank())  # Αφαίρεση των ενδείξεων x και y
+
+plot1
+```
+
+Το σωματείο φαίνεται να έχει όλη τη γκάμα των πολιτικών αποχρώσεων. Δεν μπορούμε να πούμε ότι κάποιο πολιτικό κόμμα έχει μόνο τυπική παρουσία στο σωματείο.
+
+Αντίθετα, στο παρακάτω σωματείο φαίνεται να υπάρχει μικρότερη ποικιλία απόψεων. Σε αυτό παραβρίσκονται 290 άτομα που πρόσκεινται στη ΝΔ (*μπλε*), 60 άτομα που πρόσκεινται στον ΣΥΡΙΖΑ (*ροζ*), 50 άτομα στο ΠΑΣΟΚ (*πράσινο*) και 40 στο ΚΚΕ (*κόκκινο*).
+
+```{r}
+#| echo = F,
+#| message = F
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+num_blue <- 290
+num_pink <- 60
+num_green <- 50
+num_red <- 40
+
+# Δημιουργία τυχαίων θέσεων για κάθε χρώμα
+blue_points <- data.frame(x = runif(num_blue), y = runif(num_blue))
+pink_points <- data.frame(x = runif(num_pink), y = runif(num_pink))
+green_points <- data.frame(x = runif(num_green), y = runif(num_green))
+red_points <- data.frame(x = runif(num_red), y = runif(num_red))
+
+# Δημιουργία του γραφήματος
+plot1 <- ggplot() +
+  geom_point(data = blue_points, aes(x, y), color = "blue") +
+  geom_point(data = pink_points, aes(x, y), color = "pink") +
+  geom_point(data = green_points, aes(x, y), color = "green") +
+  geom_point(data = red_points, aes(x, y), color = "red") +
+  xlim(0, 1) + ylim(0, 1) +  # Ορισμός των ορίων της ορθογώνιας περιοχής
+  theme(axis.text.x = element_blank(), axis.text.y = element_blank(),  # Αφαίρεση των αριθμών των άξονων
+        axis.title.x = element_blank(), axis.title.y = element_blank())  # Αφαίρεση των ενδείξεων x και y
+
+plot1
+```
+
+Σε αυτό φαίνεται να έχει μονοκρατορία η ΝΔ. Η ποικιλία απόψεων είναι μόνο σε τυπικό επίπεδο, αφού η παρουσία των υπολοίπων είναι πρακτικά ασήμαντη.
+
+Γενικότερα, όσο λιγότερα είδη φέρει ένας πληθυσμός, τόσο μικρότερη ποικιλότητα έχει. Κι όσο περισσότερο μονοπωλεί τον πληθυσμό ένα είδος, τόσο επίσης λιγότερη ποικιλότητα έχει. Πώς όμως μπορώ να μετρήσω αυτή την ποικιλότητα;
+
+Ευτυχώς για μας, δεν χρειάζεται να βασιζόμαστε μόνο στη διαίσθησή μας. Υπάρχει τρόπος να ορίσουμε τόσο αυστηρά την ποικιλότητα, ώστε να μπορεί να προσδιοριστεί με έναν αριθμό. Όσο μεγαλύτερος είναι αυτός, τόσο μεγαλύτερη και η ποικιλότητα. Αυτός είναι η λεγόμενη **ποικιλότητα Shannon**.
+
+Εδώ δεν θα ασχοληθούμε, φυσικά, με υποθετικά σωματεία. Θα εξετάσουμε την ποικιλότητα της ελληνικής εκλογικής σκηνής στις αναμετρήσεις του 1996 και του 2000. Προς τούτο αντλήσαμε στοιχεία από τη σελίδα του Υπουργείου Εσωτερικών και τ’ αποθηκεύσαμε σε ένα αρχείο ονόματι *ekloges9600.xlsx* ακολουθώντας τις οδηγίες από την ενότητα [Εισαγωγή αρχείων από άλλα προγράμματα](pinakes.html#13_Εισαγωγή_αρχείων_από_άλλα_προγράμματα).
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+if(!require(readxl)){
+    install.packages("readxl")
+    library(readxl)
+}
+ekloges9600 <- readxl::read_excel("ekloges9600.xlsx")
+knitr::kable(ekloges9600) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "max-content", height = "200px")
+```
+
+Για να βρούμε την ποικιλότητα του κάθε εκλογικού τοπίου χρειαζόμαστε τις συχνότητες των κομμάτων που το αποτελούν. Αυτές θα επεξεργαστεί η R για να βρει την ποικιλότητα Shannon. Δυστυχώς, η R δεν έχει έτοιμη συνάρτηση που να υπολογίζει την εν λόγω ποσότητα. Εν πάση περιπτώσει, ο γράφων δεν έχει υπ’ όψιν κάτι τέτοιο. Αισίως, όμως, υπάρχει η δυνατότητα να κατασκευάσουμε τα δικά μας εργαλεία στην R.
+
+Παρακάτω ακολουθεί η συνάρτηση που υπολογίζει την ποικιλότητα Shannon από μια λίστα με συχνότητες (απόλυτες ή σχετικές). Οποτεδήποτε την χρειαστούμε επικολλούμε τις γραμμές αυτές ακριβώς ως έχουν πριν από το σημείο που θα την χρησιμοποιήσουμε. Ακολούθως γράφουμε `shannon_diversity(♔)`, όπου `♔` το όνομα της λίστας με τις συχνότητες.
+
+```{r}
+shannon_diversity <- function(my_freq) {
+  s <- sum(my_freq)
+  temp <- my_freq/s
+  sh <- -sum(temp*log2(temp))
+  sh
+}
+```
+
+Ακολούθως αποσπούμε τα κομμάτια της στήλης `psifoi` που μας απασχολούν. Θα φτιάξουμε μια λίστα με τις ψήφους του 1996 (`psifoi1996`) και μία με τις ψήφους του 2000 (`psifoi1996`). Ακολουθώντας τις οδηγίες της υποενότητας [Νέος πίνακας](pinakes.html#21_Νέος_πίνακας) έχουμε:
+
+```{r}
+etos1996 <- ekloges9600$etos == 1996
+psifoi1996 <- ekloges9600[etos1996,"psifoi"]
+etos2000 <- ekloges9600$etos == 2000
+psifoi2000 <- ekloges9600[etos2000,"psifoi"]
+```
+
+Οι ποικιλότητες Shannon υπολογίζονται πλέον απλά γράφοντας:
+
+```{r}
+shannon_diversity(psifoi1996)
+shannon_diversity(psifoi2000)
+```
+
+οπότε βρίσκουμε για το 1996 ποικιλότητα `r shannon_diversity(psifoi1996)` και για το 2000 ποικιλότητα `r shannon_diversity(psifoi2000)`. Επομένως τα αποτελέσματα του 1996 είχαν μεγαλύτερη ποικιλομορφία συγκριτικά με του 2000.
+
+Ο αναγνώστης θα έχει τώρα την εύλογη απορία «Και πόσο μεγαλύτερη είναι η ποικιλότητα το 1996; Είναι οι 0,2968306 μονάδες διαφορά τόσο μεγάλη;». Θα χρησιμοποιήσουμε τον τροποποιημένο πίνακα από [εδώ](https://www.researchgate.net/publication/339064707_Ecological_services_of_agroforestry_systems_in_selected_upland_farming_communities_in_the_Philippines/figures?lo=1), για να δούμε πόσο μεγάλη είναι η κάθε ποικιλότητα:
+
+|  Τιμή ποικιλότητας   | Αξιολόγηση ποικιλότητας |
+|:--------------------:|:-----------------------:|
+|    5,049 και πάνω    |       Πολύ υψηλή        |
+|    4,328 με 5,048    |          Υψηλή          |
+|    3,607 με 4,327    |          Μέση           |
+|    2,885 με 3,606    |         Χαμηλή          |
+| 2,884 και χαμηλότερα |       Πολύ χαμηλή       |
+
+Βλέπουμε, λοιπόν, ότι και στις δύο εκλογικές αναμετρήσεις είχαμε πολύ χαμηλή ποικιλότητα. Η σύγκρισή τους όμως ακόμα δεν είναι εφικτή. Πρέπει να δουλέψουμε κι άλλο!
+
+# Ισομέρεια Shannon {#ισομέρεια-shannon}
+
+Ένας τρόπος, λοιπόν, να απαντήσουμε αυτή την απορία είναι συγκρίνοντας τις εκάστοτε ποικιλότητες με τη μέγιστη δυνατή ανά περίπτωση.
+
+Η μέγιστη δυνατή ποικιλότητα συμβαίνει όταν όλα τα είδη είναι ισόποσα στον πληθυσμό. Αυτή μπορεί να υπολογιστεί μέσω της συνάρτησης:
+
+```{r}
+shannon_diversity_max <- function(my_freq) {
+  sh <- log2(length(my_freq))
+  sh
+}
+```
+
+Γράφοντας όμως:
+
+```{r}
+shannon_diversity_max(psifoi1996)
+shannon_diversity_max(psifoi2000)
+```
+
+προκύπτει ότι η μέγιστη ποικιλότητα είναι μηδέν, οπότε καταλαβαίνουμε ότι κάτι δεν πάει καλά με τον κώδικά μας. Αυτό το πρόβλημα προκύπτει επειδή τα `psifoi1996` και `psifoi2000` στην πραγματικότητα είναι πίνακες με μία στήλη κι όχι λίστες. Ναι, είναι διαφορετικό για την R, αλλά αυτόν της τον ψυχαναγκασμό μπορούμε να τον αντιμετωπίσουμε μέσω της σύνθεσης της συνάρτησης `unlist`:
+
+```{r}
+psifoi1996L <- unlist(psifoi1996)
+psifoi2000L <- unlist(psifoi2000)
+```
+
+Έτσι, υπολογίζουμε την μέγιστη ποικιλότητα των **λιστών** `psifoi1996L` και `psifoi1996L`:
+
+```{r}
+shannon_diversity_max(psifoi1996L)
+shannon_diversity_max(psifoi2000L)
+```
+
+οπότε βρίσκουμε ότι η μέγιστη δυνατή ποικιλότητα το 1996 θα ήταν `r shannon_diversity_max(psifoi1996L)` και το 2000 θα ήταν επίσης `r shannon_diversity_max(psifoi2000L)`.
+
+Αυτό που βρήκαμε δεν είναι καθόλου παράξενο, αφού και στις δύο περιπτώσεις είχαμε `r length(psifoi1996L)` κόμματα, πράγμα που διαπιστώνουμε με τον παρακάτω κώδικα:
+
+```{r}
+length(psifoi1996L)
+length(psifoi2000L)
+```
+
+Η αρχική μας ιδέα ήταν να συγκριθεί η κάθε ποικιλότητα με την μέγιστη της άλλης. Αφού, όμως, οι μέγιστες ποικιλότητες είναι ίσες, δεν έχουμε παρά να δούμε τι ποσοστό της μέγιστης ποικιλότητας είναι η κάθε μία ξεχωριστά. Αυτό το ποσοστό είναι η ισομέρεια Shannon και υπολογίζεται από την συνάρτηση:
+
+```{r}
+shannon_equitability <- function(my_freq) {
+  s <- sum(my_freq)
+  temp <- my_freq/s
+  shd <- -sum(temp*log2(temp))
+  shm <- log2(length(my_freq))
+  sh <- shd/shm
+  sh
+}
+```
+
+Κατά συνέπεια, γράφουμε:
+
+```{r}
+shannon_equitability(psifoi1996L)
+shannon_equitability(psifoi2000L)
+```
+
+και διαπιστώνουμε ότι ο δείκτης ισομέρειας το 1996 ήταν `shannon_equitability(psifoi1996L)` και το 2000 ήταν `shannon_equitability(psifoi2000L)`. Απ’ ότι φαίνεται, τελικά, το 1996 υπήρχε εμφανώς μεγαλύτερη ποικιλομορφία στα εκλογικά αποτελέσματα, ενώ το 2000 υπήρξε έντονη συσπείρωση γύρω από τα μεγάλα κόμματα.
+
+Συνολικά ο κώδικας αυτής της ανάρτησης έχει ως εξής:
+
+```{r}
+#| eval = F
+rm(list = ls())
+shannon_diversity <- function(my_freq) {
+  s <- sum(my_freq)
+  temp <- my_freq/s
+  sh <- -sum(temp*log2(temp))
+  sh
+}
+etos1996 <- ekloges9600$etos == 1996
+psifoi1996 <- ekloges9600[etos1996,"psifoi"]
+etos2000 <- ekloges9600$etos == 2000
+psifoi2000 <- ekloges9600[etos2000,"psifoi"]
+shannon_diversity(psifoi1996)
+shannon_diversity(psifoi2000)
+shannon_diversity_max <- function(my_freq) {
+  sh <- log2(length(my_freq))
+  sh
+}
+shannon_diversity_max(psifoi1996) # Τα psifoi1996 και psifoi2000 δεν είναι σε κατάλληλη μορφή
+shannon_diversity_max(psifoi2000)
+psifoi1996L <- unlist(psifoi1996)
+psifoi2000L <- unlist(psifoi2000)
+shannon_diversity_max(psifoi1996L) # Τα psifoi1996L και psifoi2000L είναι σε κατάλληλη μορφή
+shannon_diversity_max(psifoi2000L)
+length(psifoi1996L)
+length(psifoi2000L)
+shannon_equitability <- function(my_freq) {
+  s <- sum(my_freq)
+  temp <- my_freq/s
+  shd <- -sum(temp*log2(temp))
+  shm <- log2(length(my_freq))
+  sh <- shd/shm
+  sh
+}
+shannon_equitability(psifoi1996L)
+shannon_equitability(psifoi2000L)
+```

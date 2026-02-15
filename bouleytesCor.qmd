@@ -1,0 +1,2237 @@
+---
+title: "Το πολιτικό προφίλ των Ελλήνων εστιασμένο στ' αριστερά"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+rm(list = ls())
+if(!require(plotly)){
+    install.packages("plotly")
+    library(plotly)
+}
+if(!require(tidyr)){
+  install.packages("tidyr")
+  library(tidyr)
+}
+if(!require(rgl)){
+  install.packages("rgl")
+  library(rgl)
+}
+if(!require(vegan3d)){
+  install.packages("vegan3d")
+  library(vegan3d)
+}
+if(!require(fmsb)){
+    install.packages("fmsb")
+    library(fmsb)
+}
+if(!require(vegan)){
+  install.packages("vegan")
+  library(vegan)
+}
+if(!require(pheatmap)){
+  install.packages("pheatmap")
+  library(pheatmap)
+}
+if(!require(dplyr)){
+  install.packages("dplyr")
+  library(dplyr)
+}
+if(!require(reshape)){
+    install.packages("reshape")
+    library(reshape)
+}
+if(!require(reshape2)){
+    install.packages("reshape2")
+    library(reshape2)
+}
+if(!require(fmsb)){
+    install.packages("fmsb")
+    library(fmsb)
+}
+if(!require(FactoMineR)){
+    install.packages("FactoMineR")
+    library(FactoMineR)
+}
+if(!require(factoextra)){
+    install.packages("factoextra")
+    library(factoextra)
+}
+```
+
+
+
+```{r}
+#| echo = FALSE
+PoPrKlim_interactive2D <- function(dedomena, diastasi = 2, ar_epan = 500, metriki = "euclidean") {
+  # Φόρτωση των βιβλιοθηκών
+  library(vegan)
+  library(plotly)
+
+  # --- Υπάρχων κώδικας για υπολογισμούς (παραμένει ίδιος) ---
+  dedomenaS <- scale(dedomena[, -1])
+  dissimilarities <- vegdist(dedomenaS, metriki)
+  cat("Εκτέλεση metaMDS...\n")
+  nmds_result <- metaMDS(dissimilarities, k = diastasi, trymax = ar_epan, trace = FALSE)
+  cat("Ολοκληρώθηκε η metaMDS.\n")
+
+  # --- Δημιουργία data frame για το γράφημα ---
+  plot_data <- as.data.frame(nmds_result$points)
+  plot_data$label <- dedomena[, 1]
+
+  # --- Ενότητα Διαδραστικού Γραφήματος ---
+  if (diastasi == 2) {
+    # Δημιουργία διαδραστικού 2D γραφήματος
+    fig <- plot_ly(
+      data = plot_data,
+      x = ~MDS1,
+      y = ~MDS2,
+      type = 'scatter',
+      # *** ΑΛΛΑΓΗ ΕΔΩ: Εμφάνιση σημείων ΚΑΙ κειμένου εξ αρχής ***
+      mode = 'markers+text',
+      hoverinfo = 'text',
+      text = ~label,
+      # Στυλ και θέση για τις μόνιμες ετικέτες κειμένου
+      textposition = 'top right',
+      textfont = list(size = 10, color = '#555555'),
+      marker = list(color = "blue", symbol = 'circle', size = 10)
+    ) %>%
+    layout(
+      title = "Εγγύτητα κομμάτων με κοινωνικές ομάδες",
+      xaxis = list(title = "NMDS1"),
+      yaxis = list(title = "NMDS2"),
+      showlegend = FALSE # Απόκρυψη του legend, αφού οι ετικέτες είναι στο γράφημα
+    )
+
+  } else if (diastasi == 3) {
+    # Δημιουργία διαδραστικού 3D γραφήματος
+    fig <- plot_ly(
+      data = plot_data,
+      x = ~MDS1,
+      y = ~MDS2,
+      z = ~MDS3,
+      type = 'scatter3d',
+      # *** ΑΛΛΑΓΗ ΕΔΩ: Εμφάνιση σημείων ΚΑΙ κειμένου εξ αρχής ***
+      mode = 'markers+text',
+      hoverinfo = 'text',
+      text = ~label,
+      marker = list(color = "blue", size = 5)
+    ) %>%
+    layout(
+      title = "Διαδραστικό 3D NMDS Διάγραμμα (με Ετικέτες)",
+      scene = list(
+        xaxis = list(title = "NMDS1"),
+        yaxis = list(title = "NMDS2"),
+        zaxis = list(title = "NMDS3")
+      ),
+      showlegend = FALSE
+    )
+  } else {
+      stop("Η συνάρτηση υποστηρίζει μόνο 2 ή 3 διαστάσεις για απεικόνιση.")
+  }
+
+  return(fig)
+}
+
+
+PoPrKlim_interactive <- function(dedomena, ar_epan = 500, metriki = "euclidean"){
+  
+  # Κλιμάκωση των δεδομένων, εξαιρουμένης της πρώτης στήλης με τις ετικέτες
+  dedomenaS <- scale(dedomena[,-1])
+  
+  # Υπολογισμός των ανομοιοτήτων
+  dissimilarities <- vegdist(dedomenaS, metriki)
+  
+  # Δημιουργία του NMDS με k = 3
+  nmds_result <- metaMDS(dissimilarities, k = 3, trymax = ar_epan, trace = FALSE)
+  
+  # Δημιουργία του διαδραστικού 3D γραφήματος με το 'rgl'
+  # Χρησιμοποιούμε τη συνάρτηση plot3d
+  plot3d(nmds_result$points, 
+         type = "p", 
+         col = "blue", 
+         size = 8, 
+         xlab = "NMDS1", 
+         ylab = "NMDS2", 
+         zlab = "NMDS3")
+  
+  # Προσθήκη των ετικετών των σημείων
+  text3d(nmds_result$points, 
+         texts = dedomena[,1], 
+         adj = c(-0.2, -0.2),
+         cex = 0.8)
+  
+  # Προσθήκη των αξόνων
+  axes3d()
+  
+  # Προσθήκη του πλαισίου
+  box3d()
+  
+  # Εμφάνιση του γραφήματος
+  # Το rgl.snapshot() ή η αποθήκευση σε html είναι απαραίτητα για την εμφάνιση στο τελικό αρχείο
+  # Στο R Markdown, το γράφημα θα εμφανιστεί αυτόματα ως διαδραστικό
+  
+  # Επιστρέφει το διαδραστικό widget για ενσωμάτωση στο HTML
+  return(rglwidget())
+}
+PoPrKlim <- function(dedomena, diastasi = 2, ar_epan=500, metriki = "euclidean"){
+  dedomenaS <- scale(dedomena[,-1])
+  dissimilarities <- vegdist(dedomenaS,metriki)
+  nmds_result <- metaMDS(dissimilarities, k = diastasi, trymax=ar_epan, trace=FALSE)
+  if (diastasi == 2){
+  ordiplot(nmds_result, type = "n")
+  points(nmds_result$points, col = "blue", pch = 19)
+  text(nmds_result$points, labels = dedomena[,1], pos = 4, cex = 0.8)
+  } else if (diastasi == 3) {
+    ordiplot3d(nmds_result, type = "n")
+    points(nmds_result$points, col = "blue", pch = 19)
+    text(nmds_result$points, labels = dedomena[,1], pos = 4, cex = 0.8)
+  }
+}
+eyresiEntasis <- function(dedomena, diastasi = 2, ar_epan=500, metriki = "euclidean"){
+  dedomenaS <- scale(dedomena[,-1])
+  dissimilarities <- vegdist(dedomenaS,metriki)
+  k0 <- 1
+  nmds_result <- metaMDS(dissimilarities, k = k0, trymax=ar_epan, trace=FALSE)
+  stress0 <- nmds_result$stress
+  while (k0 < min(diastasi,length(dedomena[1,]))) {
+    k0 <- k0+1
+    nmds_result <- metaMDS(dissimilarities, k = k0, trymax=ar_epan, trace=FALSE)
+    stress0 <- nmds_result$stress
+  }
+  print(paste("Η διάσταση είναι",k0,"και η ένταση είναι ",stress0,"."))
+  stressplot(nmds_result)
+}
+eyresiDiastasis <- function(dedomena, entasi = 0.05, ar_epan=500, metriki = "euclidean"){
+  dedomenaS <- scale(dedomena[,-1])
+  dissimilarities <- vegdist(dedomenaS,metriki)
+  k0 <- 1
+  nmds_result <- metaMDS(dissimilarities, k = k0, trymax=ar_epan, trace=FALSE)
+  stress0 <- nmds_result$stress
+  while (k0 < length(dedomena[1,]) && entasi<stress0) {
+    k0 <- k0+1
+    nmds_result <- metaMDS(dissimilarities, k = k0, trymax=ar_epan, trace=FALSE)
+    stress0 <- nmds_result$stress
+  }
+  print(paste("Η διάσταση είναι",k0,"και η ένταση είναι ",stress0,"."))
+  stressplot(nmds_result)
+}
+astrogramma1 <- function(dedomena, xroma = rep("brown", length(dedomena[,1])), # Αλλάξαμε την προεπιλογή σε "brown"
+                          vlabels = colnames(dedomena)[-1], vlcex = 0.7, title = NULL, ...){
+  m <- min(dedomena[,-1])
+  M <- max(dedomena[,-1])
+  n <- length(dedomena[1,])
+  m_row <- rep(m, n-1)
+  M_row <- rep(M, n-1)
+  max_min <- rbind(M_row, m_row)
+  rownames(max_min) <- c("Max", "Min")
+  rownames(dedomena) <- dedomena[,1]
+  data <- dedomena[,-1]
+  colnames(max_min) <- colnames(data)
+  data <- rbind(max_min,data)
+  radarchart(
+    data, axistype = 1,
+    # Customize the polygon
+    pcol = xroma, pfcol = scales::alpha(xroma, 0.5), plwd = 2, plty = 1,
+    # Customize the grid
+    cglcol = "grey", cglty = 1, cglwd = 0.8,
+    # Customize the axis
+    axislabcol = "grey",
+    # Variable labels
+    vlcex = vlcex, vlabels = vlabels,
+    caxislabels = (0:5)*(M/5), title = title, ...
+  )
+  for (k in 1:length(data[,1])){
+    rn <- dedomena[k,1]
+    mtext(rn, side = 1, line = k-1, col = xroma[k], adj = 0.5)
+  }
+}
+
+astrogramma <- function(dedomena, mazi = T, xroma = rep("brown", length(dedomena[,1])), # Αλλάξαμε την προεπιλογή σε "brown"
+                         vlabels = colnames(dedomena)[-1], vlcex = 0.7, title = NULL, ...) {
+  if (mazi) {
+    # Εδώ περνάμε το "brown" αν δεν έχει οριστεί διαφορετικό χρώμα στην κλήση της astrogramma
+    astrogramma1(dedomena, xroma = xroma,
+                 vlabels, vlcex, title, ...)
+  } else {
+    op <- par(mar = c(1, 1, 1, 1))
+    par(mfrow = c(3,2))
+    nn <- length(dedomena[,1])
+    for (i in 1:nn){
+      df0 <- dedomena[i,]
+      # Εδώ ορίζουμε ρητά το χρώμα ως "brown" για κάθε μεμονωμένο γράφημα
+      astrogramma1(df0, xroma = "brown")
+    }
+    par(op)
+  }
+}
+
+dentrogramma <- function(stiles){
+  stiles <- stiles %>% select_if(~ !any(is.na(.)))
+  stiles_m <- as.matrix(stiles)
+  stiles_m.t <- t(stiles_m)
+  dist.stiles_m <- dist(stiles_m.t, diag = TRUE, upper = TRUE)
+  dist.stiles_m <- as.matrix(dist.stiles_m)
+  pheatmap(dist.stiles_m)
+}
+```
+
+Στην παρούσα εργασία θα εξετάσουμε το πολιτικό προφίλ των Ελλήνων, επικεντρωνόμενοι στα ζητήματα που απασχολούν την αριστερά. Προς τούτο αντλήσαμε δεδομένα από το [Ινστιτούτο Εναλλακτικών Ιδεών και Πολιτικών - Ένα](https://enainstitute.org/wp-content/uploads/2024/02/%CE%88%CF%81%CE%B5%CF%85%CE%BD%CE%B1_%CE%95%CE%9D%CE%91_Final.pdf). 
+
+# Πολιτικές ταυτότητες
+
+## Ο χαρακτήρας του κάθε κόμματος
+
+
+Τα πρώτα δεδομένα που θα χρησιμοποιήσουμε είναι τα παρακάτω:
+
+
+```{r}
+#| echo = FALSE
+# Δημιουρία στηλών
+
+politiki_taytotita <- c(
+  "Πατριώτης", "Κεντρώος", "Προοδευτικός", "Κεντροδεξιός",
+  "Κεντροαριστερός", "Φιλελεύθερος", "Οικολόγος", "Αριστερός",
+  "Φεμινιστής", "Σοσιαλδημοκράτης", "Υπέρμαχος_ελεύθερης_αγοράς",
+  "Δεξιός", "Συντηρητικός", "Σοσιαλιστής", "Εθνικιστής",
+  "Αντικαπιταλιστής", "Κομμουνιστής", "Αναρχικός",
+  "Ακροδεξιός", "Ακροαριστερός", "Λαϊκιστής", "ΔΞ/ΔΑ"
+)
+
+synolo <- c(
+  23, 20, 20, 18, 17, 15, 11, 10, 8, 8, 8, 8, 7, 6, 5, 4, 4, 2, 1, 1, 1, 6
+)
+
+ilikia17_34 <- c(
+  28, 19, 30, 16, 19, 26, 15, 15, 16, 11, 14, 12, 16, 10, 9, 9, 4, 3, 2, 2, 2, 5
+)
+
+ilikia35_54 <- c(
+  27, 19, 22, 17, 14, 15, 10, 8, 8, 9, 9, 9, 7, 4, 7, 3, 4, 2, 2, 1, 1, 8
+)
+
+ilikia55ano <- c(
+  17, 22, 15, 19, 19, 10, 10, 10, 6, 6, 5, 5, 3, 5, 3, 3, 4, 1, 0, 1, 0, 4
+)
+
+ND <- c(
+  20, 29, 19, 43, 4, 28, 9, 0, 6, 4, 15, 11, 6, 1, 0, 0, 0, 0, 0, 0, 0, 3
+)
+
+SYRIZA <- c(
+  9, 14, 34, 3, 49, 4, 11, 29, 11, 7, 2, 1, 1, 11, 1, 6, 2, 2, 0, 1, 1, 3
+)
+
+PASOK <- c(
+  13, 39, 25, 7, 43, 11, 14, 4, 9, 30, 6, 1, 2, 14, 0, 1, 0, 1, 0, 0, 1, 2
+)
+
+KKE <- c(
+  12, 10, 18, 2, 11, 8, 9, 32, 9, 3, 0, 0, 4, 12, 1, 16, 40, 5, 0, 4, 2, 5
+)
+
+Spartiates <- c(
+  54, 8, 8, 8, 0, 12, 19, 0, 0, 4, 8, 19, 0, 0, 46, 4, 0, 0, 15, 0, 8, 0
+)
+
+Elliniki_Lysi <- c(
+  52, 8, 9, 19, 3, 9, 1, 1, 0, 0, 7, 15, 18, 1, 18, 0, 0, 0, 3, 0, 2, 4
+)
+
+Niki <- c(
+  71, 12, 8, 17, 3, 7, 5, 0, 5, 3, 7, 27, 29, 2, 15, 7, 0, 0, 2, 0, 0, 3
+)
+
+Pleysi_Eleytherias <- c(
+  29, 19, 35, 3, 23, 10, 19, 10, 26, 13, 0, 6, 3, 3, 6, 6, 3, 3, 0, 0, 0, 16
+)
+
+Nea_Aristera <- c(
+  4, 4, 27, 2, 37, 4, 27, 57, 24, 16, 0, 0, 2, 22, 0, 14, 0, 6, 0, 6, 0, 2
+)
+
+MERA25 <- c(
+  12, 5, 29, 2, 24, 7, 22, 37, 29, 12, 0, 2, 0, 15, 0, 22, 12, 5, 0, 10, 0, 7
+)
+
+Aristera_Kentroaristera <- c(
+  10, 6, 30, 0, 48, 5, 16, 31, 16, 15, 2, 0, 0, 15, 0, 11, 11, 5, 0, 3, 1, 1
+)
+
+# Δημιουργία του dataframe
+prothesiPsifoy <- data.frame(
+  politiki_taytotita,
+  synolo,
+  ilikia17_34,
+  ilikia35_54,
+  ilikia55ano,
+  ND,
+  SYRIZA,
+  PASOK,
+  KKE,
+  Spartiates,
+  Elliniki_Lysi,
+  Niki,
+  Pleysi_Eleytherias,
+  Nea_Aristera,
+  MERA25,
+  Aristera_Kentroaristera
+)
+
+
+```
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(prothesiPsifoy) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+Βλέπουμε ότι κάθε γραμμή αντιστοιχεί σε μια πολιτική ταυτότητα. Θα μπορούσαμε να πούμε πως ο πολιτικός χαρακτήρας ενός κόμματος, των ψηφοφόρων του για την ακρίβεια, είναι αυτά τα `r length(prothesiPsifoy$politiki_taytotita)`, που αφορούν τις πολιτικές ταυτότητες:
+
+```{r}
+#| echo = FALSE
+prothesiPsifoy$politiki_taytotita
+```
+
+Για να κάνουμε ευκρινέστερες τις ομοιότητες και τις διαφορές των διαφόρων κομμάτων, θα παρουσιάσουμε τα αστρογράμματά τους.
+
+
+```{r}
+#| echo = FALSE
+prothesiPsifoyTemp <- prothesiPsifoy[,-c(1,2,3,4,5,16)]
+row.names(prothesiPsifoyTemp) <- prothesiPsifoy[,1]
+prothesiPsifoyTemp2 <- data.frame(t(prothesiPsifoyTemp))
+prothesiPsifoyTemp2$komma <- colnames(prothesiPsifoyTemp)
+prothesiPsifoyTemp2 <- prothesiPsifoyTemp2[, c("komma", setdiff(names(prothesiPsifoyTemp2), "komma"))]
+astrogramma(prothesiPsifoyTemp2, FALSE)
+```
+
+Βλέπουμε παρόμοιους σχηματισμούς σε ΝΔ, ΠΑΣΟΚ και ΣΥΡΙΖΑ. Κάτι που ίσως να σημαίνει ότι δεν διαφέρουν και τόσο πολύ οι ψηφοφόροι τους. Ομοίως οι Σπαρτιάτες, η Ελληνική Λύση και η Νίκη έχουν παρόμοια μορφολογία ψηφοφόρων. Τέλος, παρόμοιες αναλογίες στις πολιτικές τους ταυτότητες έχουν και οι ψηφοφόροι του ΜΕΡΑ25 και της Νέας Αριστεράς.
+
+Ας πάμε να ελέγξουμε και γραφικά τη εγγύτητα των διαφόρων κομμάτων με ένα δεντρόγραμμα και μια μήτρα απόστασης. Να σημειώσουμε εδώ ότι όσο πιο ψυχρό είναι ένα κελί του κάτωθι πίνακα, τόσο μεγαλύτερη εγγύτητα έχουμε στα κόμματα που διασταυρώνονται εκεί.
+
+```{r}
+#| echo = FALSE
+dentrogramma(prothesiPsifoyTemp)
+```
+
+Από τα κλαδιά του δεντροδιαγράμματος βλέπουμε να σχηματίζονται τρεις ομάδες:
+
+- Μία απαρτιζόμενη από ΝΔ, Σπαρτιάτες, Ελληνική Λύση και Νίκη,
+- άλλη μία από Πλεύση Ελευθερίας, ΣΥΡΙΖΑ και ΠΑΣΟΚ και
+- μία από ΚΚΕ, Νέα Αριστερά και ΜΕΡΑ25.
+
+Είπαμε πως κάθε ένα από τα `r length(colnames(prothesiPsifoyTemp))` κόμματα αναπαρίσταται από μια `r length(prothesiPsifoy$politiki_taytotita)`-άδα τιμών που αφορούν τις πολιτικές ταυτότητες. Πόσο πιστά μπορούν αυτές να απεικονιστούν σε λιγότερες από `r min(length(prothesiPsifoy$politiki_taytotita),length(colnames(prothesiPsifoyTemp)))` διαστάσεις; Προς τούτο θα χρησιμοποιήσουμε τη διατακτική πολυδιάστατη προσαρμογή κλίμακας (MDS). Θέλοντας να ρίξουμε την ένταση του Kruskal κάτω από 0.05, ώστε να έχουμε εξαιρετικό τρόπο αναπαράστασης, καταλήγουμε να χρειάζονται τρεις διαστάσεις για την αναπαράσταση των αποστάσεων των κομμάτων. 
+
+```{r}
+#| echo = FALSE
+eyresiDiastasis(prothesiPsifoyTemp2)
+```
+
+Μάλιστα το γράφημα αποστάσεων δείχνει μια έντονη γραμμική συσχέτιση, μεταξύ των παρατηρούμενων αποστάσεων και αυτών που θα ήταν αν βρισκόμασταν στις τρεις διαστάσεις, οπότε σίγουρα η τρισδιάστατη αναπαράσταση είναι μια εξαιρετική επιλογή. Ας δούμε, όμως, και το γράφημα των τριών διαστάσεων.
+
+```{r}
+#| echo = FALSE
+PoPrKlim_interactive(prothesiPsifoyTemp2)
+```
+
+Ο οριζόντιος άξονας που διαβαθμίζει το αριστερά-δεξιά θα μπορούσαμε να πούμε ότι είναι ακριβώς αυτός που ορίζει ο πολιτικός άξονας αριστερά-δεξιά. Ευχάριστη σύμπτωση! Στα δεξιά η δεξιά και στ' αριστερά η αριστερά. Ο άξονας μπρος-πίσω ίσως να ξεχωρίζει τα συστημικά από τα αντισυστημικά κόμματα. Ο κατακόρυφος άξονας, ο πάνω-κάτω φαίνεται λίγο παράδοξος. Ομαδοποιεί Νίκη με Πλεύση Ελευθερίας και ξεχωριστά Σπαρτιάτες με ΠΑΣΟΚ και Νέα Αριστερά. Ο γράφων δεν μπορεί να φανταστεί προς το παρόν κάτι που να αιτιολογεί αυτή τη διάκριση.
+
+Αν, όμως, κάποιος θέλει οπωσδήποτε να περιοριστεί στις δύο διαστάσεις, τότε δεν είναι τόσο άσχημα τα πράγματα. Η ένταση του Kruskal βγαίνει λίγο μεγαλύτερη του 0.05, αλλά όχι κάτι που δεν θα αποτελούσε καλή επιλογή. Επομένως, δεν θα προέκυπτε κίνδυνος εξαγωγής εσφαλμένων συμπερασμάτων, αν υιοθετούσαμε τις δύο διαστάσεις.
+
+```{r}
+#| echo = FALSE
+eyresiEntasis(prothesiPsifoyTemp2)
+```
+
+Ας δούμε και τον χάρτη των αποστάσεων στις δύο διαστάσεις.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+PoPrKlim(prothesiPsifoyTemp2)
+
+```
+
+
+
+Θα μπορούσαμε να πούμε και πάλι πως ο οριζόντιος άξονας είναι ο άξονας αριστερά-δεξιά: αριστερά είναι η αριστερά και δεξιά η δεξιά. Ο κατακόρυφος ίσως κι αυτή τη φορά να είναι ο άξονας του μέτρου της αντισυστημικότητας: πάνω τα κόμματα που είναι αντισυστημικά και κάτω αυτά που είναι συστημικά.
+
+## Το πολιτικό τοπίο των ελληνικών απόψεων
+
+Κάποια ζητήματα που θα εξετάσουμε εδώ είναι τα εξής:
+
+- Εβρισκόμενοι σε ένα κόμμα, κάποια πολιτική ταυτότητα τίνει να διογκωθεί εμφανώς πάνω από το μέσο όρο ή να συμπιεστεί εμφανώς κάτω από το μέσο όρο;
+
+- Έχοντας ένα άτομο με την τάδε πολιτική ταυτότητα, το γεγονός αυτό εκτοξεύει ή καταβαραθρώνει τις πιθανότητες να είναι του ενός ή του άλλου κόμματος; 
+
+Η διαδικασία που θα εκπληρώσει αυτό το στόχο είναι η ανάλυση αντιστοιχίας (CORA), αλλά δυστυχώς απαιτεί, όχι τα ποσοστά των πολιτικών ταυτοτήτων σε κάθε κόμμα (τα οποία μάς δίνονται), αλλά στο σύνολο όλων των απαντήσεων. Αυτό θα μάς εξαναγκάσει να εκμαιεύσουμε τα εν λόγω ποσοστά και ίσως να προσθέσει μια μικρή ανακρίβεια στα αποτελέσματα.
+
+Αλλά ας δώσουμε λίγη περισσότερη προσοχή στα προηγούμενα! Αυτό που θα ψάξουμε δεν είναι τα ποσοστά των ανθρώπων που έδωσαν τη μία ή την άλλη απάντηση, αλλά τα ποσοστά της κάθε απάντησης στο σύνολο των απαντήσεων που δόθηκαν συνολικά. Δεδομένου ότι κάθε ένας μπορεί να αυτοχαρακτηριστεί με περισσότερες από μία πολιτικές ταυτότητες, κάλλιστα μπορεί  όλοι (100% των ερωτηθέντων) να δηλώνουν π.χ. «καλοί άνθρωποι», αλλά η ταυτότητα «καλός άνθρωπος» να εμφανίζεται στο 50% των συνολικών απαντήσεων, καθόσον υπάρχουν κι άλλες απαντήσεις. Για να το κάνουμε σαφέστερο, φανταστείτε να είστε σε μια πλατεία που διάφοροι άνθρωποι συζητούν πολιτικά. Πόσο συχνά θα ακούσετε κάποιον να δηλώνει ότι έχει αυτή την ταυτότητα; Αυτό μετράει η εν λόγω συχνότητα. Προσοχή! Όχι πόσους θα συναντήσετε που να έχουν αυτή την ταυτότητα, αλλά στη διάρκεια όλων των συζητήσεων, πόσες φορές θα ακούσετε τη δήλωση «Έχω την τάδε πολιτική ταυτότητα». Συνεπώς, η συχνότητα μιας πολιτικής ταυτότητας στο σύνολο όλων των αυτοχαρακτηρισμών δείχνει πόσο αυτή μονοπωλεί το σύνολο των αυτοπροσδιορισμών κι όχι πόσο εξαπλωμένη είναι στους ανθρώπους.
+
+Εν πάση περιπτώσει, στο [Ανάλυση πολυμεταβλητών τεχνικών στις κοινωνικές επιστήμες](https://www.klidarithmos.gr/analysh-polymetablhtwn-texnikwn-stis-koinwnikes-episthmes/) αναφέρεται ότι δεν υπάρχει πρόβλημα να εξάγουμε συμπεράσματα για τον πληθυσμό μας μέσω της ανάλυσης αντιστοιχίας, ακόμα κι όταν το ερωτηματολόγιο δέχεται πολλαπλές επιλογές. Συνεπώς, αν και θα κρατήσουμε κάποιες επιφυλάξεις, δεν θα επιμείνουμε σχολαστικά στη διαφοροποίηση «συχνότητα ανθρώπων»-«συχνότητα απόψεων».
+
+
+Πάμε, λοιπόν, να κάνουμε τις προσαρμογές που θέλαμε στους αρχικούς πίνακες συχνοτήτων. Για να κάνουμε αυτή τη δουλειά χρειαστήκαμε τα ποσοστά των ερωτηθέντων που ψήφισαν το εκάστοτε κόμμα. Η πρώτη σκέψη ήταν να χρησιμοποιήσουμε τη στήλη `synolo` και μετά να βρούμε τον Moore–Penrose αντίστροφο του πίνακα με στήλες τις στήλες των κομμάτων. Κάνοντας αυτή τη δουλειά, βρίσκουμε τα κάτωθι ποσοστά.
+
+
+```{r}
+#| echo = FALSE
+# Moore–Penrose για πρόθεση ψήφου σε κάθε κόμμα
+pM <- as.matrix(prothesiPsifoyTemp/100)
+pMt <- t(pM)
+pInv <- solve(pMt %*% pM) %*% pMt # Use solve() for inverse and %*% for matrix multiplication
+prAprrox <- pInv %*% synolo
+prAprrox <- data.frame(prAprrox)
+prAprrox
+```
+
+Δεδομένου ότι το ποσοστό του ΜΕΡΑ25 ήταν μαθηματικώς απαράδεκτο εξετάσαμε τις δημοσκοπήσεις της [Opinion Poll](https://air.euro2day.gr/media/files/1475525-OPINION%20POLL.pdf) που εκτελέστηκαν την περίοδο του Φεβρουαρίου του 2024. Από αυτές διαλέξαμε αυτή που είχε τη μικρότερη (ευκλείδεια) απόσταση από τα συμπεράσματα που προαναφέραμε και τη μέγιστη γραμμική συσχέτιση (Pearson). Τέλος, αυτή συμπληρώθηκε με το ποσοστό του ΜΕΡΑ25 από τη σελίδα [dimoskopiseis](https://dimoskopiseis.gr/prothesi-psifoy/)   (βλ. Metron Analysis για το MEGA CHANNEL).
+
+```{r}
+#| echo = FALSE
+feb19 <- c(34.3, 12.5, 14.6, 9.4, 2.7, 9.5, 3.8, 3.7, 3.3)
+feb29 <- c(33.9, 11.9, 13.9, 10.1, 2.7, 10.2, 4.2, 3.5, 3.3)
+mpAppr <- as.vector(prAprrox[-10,1])
+```
+
+```{r}
+#| eval = FALSE,
+#| echo = FALSE
+sd(mpAppr-feb19)
+sd(mpAppr-feb29)
+cor(feb19,mpAppr)
+cor(feb29,mpAppr)
+
+```
+
+
+
+```{r}
+#| echo = FALSE
+feb29 <- c(33.9, 11.9, 13.9, 10.1, 2.7, 10.2, 4.2, 3.5, 3.3, 0.7)/100
+prAprrox$OpinionPoll.MetronAnalysis <- feb29*100
+prothesiPsifoyAll <- prothesiPsifoyTemp
+prothesiPsifoyAll$ND <- prothesiPsifoyAll$ND*feb29[1]
+prothesiPsifoyAll$SYRIZA <- prothesiPsifoyAll$SYRIZA*feb29[2]
+prothesiPsifoyAll$PASOK <- prothesiPsifoyAll$PASOK*feb29[3]
+prothesiPsifoyAll$KKE <- prothesiPsifoyAll$KKE*feb29[4]
+prothesiPsifoyAll$Spartiates <- prothesiPsifoyAll$Spartiates*feb29[5]
+prothesiPsifoyAll$Elliniki_Lysi <- prothesiPsifoyAll$Elliniki_Lysi*feb29[6]
+prothesiPsifoyAll$Niki <- prothesiPsifoyAll$Niki*feb29[7]
+prothesiPsifoyAll$Pleysi_Eleytherias <- prothesiPsifoyAll$Pleysi_Eleytherias*feb29[8]
+prothesiPsifoyAll$Nea_Aristera <- prothesiPsifoyAll$Nea_Aristera*feb29[9]
+prothesiPsifoyAll$MERA25 <- prothesiPsifoyAll$MERA25*feb29[10]
+prAprrox
+```
+
+Κάποια άλλα δημοσκοπικά αποτελέσματα, για την περίπτωση που θέλει να διπλοελέγξει ο αναγνώστης, είναι τα κάτωθι.
+
+```{r}
+#| echo = FALSE
+# Εταιρείες
+ΕΤΑΙΡΕΙΑ <- c("ALCO", "INTERVIEW", "Metron Analysis", "Opinion Poll")
+
+# Αποτελέσματα για ΝΔ
+ΝΔ <- c(28.20, 29.10, 28.50, 29.50)
+
+# Αποτελέσματα για ΣΥΡΙΖΑ
+ΣΥΡΙΖΑ <- c(12.20, 11.00, 11.70, 12.20)
+
+# Αποτελέσματα για ΚΚΕ
+ΚΚΕ <- c(10.20, 11.90, 10.40, 9.80)
+
+# Αποτελέσματα για ΠΑΣΟΚ (Χρησιμοποιώ την αρχική ονομασία ΠΑΣΟΚ)
+ΠΑΣΟΚ <- c(9.10, 7.00, 6.80, 7.70)
+
+# Αποτελέσματα για ΕΛΛΗΝΙΚΗ_ΛΥΣΗ
+ΕΛΛΗΝΙΚΗ_ΛΥΣΗ <- c(6.10, 7.50, 6.30, 7.10)
+
+# Αποτελέσματα για ΠΛΕΥΣΗ (Έχω χρησιμοποιήσει την ονομασία ΠΛΕΥΣΗ)
+ΠΛΕΥΣΗ <- c(2.50, 2.50, 2.40, 1.80)
+
+# Δημιουργία του dataframe
+feb_2024_data <- data.frame(
+  ΕΤΑΙΡΕΙΑ = ΕΤΑΙΡΕΙΑ,
+  ΝΔ = ΝΔ,
+  ΣΥΡΙΖΑ = ΣΥΡΙΖΑ,
+  ΚΚΕ = ΚΚΕ,
+  ΠΑΣΟΚ = ΠΑΣΟΚ,
+  ΕΛΛΗΝΙΚΗ_ΛΥΣΗ = ΕΛΛΗΝΙΚΗ_ΛΥΣΗ,
+  ΠΛΕΥΣΗ = ΠΛΕΥΣΗ
+)
+
+# Εκτύπωση του dataframe για να το δεις
+feb_2024_data
+```
+
+
+
+Ας εξετάσουμε αρχικά πόσες διαστάσεις θα είναι ικανοποιητικές για να περιγράψουν τα συμπεράσματα της ανάλυσης αντιστοιχίας. Προς τούτο θα κατασκευάσουμε το γράφημα παραγόντων (scree plot). 
+
+
+```{r}
+#| echo = FALSE
+apotelesmataCORA <- CA(prothesiPsifoyAll, graph=FALSE)
+```
+
+```{r}
+#| echo = FALSE
+# Scree plot
+fviz_eig(apotelesmataCORA, addlabels = TRUE)
+```
+
+Βλέπουμε ότι η μία διάσταση αρκεί για να περιγράψει το 44.3% της μάζας των δεδομένων μας. Βάζοντας ακόμα μία διάσταση στο «παιχνίδι» εξηγείται άλλο ένα 24.6%. Συνολικά, δηλαδή, από δύο διαστάσεις εξηγείται το 68.9% των δεδομένων μας. Δεν θέλουμε κάτι παραπάνω, οπότε προχωράμε τη μελέτη μας.
+
+Για να απαντήσουμε τα ερωτήματα που θέσαμε στην αρχή αυτής της ενότητας, θα πρέπει να φτιάξουμε το γράφημα διπλής προβολής.
+
+```{r}
+#| echo = FALSE
+fviz_ca_biplot(apotelesmataCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και ταυτοτήτων"
+               )
+```
+
+
+Το σημαντικό σε αυτή την αναπαράσταση είναι να εξετάσουμε τις γωνίες με την μύτη στο σημείο διασταύρωσης των αξόνων (θα το αποκαλούμε **`διασταύρωση`**) και πλευρές που να καταλήγουν η μία σε <span style="color:#a36fbd; font-weight:bold;">μοβ σημείο</span> (<span style="color:#a36fbd; font-weight:bold;">πολιτική ταυτότητα</span>) και η άλλη σε <span style="color:orange; font-weight:bold;">πορτοκαλί</span> (<span style="color:orange; font-weight:bold;">κόμμα</span>). Συγκεκριμένα:
+
+- Η γωνία με πλευρές **`διασταύρωση`**-<span style="color:#a36fbd; font-weight:bold;">Εθνικιστής</span> και **`διασταύρωση`**-<span style="color:orange; font-weight:bold;">Σπαρτιάτες</span> είναι πολύ μητερή και με μακριές πλευρές. Αυτό σημαίνει ότι κοιτάζοντας μέσα στο κόμμα των Σπαρτιατών, τα ποσοστά των εθνικιστών είναι εμφανώς μεγαλύτερα από του μέσου όρου. Και αντίστροφα. Κοιτάζοντας στο σύνολο των εθνικιστών, τα ποσοστά των Σπαρτιατών εκτοξεύονται προς τα πάνω σε σχέση με τα εκλογικά τους. Ομοίως έντονη συσχέτιση βλέπουμε και στο <span style="color:orange; font-weight:bold;">ΚΚΕ</span> και στην πολιτική ταυτότητα <span style="color:#a36fbd; font-weight:bold;">Αντικαπιταλιστής</span> ή <span style="color:#a36fbd; font-weight:bold;">Ακροαριστερός</span>.
+
+- Από την άλλη, η γωνία με πλευρές **`διασταύρωση`**-<span style="color:#a36fbd; font-weight:bold;">Συντηρητικός</span> και **`διασταύρωση`**-<span style="color:orange; font-weight:bold;">Νέα Αριστερά</span> είναι πολύ πλατιά με με μακριές πλευρές. Αυτό υποδηλώνει το ποσοστό των συντηρητικών στη Νέα Αριστερά είναι εμφανώς κάτω από αυτό που συναντάμε στην κοινωνία. Αλλά και ανάποδα. Εστιάζοντας στους συντηρητικούς, οι οπαδοί της Νέας Αριστεράς είναι εμφανώς λιγότεροι από αυτό που θα αναμέναμε αν εκεί όλα τα κόμματα εκπροσωπούνταν απλά από τις εκλογικές αναλογίες τους. Τα ίδιαμπορούμε να πούμε με τη  <span style="color:orange; font-weight:bold;">Νέα Αριστερά</span> και την πολιτική ταυτότητα <span style="color:#a36fbd; font-weight:bold;">Αριστερός</span>.
+
+- Τι σημαίνουν τα παραπάνω όταν μιλάμε για δύο <span style="color:orange; font-weight:bold;">κόμματα</span>; Δύο <span style="color:orange; font-weight:bold;">κόμματα</span> που είναι κοντά το ένα στο άλλο και μακριά από το κέντρο (**`διασταύρωση`**), πάει να πει ότι ασκούν τις ίδιες  «πιέσεις» στα ποσοστά των <span style="color:#a36fbd; font-weight:bold;">πολιτικών ταυτοτήτων</span>, ώστε να υπερβούν πάνω από τον μέσο όρο ή να καταποντιστούν κάτω από αυτόν. Κάτι τέτοιο συμβαίνει με τη <span style="color:orange; font-weight:bold;">Νίκη</span> και την <span style="color:orange; font-weight:bold;">Ελληνική Λύση</span>, όπερ σημαίνει ότι έχουν παρόμοιες σφαίρες επιρροής. Αλλά και από την άλλη, κόμματα κοντά στο κέντρο (**`διασταύρωση`**) είναι αυτά που στο εσωτερικό τους δεν έχουν να επιδείξουν κάποια ιδιομορφία, κάτι που να τα ξεχωρίζει από μια συνάθροιση τυχαίων ανθρώπων σε μια πλατεία. Ένα τέτοιο κόμμα είναι η Πλεύση Ελευθερίας.
+
+-   Τα ίδια μπορούμε να πούμε και για δύο <span style="color:#a36fbd; font-weight:bold;">πολιτικές ταυτότητες</span>. Η <span style="color:#a36fbd; font-weight:bold;">ΔΞ/ΔΑ</span> είναι πιο κοντά στο κέντρο. Αυτό σημαίνει ότι στα άτομα που τη φέρουν δεν ξεχωρίζει κάποιο κόμμα, με τρόπο εντονότερο προς τα πάνω ή προς τα κάτω σε σχέση με αυτό που φαίνεται σε όλη την κοιωνία. Επίσης, δεδομένου ότι οι πολιτικές ταυτότητες <span style="color:#a36fbd; font-weight:bold;">Υπέρμαχος της Ελεύθερης Αγοράς</span> και <span style="color:#a36fbd; font-weight:bold;">Κεντροδεξιός</span> είναι κοντά και λίγο μακριά από το κέντρο, πάει να πει ότι εμφανίζουν την ίδια άνοδο ή πτώση στο κάθε κόμμα.
+
+
+Αφού ερμηνεύσαμε διάφορα στοιχεία του γραφήματος, πάμε να εξετάσουμε τον ρόλο των αξόνων. Αυτοί ποσοτικοποιούν την διαφοροποίηση των σφαιρών επιρροής των <span style="color:orange; font-weight:bold;">κομμάτων</span> και των <span style="color:#a36fbd; font-weight:bold;">πολιτικών ταυτοτήτων</span>. Για να το δούμε ακριβέστερα σε ποια μέρη χωρίζουν τα <span style="color:orange; font-weight:bold;">κόμματα</span> και τις <span style="color:#a36fbd; font-weight:bold;">πολιτικές ταυτότητες</span>, θα χρειαστεί να δούμε ποια <span style="color:orange; font-weight:bold;">κόμματα</span> και ποιες <span style="color:#a36fbd; font-weight:bold;">πολιτικές ταυτότητες</span> εκπροσωπούνται καλά με αυτό το πλήθος διαστάσεων. Τα παρακάτω γραφήματα δείχνουν με κόκκινο τα <span style="color:orange; font-weight:bold;">κόμματα</span> και τις <span style="color:#a36fbd; font-weight:bold;">πολιτικές ταυτότητες</span> πολιτικές ταυτότητες που έχουν καλή εκπροσώπηση στο σχήμα μας.
+
+
+
+::: {.panel-tabset}
+
+
+
+### Κόμματα {.unnumbered }
+
+```{r}
+#| echo = FALSE
+fviz_ca_col(apotelesmataCORA, repel = TRUE,
+            col.col = "cos2",
+            gradient.cols = c("blue", "red"), # Κλίμακα χρωμάτων
+            title = "Ποια πολιτικά κόμματα εκπροσωπούνται καλά;"
+            )
+```
+
+### Πολιτικές ταυτότητες {.unnumbered }
+
+```{r}
+#| echo = FALSE
+fviz_ca_row(apotelesmataCORA, repel = TRUE,
+            col.row = "cos2",
+            gradient.cols = c("blue", "red"), # Κλίμακα χρωμάτων
+            title = "Ποιες πολιτικές ταυτότητες εκπροσωπούνται καλά;"
+            )
+```
+
+
+:::
+
+
+Μπορούμε να πούμε ότι με εξαίρεση την Πλεύση Ελευθερίας και το ΔΞ/ΔΑ, όλα τα κόμματα έχουν καλή εκπροσώπηση στο διάγραμμα διπλής προβολής. Σε δεύτερη φάση, λοιπόν, θα εξετάσουμε τα κόμματα και τις πολιτικές ταυτότητες που διαμορφώνουν τους άξονες, ώστε να τους νοηματοδοτήσουμε. Στα παρακάτω σχήματα με κόκκινο πάλι παριστάνονται ακριβώς αυτά που τους διαμορφώνουν πιο έντονα.
+
+
+
+::: {.panel-tabset}
+
+### Κόμματα {.unnumbered }
+
+```{r}
+#| echo = FALSE
+fviz_ca_row(apotelesmataCORA, repel = TRUE,
+            col.row = "contrib",
+            gradient.cols = c("blue", "red"),
+            title = "Συνεισφορά πολιτικών ταυτοτήτων στη διαμόρφωση των αξόνων"
+            )
+```
+
+### Πολιτικές ταυτότητες {.unnumbered }
+
+```{r}
+#| echo = FALSE
+fviz_ca_col(apotelesmataCORA, repel = TRUE,
+            col.col = "contrib",
+            gradient.cols = c("blue", "red"),
+            title = "Συνεισφορά κομμάτων στη διαμόρφωση των αξόνων"
+            )
+```
+
+:::
+
+
+Εξετάζοντάς τα, θα μπορούσαμε να βγάλουμε παρόμοιο συμπέρασμα και με την απεικόνιση στην περίπτωση της πολυδιάστατης προσαρμογής κλίμακας. Ο οριζόντιος άξονας ξεχωρίζει την αριστερά από τη δεξιά, ενώ ο κατακόρυφος θα μπορούσαμε να πούμε ότι αποτυπώνει το βαθμό που ένα κόμμα διαχειρίζεται το σύστημα ή επιδιώκει τη ρίξη με αυτό.
+
+
+# Η σχέση της αριστεράς στην κοινωνία
+
+Στις παρακάτω ενότητες οι ερωτηθέντες απαντούν κάποιες ερωτήσεις επιλέγοντας μεταξύ των:
+
+- Συμφωνώ
+
+- Διαφωνώ
+
+- Δεν ξέρω / Δεν απαντώ
+
+Οι ερωτηθέντες έχουν χωριστεί είτε ανά κόμμα, είτε ανά κοινωνική ομάδα. Εδώ θα μελετήσουμε την εγγύτητα των κομμάτων με την κάθε απάντηση, αλλά και με την κάθε κοινωνική ομάδα από τις κάτωθι:
+
+- ηλικία 17-34,
+- ηλικία 35-54
+- ηλικία 55 και άνω
+- ετήσιο καθαρό εισόδημα νοικοκυριού έως 7000€,
+- ετήσιο καθαρό εισόδημα νοικοκυριού από 7001€ έως 16000€,
+- ετήσιο καθαρό εισόδημα νοικοκυριού από 16001€ έως 30000€,
+- ετήσιο καθαρό εισόδημα νοικοκυριού άνω των 30000€,
+- μισθωτός δημοσίου,
+- μισθωτός ιδιωτικού,
+- συνταξιούχος,
+- ελεύθερος επαγγελματίας / αυτοαπασχολούμενος,
+- άνεργος,
+- οικιακά.
+
+
+Σε ό,τι ακολουθεί θα θεωρείται ότι ο γράφων είναι εξοικειωμένος τόσο με την ανάγνωση των αποτελεσμάτων της ανάλυσης αντιστοιχίας, όσο και της πολυδιάστατης προσαρμογής κλίμακας. Αν αυτό δεν συμβαίνει, ίσως να είναι καλή ιδέα να αναγνώσει το παραπάνω μέρος της εργασίας ή να ανατρέξει εδώ ([MDS](mds.html), [CORA](cora.html)).
+
+## Η κοινωνία είναι διαιρεμένη σε κοινωνικές τάξεις, οι οποίες έχουν αντικρουόμενα συμφέροντα
+
+```{r}
+#| echo = FALSE
+koinonikesTaxeisSocial <- data.frame(
+  απάντηση = c("ΚοινωνικέςΤάξειςΝΑΙ", "ΚοινωνικέςΤάξειςΟΧΙ", "ΚοινωνικέςΤάξειςΔΞ"),
+  σύνολο = c(78, 20, 2),
+  ηλικία17_34 = c(76, 23, 1),
+  ηλικία35_54 = c(80, 18, 2),
+  ηλικία55άνω = c(76, 21, 3),
+  Έως7000 = c(78, 19, 2),
+  από7001έως16000 = c(83, 15, 2),
+  από16001έως30000 = c(77, 21, 2),
+  Πάνω30000 = c(73, 24, 3),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(81, 16, 3),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(76, 20, 3),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(78, 21, 2),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(71, 27, 2),
+  ΑΝΕΡΓΟΣ = c(88, 10, 2),
+  ΟΙΚΙΑΚΑ = c(81, 17, 2)
+)
+
+koinonikesTaxeisParty <- data.frame(
+  απάντηση = c("ΚοινωνικέςΤάξειςΝΑΙ", "ΚοινωνικέςΤάξειςΟΧΙ", "ΚοινωνικέςΤάξειςΔΞ"),
+  σύνολο = c(78, 20, 2),
+  ΝΔ = c(58, 39, 3),
+  ΣΥΡΙΖΑ = c(93, 7, 1),
+  ΠΑΣΟΚ = c(80, 15, 0),
+  ΚΚΕ = c(93, 6, 1),
+  Σπαρτιάτες = c(85, 15, 0),
+  Ελληνική_Λύση = c(84, 14, 2),
+  Νίκη = c(76, 22, 2),
+  Πλεύση_Ελευθερίας = c(87, 13, 0),
+  Νέα_Αριστερά = c(96, 2, 2),
+  ΜΕΡΑ25 = c(95, 2, 2),
+  Αριστερά_Κεντροαριστερά = c(91, 7, 1)
+)
+
+koinonikesTaxeis <- merge(x=koinonikesTaxeisSocial,y=koinonikesTaxeisParty,by=c("απάντηση","σύνολο"))
+
+koinonikesTaxeisTemp <- koinonikesTaxeis[,-1]
+row.names(koinonikesTaxeisTemp) <- koinonikesTaxeis[,1]
+koinonikesTaxeisTemp2 <- data.frame(t(koinonikesTaxeisTemp))
+koinonikesTaxeisTemp2$omada <- colnames(koinonikesTaxeisTemp)
+koinonikesTaxeisTemp2 <- koinonikesTaxeisTemp2[, c("omada", setdiff(names(koinonikesTaxeisTemp2), "omada"))]
+```
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τακόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+
+```{r}
+#| echo = FALSE
+koinonikesTaxeisPartyTemp <- koinonikesTaxeisParty[,-c(1,2)]
+row.names(koinonikesTaxeisPartyTemp) <- koinonikesTaxeisParty[,1]
+koinonikesTaxeisPartyAll <- koinonikesTaxeisPartyTemp
+koinonikesTaxeisPartyAll$ΝΔ <- koinonikesTaxeisPartyAll$ΝΔ*feb29[1]
+koinonikesTaxeisPartyAll$ΣΥΡΙΖΑ <- koinonikesTaxeisPartyAll$ΣΥΡΙΖΑ*feb29[2]
+koinonikesTaxeisPartyAll$ΠΑΣΟΚ <- koinonikesTaxeisPartyAll$ΠΑΣΟΚ*feb29[3]
+koinonikesTaxeisPartyAll$ΚΚΕ <- koinonikesTaxeisPartyAll$ΚΚΕ*feb29[4]
+koinonikesTaxeisPartyAll$Σπαρτιάτες <- koinonikesTaxeisPartyAll$Σπαρτιάτες*feb29[5]
+koinonikesTaxeisPartyAll$Ελληνική_Λύση <- koinonikesTaxeisPartyAll$Ελληνική_Λύση*feb29[6]
+koinonikesTaxeisPartyAll$Νίκη <- koinonikesTaxeisPartyAll$Νίκη*feb29[7]
+koinonikesTaxeisPartyAll$Πλεύση_Ελευθερίας <- koinonikesTaxeisPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+koinonikesTaxeisPartyAll$Νέα_Αριστερά <- koinonikesTaxeisPartyAll$Νέα_Αριστερά*feb29[9]
+koinonikesTaxeisPartyAll$ΜΕΡΑ25 <- koinonikesTaxeisPartyAll$ΜΕΡΑ25*feb29[10]
+koinonikesTaxeisPartyAll <- koinonikesTaxeisPartyAll[,]
+koinonikesTaxeisPartyCORA <- CA(koinonikesTaxeisPartyAll, graph=FALSE)
+fviz_ca_biplot(koinonikesTaxeisPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(koinonikesTaxeisTemp2)
+```
+
+:::
+
+## Το μεγαλύτερο πρόβλημα για την πρόοδο της κοινωνίας μας είναι το γεγονός ότι οι λίγοι εκμεταλλεύονται τους πολλούς
+
+```{r}
+#| echo = FALSE
+ekmetaleysiProblimaSocial <- data.frame(
+  απάντηση = c("ΕκμετάλλευσηΙΣΟΝπρόβλημαΝΑΙ", "ΕκμετάλλευσηΙΣΟΝπρόβλημαΟΧΙ", "ΕκμετάλλευσηΙΣΟΝπρόβλημαΔΞ"),
+  σύνολο = c(72, 26, 2),
+  ηλικία17_34 = c(68, 28, 4),
+  ηλικία35_54 = c(73, 26, 2),
+  ηλικία55άνω = c(72, 26, 2),
+  Έως7000 = c(80, 18, 2),
+  από7001έως16000 = c(79, 19, 2),
+  από16001έως30000 = c(70, 27, 2),
+  Πάνω30000 = c(58, 39, 3),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(78, 20, 2),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(71, 27, 2),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(70, 28, 2),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(66, 32, 3),
+  ΑΝΕΡΓΟΣ = c(87, 13, 0),
+  ΟΙΚΙΑΚΑ = c(71, 26, 2)
+)
+
+ekmetaleysiProblimaParty <- data.frame(
+  απάντηση = c("ΕκμετάλλευσηΙΣΟΝπρόβλημαΝΑΙ", "ΕκμετάλλευσηΙΣΟΝπρόβλημαΟΧΙ", "ΕκμετάλλευσηΙΣΟΝπρόβλημαΔΞ"),
+  σύνολο = c(72, 26, 2),
+  ΝΔ = c(40, 57, 3),
+  ΣΥΡΙΖΑ = c(94, 4, 2),
+  ΠΑΣΟΚ = c(76, 21, 3),
+  ΚΚΕ = c(92, 4, 4),
+  Σπαρτιάτες = c(81, 19, 0),
+  Ελληνική_Λύση = c(88, 12, 0),
+  Νίκη = c(71, 27, 2),
+  Πλεύση_Ελευθερίας = c(87, 13, 0),
+  Νέα_Αριστερά = c(92, 4, 4),
+  ΜΕΡΑ25 = c(95, 5, 0),
+  Αριστερά_Κεντροαριστερά = c(91, 8, 1)
+)
+
+
+ekmetaleysiProblima <- merge(x=ekmetaleysiProblimaSocial,y=ekmetaleysiProblimaParty,by=c("απάντηση","σύνολο"))
+ekmetaleysiProblimaTemp <- ekmetaleysiProblima[,-1]
+row.names(ekmetaleysiProblimaTemp) <- ekmetaleysiProblima[,1]
+ekmetaleysiProblimaTemp2 <- data.frame(t(ekmetaleysiProblimaTemp))
+ekmetaleysiProblimaTemp2$omada <- colnames(ekmetaleysiProblimaTemp)
+ekmetaleysiProblimaTemp2 <- ekmetaleysiProblimaTemp2[, c("omada", setdiff(names(ekmetaleysiProblimaTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+ekmetaleysiProblimaPartyTemp <- ekmetaleysiProblimaParty[,-c(1,2)]
+row.names(ekmetaleysiProblimaPartyTemp) <- ekmetaleysiProblimaParty[,1]
+ekmetaleysiProblimaPartyAll <- ekmetaleysiProblimaPartyTemp
+ekmetaleysiProblimaPartyAll$ΝΔ <- ekmetaleysiProblimaPartyAll$ΝΔ*feb29[1]
+ekmetaleysiProblimaPartyAll$ΣΥΡΙΖΑ <- ekmetaleysiProblimaPartyAll$ΣΥΡΙΖΑ*feb29[2]
+ekmetaleysiProblimaPartyAll$ΠΑΣΟΚ <- ekmetaleysiProblimaPartyAll$ΠΑΣΟΚ*feb29[3]
+ekmetaleysiProblimaPartyAll$ΚΚΕ <- ekmetaleysiProblimaPartyAll$ΚΚΕ*feb29[4]
+ekmetaleysiProblimaPartyAll$Σπαρτιάτες <- ekmetaleysiProblimaPartyAll$Σπαρτιάτες*feb29[5]
+ekmetaleysiProblimaPartyAll$Ελληνική_Λύση <- ekmetaleysiProblimaPartyAll$Ελληνική_Λύση*feb29[6]
+ekmetaleysiProblimaPartyAll$Νίκη <- ekmetaleysiProblimaPartyAll$Νίκη*feb29[7]
+ekmetaleysiProblimaPartyAll$Πλεύση_Ελευθερίας <- ekmetaleysiProblimaPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+ekmetaleysiProblimaPartyAll$Νέα_Αριστερά <- ekmetaleysiProblimaPartyAll$Νέα_Αριστερά*feb29[9]
+ekmetaleysiProblimaPartyAll$ΜΕΡΑ25 <- ekmetaleysiProblimaPartyAll$ΜΕΡΑ25*feb29[10]
+ekmetaleysiProblimaPartyAll <- ekmetaleysiProblimaPartyAll[,]
+ekmetaleysiProblimaPartyCORA <- CA(ekmetaleysiProblimaPartyAll, graph=FALSE)
+fviz_ca_biplot(ekmetaleysiProblimaPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(ekmetaleysiProblimaTemp2)
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+kommataKoinvnia <- merge(x=koinonikesTaxeisTemp2,y=ekmetaleysiProblimaTemp2,by="omada")
+```
+
+:::
+
+## Δεν θα πρέπει να αποκλειστεί το ενδεχόμενο ο λαός να ασκήσει βία κάποια στιγμή ενάντια στο σύστημα
+
+```{r}
+#| echo = FALSE
+biaProblimaSocial <- data.frame(
+  απάντηση = c("ΑντισυστημικήΒίαΝΑΙ", "ΑντισυστημικήΒίαΟΧΙ", "ΑντισυστημικήΒίαΔΞ"),
+  σύνολο = c(45, 47, 8),
+  ηλικία17_34 = c(49, 43, 9),
+  ηλικία35_54 = c(46, 46, 8),
+  ηλικία55άνω = c(42, 49, 9),
+  Έως7000 = c(60, 33, 7),
+  από7001έως16000 = c(52, 41, 7),
+  από16001έως30000 = c(39, 52, 9),
+  Πάνω30000 = c(41, 54, 4),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(46, 44, 11),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(44, 49, 8),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(39, 52, 10),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(45, 48, 6),
+  ΑΝΕΡΓΟΣ = c(64, 28, 8),
+  ΟΙΚΙΑΚΑ = c(40, 52, 7)
+)
+
+biaProblimaParty <- data.frame(
+  απάντηση = c("ΑντισυστημικήΒίαΝΑΙ", "ΑντισυστημικήΒίαΟΧΙ", "ΑντισυστημικήΒίαΔΞ"),
+  σύνολο = c(45, 47, 8),
+  ΝΔ = c(16, 80, 4),
+  ΣΥΡΙΖΑ = c(63, 26, 11),
+  ΠΑΣΟΚ = c(32, 60, 8),
+  ΚΚΕ = c(74, 18, 8),
+  Σπαρτιάτες = c(85, 15, 0),
+  Ελληνική_Λύση = c(65, 29, 6),
+  Νίκη = c(59, 36, 5),
+  Πλεύση_Ελευθερίας = c(42, 48, 10),
+  Νέα_Αριστερά = c(55, 25, 20),
+  ΜΕΡΑ25 = c(93, 5, 2),
+  Αριστερά_Κεντροαριστερά = c(57, 33, 10)
+)
+
+
+biaProblima <- merge(x=biaProblimaSocial,y=biaProblimaParty,by=c("απάντηση","σύνολο"))
+biaProblimaTemp <- biaProblima[,-1]
+row.names(biaProblimaTemp) <- biaProblima[,1]
+biaProblimaTemp2 <- data.frame(t(biaProblimaTemp))
+biaProblimaTemp2$omada <- colnames(biaProblimaTemp)
+biaProblimaTemp2 <- biaProblimaTemp2[, c("omada", setdiff(names(biaProblimaTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+biaProblimaPartyTemp <- biaProblimaParty[,-c(1,2)]
+row.names(biaProblimaPartyTemp) <- biaProblimaParty[,1]
+biaProblimaPartyAll <- biaProblimaPartyTemp
+
+
+
+biaProblimaPartyAll$ΝΔ <- biaProblimaPartyAll$ΝΔ*feb29[1]
+biaProblimaPartyAll$ΣΥΡΙΖΑ <- biaProblimaPartyAll$ΣΥΡΙΖΑ*feb29[2]
+biaProblimaPartyAll$ΠΑΣΟΚ <- biaProblimaPartyAll$ΠΑΣΟΚ*feb29[3]
+biaProblimaPartyAll$ΚΚΕ <- biaProblimaPartyAll$ΚΚΕ*feb29[4]
+biaProblimaPartyAll$Σπαρτιάτες <- biaProblimaPartyAll$Σπαρτιάτες*feb29[5]
+biaProblimaPartyAll$Ελληνική_Λύση <- biaProblimaPartyAll$Ελληνική_Λύση*feb29[6]
+biaProblimaPartyAll$Νίκη <- biaProblimaPartyAll$Νίκη*feb29[7]
+biaProblimaPartyAll$Πλεύση_Ελευθερίας <- biaProblimaPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+biaProblimaPartyAll$Νέα_Αριστερά <- biaProblimaPartyAll$Νέα_Αριστερά*feb29[9]
+biaProblimaPartyAll$ΜΕΡΑ25 <- biaProblimaPartyAll$ΜΕΡΑ25*feb29[10]
+biaProblimaPartyAll <- biaProblimaPartyAll[,]
+biaProblimaPartyCORA <- CA(biaProblimaPartyAll, graph=FALSE)
+fviz_ca_biplot(biaProblimaPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(biaProblimaTemp2)
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+kommataKoinvnia <- merge(x=kommataKoinvnia,y=biaProblimaTemp2,by="omada")
+```
+
+:::
+
+## Η δημοκρατία είναι το καλύτερο πολίτευμα αλλά θα ανεχόμουν τον περιορισμό της για να εξασφαλιστεί ανάπτυξη και ευημερία
+
+```{r}
+#| echo = FALSE
+periorDimokrSocial <- data.frame(
+  απάντηση = c("ΠεριορισμόςΔημοκρατίαςΝΑΙ", "ΠεριορισμόςΔημοκρατίαςΟΧΙ", "ΠεριορισμόςΔημοκρατίαςΔΞ"),
+  σύνολο = c(30, 64, 6),
+  ηλικία17_34 = c(28, 66, 6),
+  ηλικία35_54 = c(30, 63, 7),
+  ηλικία55άνω = c(31, 65, 4),
+  Έως7000 = c(38, 52, 10),
+  από7001έως16000 = c(34, 59, 7),
+  από16001έως30000 = c(29, 68, 3),
+  Πάνω30000 = c(27, 69, 4),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(30, 65, 4),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(29, 64, 7),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(37, 61, 3),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(23, 70, 7),
+  ΑΝΕΡΓΟΣ = c(31, 63, 7),
+  ΟΙΚΙΑΚΑ = c(38, 57, 5)
+)
+
+periorDimokrParty <- data.frame(
+  απάντηση = c("ΠεριορισμόςΔημοκρατίαςΝΑΙ", "ΠεριορισμόςΔημοκρατίαςΟΧΙ", "ΠεριορισμόςΔημοκρατίαςΔΞ"),
+  σύνολο = c(30, 64, 6),
+  ΝΔ = c(44, 53, 4),
+  ΣΥΡΙΖΑ = c(10, 87, 3),
+  ΠΑΣΟΚ = c(24, 72, 4),
+  ΚΚΕ = c(15, 75, 10),
+  Σπαρτιάτες = c(54, 42, 4),
+  Ελληνική_Λύση = c(52, 43, 5),
+  Νίκη = c(32, 59, 8),
+  Πλεύση_Ελευθερίας = c(29, 65, 6),
+  Νέα_Αριστερά = c(2, 94, 4),
+  ΜΕΡΑ25 = c(12, 88, 0),
+  Αριστερά_Κεντροαριστερά = c(11, 86, 3)
+)
+
+
+periorDimokr <- merge(x=periorDimokrSocial,y=periorDimokrParty,by=c("απάντηση","σύνολο"))
+periorDimokrTemp <- periorDimokr[,-1]
+row.names(periorDimokrTemp) <- periorDimokr[,1]
+periorDimokrTemp2 <- data.frame(t(periorDimokrTemp))
+periorDimokrTemp2$omada <- colnames(periorDimokrTemp)
+periorDimokrTemp2 <- periorDimokrTemp2[, c("omada", setdiff(names(periorDimokrTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+periorDimokrPartyTemp <- periorDimokrParty[,-c(1,2)]
+row.names(periorDimokrPartyTemp) <- periorDimokrParty[,1]
+periorDimokrPartyAll <- periorDimokrPartyTemp
+
+
+
+periorDimokrPartyAll$ΝΔ <- periorDimokrPartyAll$ΝΔ*feb29[1]
+periorDimokrPartyAll$ΣΥΡΙΖΑ <- periorDimokrPartyAll$ΣΥΡΙΖΑ*feb29[2]
+periorDimokrPartyAll$ΠΑΣΟΚ <- periorDimokrPartyAll$ΠΑΣΟΚ*feb29[3]
+periorDimokrPartyAll$ΚΚΕ <- periorDimokrPartyAll$ΚΚΕ*feb29[4]
+periorDimokrPartyAll$Σπαρτιάτες <- periorDimokrPartyAll$Σπαρτιάτες*feb29[5]
+periorDimokrPartyAll$Ελληνική_Λύση <- periorDimokrPartyAll$Ελληνική_Λύση*feb29[6]
+periorDimokrPartyAll$Νίκη <- periorDimokrPartyAll$Νίκη*feb29[7]
+periorDimokrPartyAll$Πλεύση_Ελευθερίας <- periorDimokrPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+periorDimokrPartyAll$Νέα_Αριστερά <- periorDimokrPartyAll$Νέα_Αριστερά*feb29[9]
+periorDimokrPartyAll$ΜΕΡΑ25 <- periorDimokrPartyAll$ΜΕΡΑ25*feb29[10]
+periorDimokrPartyAll <- periorDimokrPartyAll[,]
+periorDimokrPartyCORA <- CA(periorDimokrPartyAll, graph=FALSE)
+fviz_ca_biplot(periorDimokrPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(periorDimokrTemp2)
+```
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+kommataKoinvnia <- merge(x=kommataKoinvnia,y=periorDimokrTemp2,by="omada")
+```
+
+:::
+
+## Οι πολιτικοί πρέπει να ακολουθούν πάντοτε τη βούληση του λαού
+
+```{r}
+#| echo = FALSE
+politikoiBoylisiLaoySocial <- data.frame(
+  απάντηση = c("ΠολιτικοίΥΠΟλαόςΝΑΙ", "ΠολιτικοίΥΠΟλαόςΟΧΙ", "ΠολιτικοίΥΠΟλαόςΔΞ"),
+  σύνολο = c(62, 31, 7),
+  ηλικία17_34 = c(54, 40, 6),
+  ηλικία35_54 = c(64, 29, 7),
+  ηλικία55άνω = c(64, 30, 6),
+  Έως7000 = c(77, 18, 6),
+  από7001έως16000 = c(68, 26, 6),
+  από16001έως30000 = c(61, 32, 7),
+  Πάνω30000 = c(47, 46, 6),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(66, 28, 6),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(61, 33, 7),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(65, 30, 5),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(52, 42, 6),
+  ΑΝΕΡΓΟΣ = c(79, 13, 8),
+  ΟΙΚΙΑΚΑ = c(74, 14, 12)
+)
+
+politikoiBoylisiLaoyParty <- data.frame(
+  απάντηση = c("ΠολιτικοίΥΠΟλαόςΝΑΙ", "ΠολιτικοίΥΠΟλαόςΟΧΙ", "ΠολιτικοίΥΠΟλαόςΔΞ"),
+  σύνολο = c(62, 31, 7),
+  ΝΔ = c(44, 52, 4),
+  ΣΥΡΙΖΑ = c(71, 20, 9),
+  ΠΑΣΟΚ = c(53, 40, 7),
+  ΚΚΕ = c(78, 12, 11),
+  Σπαρτιάτες = c(88, 4, 8),
+  Ελληνική_Λύση = c(82, 15, 2),
+  Νίκη = c(78, 15, 7),
+  Πλεύση_Ελευθερίας = c(68, 32, 0),
+  Νέα_Αριστερά = c(65, 25, 10),
+  ΜΕΡΑ25 = c(68, 22, 10),
+  Αριστερά_Κεντροαριστερά = c(67, 24, 9)
+)
+
+
+politikoiBoylisiLaoy <- merge(x=politikoiBoylisiLaoySocial,y=politikoiBoylisiLaoyParty,by=c("απάντηση","σύνολο"))
+politikoiBoylisiLaoyTemp <- politikoiBoylisiLaoy[,-1]
+row.names(politikoiBoylisiLaoyTemp) <- politikoiBoylisiLaoy[,1]
+politikoiBoylisiLaoyTemp2 <- data.frame(t(politikoiBoylisiLaoyTemp))
+politikoiBoylisiLaoyTemp2$omada <- colnames(politikoiBoylisiLaoyTemp)
+politikoiBoylisiLaoyTemp2 <- politikoiBoylisiLaoyTemp2[, c("omada", setdiff(names(politikoiBoylisiLaoyTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+politikoiBoylisiLaoyPartyTemp <- politikoiBoylisiLaoyParty[,-c(1,2)]
+row.names(politikoiBoylisiLaoyPartyTemp) <- politikoiBoylisiLaoyParty[,1]
+politikoiBoylisiLaoyPartyAll <- politikoiBoylisiLaoyPartyTemp
+
+
+
+politikoiBoylisiLaoyPartyAll$ΝΔ <- politikoiBoylisiLaoyPartyAll$ΝΔ*feb29[1]
+politikoiBoylisiLaoyPartyAll$ΣΥΡΙΖΑ <- politikoiBoylisiLaoyPartyAll$ΣΥΡΙΖΑ*feb29[2]
+politikoiBoylisiLaoyPartyAll$ΠΑΣΟΚ <- politikoiBoylisiLaoyPartyAll$ΠΑΣΟΚ*feb29[3]
+politikoiBoylisiLaoyPartyAll$ΚΚΕ <- politikoiBoylisiLaoyPartyAll$ΚΚΕ*feb29[4]
+politikoiBoylisiLaoyPartyAll$Σπαρτιάτες <- politikoiBoylisiLaoyPartyAll$Σπαρτιάτες*feb29[5]
+politikoiBoylisiLaoyPartyAll$Ελληνική_Λύση <- politikoiBoylisiLaoyPartyAll$Ελληνική_Λύση*feb29[6]
+politikoiBoylisiLaoyPartyAll$Νίκη <- politikoiBoylisiLaoyPartyAll$Νίκη*feb29[7]
+politikoiBoylisiLaoyPartyAll$Πλεύση_Ελευθερίας <- politikoiBoylisiLaoyPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+politikoiBoylisiLaoyPartyAll$Νέα_Αριστερά <- politikoiBoylisiLaoyPartyAll$Νέα_Αριστερά*feb29[9]
+politikoiBoylisiLaoyPartyAll$ΜΕΡΑ25 <- politikoiBoylisiLaoyPartyAll$ΜΕΡΑ25*feb29[10]
+politikoiBoylisiLaoyPartyAll <- politikoiBoylisiLaoyPartyAll[,]
+politikoiBoylisiLaoyPartyCORA <- CA(politikoiBoylisiLaoyPartyAll, graph=FALSE)
+fviz_ca_biplot(politikoiBoylisiLaoyPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(politikoiBoylisiLaoyTemp2)
+```
+
+```{r}
+#| echo = FALSE
+kommataKoinvnia <- merge(x=kommataKoinvnia,y=politikoiBoylisiLaoyTemp2,by="omada")
+```
+
+:::
+
+
+## Θα πρέπει να μειωθεί ο χρόνος πλήρους απασχόλησης από 40 σε 30 ώρες την εβδομάδα (5ήμερο - 6ωρο)
+
+```{r}
+#| echo = FALSE
+meiosiApasxSocial <- data.frame(
+  απάντηση = c("ΜειωσηΧρόνουΑπασχΝΑΙ", "ΜειωσηΧρόνουΑπασχΟΧΙ", "ΜειωσηΧρόνουΑπασχΔΞ"),
+  σύνολο = c(60, 29, 11),
+  ηλικία17_34 = c(71, 18, 11),
+  ηλικία35_54 = c(66, 25, 8),
+  ηλικία55άνω = c(49, 37, 14),
+  Έως7000 = c(66, 23, 11),
+  από7001έως16000 = c(63, 26, 11),
+  από16001έως30000 = c(59, 30, 11),
+  Πάνω30000 = c(53, 36, 11),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(72, 22, 6),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(71, 20, 9),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(42, 42, 16),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(48, 40, 13),
+  ΑΝΕΡΓΟΣ = c(62, 24, 14),
+  ΟΙΚΙΑΚΑ = c(60, 24, 17)
+)
+
+meiosiApasxParty <- data.frame(
+  απάντηση = c("ΜειωσηΧρόνουΑπασχΝΑΙ", "ΜειωσηΧρόνουΑπασχΟΧΙ", "ΜειωσηΧρόνουΑπασχΔΞ"),
+  σύνολο = c(60, 29, 11),
+  ΝΔ = c(38, 47, 15),
+  ΣΥΡΙΖΑ = c(81, 13, 7),
+  ΠΑΣΟΚ = c(61, 28, 11),
+  ΚΚΕ = c(80, 10, 11),
+  Σπαρτιάτες = c(62, 27, 12),
+  Ελληνική_Λύση = c(59, 30, 11),
+  Νίκη = c(56, 36, 8),
+  Πλεύση_Ελευθερίας = c(68, 26, 6),
+  Νέα_Αριστερά = c(84, 10, 6),
+  ΜΕΡΑ25 = c(93, 0, 7),
+  Αριστερά_Κεντροαριστερά = c(78, 13, 10)
+)
+
+
+meiosiApasx <- merge(x=meiosiApasxSocial,y=meiosiApasxParty,by=c("απάντηση","σύνολο"))
+meiosiApasxTemp <- meiosiApasx[,-1]
+row.names(meiosiApasxTemp) <- meiosiApasx[,1]
+meiosiApasxTemp2 <- data.frame(t(meiosiApasxTemp))
+meiosiApasxTemp2$omada <- colnames(meiosiApasxTemp)
+meiosiApasxTemp2 <- meiosiApasxTemp2[, c("omada", setdiff(names(meiosiApasxTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+meiosiApasxPartyTemp <- meiosiApasxParty[,-c(1,2)]
+row.names(meiosiApasxPartyTemp) <- meiosiApasxParty[,1]
+meiosiApasxPartyAll <- meiosiApasxPartyTemp
+
+
+
+meiosiApasxPartyAll$ΝΔ <- meiosiApasxPartyAll$ΝΔ*feb29[1]
+meiosiApasxPartyAll$ΣΥΡΙΖΑ <- meiosiApasxPartyAll$ΣΥΡΙΖΑ*feb29[2]
+meiosiApasxPartyAll$ΠΑΣΟΚ <- meiosiApasxPartyAll$ΠΑΣΟΚ*feb29[3]
+meiosiApasxPartyAll$ΚΚΕ <- meiosiApasxPartyAll$ΚΚΕ*feb29[4]
+meiosiApasxPartyAll$Σπαρτιάτες <- meiosiApasxPartyAll$Σπαρτιάτες*feb29[5]
+meiosiApasxPartyAll$Ελληνική_Λύση <- meiosiApasxPartyAll$Ελληνική_Λύση*feb29[6]
+meiosiApasxPartyAll$Νίκη <- meiosiApasxPartyAll$Νίκη*feb29[7]
+meiosiApasxPartyAll$Πλεύση_Ελευθερίας <- meiosiApasxPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+meiosiApasxPartyAll$Νέα_Αριστερά <- meiosiApasxPartyAll$Νέα_Αριστερά*feb29[9]
+meiosiApasxPartyAll$ΜΕΡΑ25 <- meiosiApasxPartyAll$ΜΕΡΑ25*feb29[10]
+meiosiApasxPartyAll <- meiosiApasxPartyAll[,]
+meiosiApasxPartyCORA <- CA(meiosiApasxPartyAll, graph=FALSE)
+fviz_ca_biplot(meiosiApasxPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(meiosiApasxTemp2)
+```
+
+```{r}
+#| echo = FALSE
+kommataKoinvnia <- merge(x=kommataKoinvnia,y=meiosiApasxTemp2,by="omada")
+```
+
+:::
+
+## Είναι εφικτό μια ελληνική κυβέρνηση να μειώσει τον χρόνο πλήρους απασχόλησης από 40 σε 30 ώρες την εβδομάδα (5ήμερο - 6ωρο)
+
+```{r}
+#| echo = FALSE
+efiktiMeiosiSocial <- data.frame(
+  απάντηση = c("ΕφικτήΜειωσηΧΝΑΙ", "ΕφικτήΜειωσηΟΧΙ", "ΕφικτήΜειωσηΔΞ"),
+  σύνολο = c(49, 37, 14),
+  ηλικία17_34 = c(52, 36, 11),
+  ηλικία35_54 = c(55, 34, 11),
+  ηλικία55άνω = c(43, 40, 17),
+  Έως7000 = c(58, 26, 16),
+  από7001έως16000 = c(55, 31, 14),
+  από16001έως30000 = c(47, 40, 13),
+  Πάνω30000 = c(41, 46, 12),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(59, 30, 12),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(53, 36, 11),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(38, 45, 16),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(42, 43, 16),
+  ΑΝΕΡΓΟΣ = c(60, 22, 18),
+  ΟΙΚΙΑΚΑ = c(57, 29, 14)
+)
+
+efiktiMeiosiParty <- data.frame(
+  απάντηση = c("ΕφικτήΜειωσηΝΑΙ", "ΕφικτήΜειωσηΟΧΙ", "ΕφικτήΜειωσηΔΞ"),
+  σύνολο = c(49, 37, 14),
+  ΝΔ = c(31, 53, 15),
+  ΣΥΡΙΖΑ = c(75, 17, 8),
+  ΠΑΣΟΚ = c(44, 41, 15),
+  ΚΚΕ = c(65, 19, 15),
+  Σπαρτιάτες = c(50, 27, 23),
+  Ελληνική_Λύση = c(57, 27, 16),
+  Νίκη = c(46, 44, 10),
+  Πλεύση_Ελευθερίας = c(52, 45, 3),
+  Νέα_Αριστερά = c(65, 22, 14),
+  ΜΕΡΑ25 = c(80, 12, 7),
+  Αριστερά_Κεντροαριστερά = c(66, 22, 12)
+)
+
+
+efiktiMeiosi <- merge(x=efiktiMeiosiSocial,y=efiktiMeiosiParty,by=c("απάντηση","σύνολο"))
+efiktiMeiosiTemp <- efiktiMeiosi[,-1]
+row.names(efiktiMeiosiTemp) <- efiktiMeiosi[,1]
+efiktiMeiosiTemp2 <- data.frame(t(efiktiMeiosiTemp))
+efiktiMeiosiTemp2$omada <- colnames(efiktiMeiosiTemp)
+efiktiMeiosiTemp2 <- efiktiMeiosiTemp2[, c("omada", setdiff(names(efiktiMeiosiTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+efiktiMeiosiPartyTemp <- efiktiMeiosiParty[,-c(1,2)]
+row.names(efiktiMeiosiPartyTemp) <- efiktiMeiosiParty[,1]
+efiktiMeiosiPartyAll <- efiktiMeiosiPartyTemp
+
+
+
+efiktiMeiosiPartyAll$ΝΔ <- efiktiMeiosiPartyAll$ΝΔ*feb29[1]
+efiktiMeiosiPartyAll$ΣΥΡΙΖΑ <- efiktiMeiosiPartyAll$ΣΥΡΙΖΑ*feb29[2]
+efiktiMeiosiPartyAll$ΠΑΣΟΚ <- efiktiMeiosiPartyAll$ΠΑΣΟΚ*feb29[3]
+efiktiMeiosiPartyAll$ΚΚΕ <- efiktiMeiosiPartyAll$ΚΚΕ*feb29[4]
+efiktiMeiosiPartyAll$Σπαρτιάτες <- efiktiMeiosiPartyAll$Σπαρτιάτες*feb29[5]
+efiktiMeiosiPartyAll$Ελληνική_Λύση <- efiktiMeiosiPartyAll$Ελληνική_Λύση*feb29[6]
+efiktiMeiosiPartyAll$Νίκη <- efiktiMeiosiPartyAll$Νίκη*feb29[7]
+efiktiMeiosiPartyAll$Πλεύση_Ελευθερίας <- efiktiMeiosiPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+efiktiMeiosiPartyAll$Νέα_Αριστερά <- efiktiMeiosiPartyAll$Νέα_Αριστερά*feb29[9]
+efiktiMeiosiPartyAll$ΜΕΡΑ25 <- efiktiMeiosiPartyAll$ΜΕΡΑ25*feb29[10]
+efiktiMeiosiPartyAll <- efiktiMeiosiPartyAll[,]
+efiktiMeiosiPartyCORA <- CA(efiktiMeiosiPartyAll, graph=FALSE)
+fviz_ca_biplot(efiktiMeiosiPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(efiktiMeiosiTemp2)
+```
+
+```{r}
+#| echo = FALSE
+kommataKoinvnia <- merge(x=kommataKoinvnia,y=efiktiMeiosiTemp2,by="omada")
+```
+
+
+:::
+
+## Η Ελλάδα δεν θα πρέπει να είναι εξαρτημένη στρατιωτικά από ισχυρότερες χώρες
+
+```{r}
+#| echo = FALSE
+stratiotikiExartSocial <- data.frame(
+  απάντηση = c("ΣτρατιωτικήΕξάρτησηΝΑΙ", "ΣτρατιωτικήΕξάρτησηΟΧΙ", "ΣτρατιωτικήΕξάρτησηΔΞ"),
+  σύνολο = c(59, 31, 10),
+  ηλικία17_34 = c(55, 34, 10),
+  ηλικία35_54 = c(61, 29, 10),
+  ηλικία55άνω = c(58, 32, 10),
+  Έως7000 = c(62, 26, 12),
+  από7001έως16000 = c(63, 28, 9),
+  από16001έως30000 = c(59, 32, 10),
+  Πάνω30000 = c(51, 41, 8),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(62, 27, 11),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(57, 34, 9),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(59, 32, 10),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(61, 32, 7),
+  ΑΝΕΡΓΟΣ = c(59, 26, 15),
+  ΟΙΚΙΑΚΑ = c(45, 36, 19)
+)
+
+stratiotikiExartParty <- data.frame(
+  απάντηση = c("ΣτρατιωτικήΕξάρτησηΝΑΙ", "ΣτρατιωτικήΕξάρτησηΟΧΙ", "ΣτρατιωτικήΕξάρτησηΔΞ"),
+  σύνολο = c(59, 31, 10),
+  ΝΔ = c(43, 48, 9),
+  ΣΥΡΙΖΑ = c(63, 25, 12),
+  ΠΑΣΟΚ = c(58, 33, 9),
+  ΚΚΕ = c(76, 18, 6),
+  Σπαρτιάτες = c(77, 23, 0),
+  Ελληνική_Λύση = c(72, 21, 7),
+  Νίκη = c(71, 20, 8),
+  Πλεύση_Ελευθερίας = c(52, 42, 6),
+  Νέα_Αριστερά = c(67, 18, 16),
+  ΜΕΡΑ25 = c(76, 15, 10),
+  Αριστερά_Κεντροαριστερά = c(65, 23, 12)
+)
+
+
+stratiotikiExart <- merge(x=stratiotikiExartSocial,y=stratiotikiExartParty,by=c("απάντηση","σύνολο"))
+stratiotikiExartTemp <- stratiotikiExart[,-1]
+row.names(stratiotikiExartTemp) <- stratiotikiExart[,1]
+stratiotikiExartTemp2 <- data.frame(t(stratiotikiExartTemp))
+stratiotikiExartTemp2$omada <- colnames(stratiotikiExartTemp)
+stratiotikiExartTemp2 <- stratiotikiExartTemp2[, c("omada", setdiff(names(stratiotikiExartTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+stratiotikiExartPartyTemp <- stratiotikiExartParty[,-c(1,2)]
+row.names(stratiotikiExartPartyTemp) <- stratiotikiExartParty[,1]
+stratiotikiExartPartyAll <- stratiotikiExartPartyTemp
+
+
+
+stratiotikiExartPartyAll$ΝΔ <- stratiotikiExartPartyAll$ΝΔ*feb29[1]
+stratiotikiExartPartyAll$ΣΥΡΙΖΑ <- stratiotikiExartPartyAll$ΣΥΡΙΖΑ*feb29[2]
+stratiotikiExartPartyAll$ΠΑΣΟΚ <- stratiotikiExartPartyAll$ΠΑΣΟΚ*feb29[3]
+stratiotikiExartPartyAll$ΚΚΕ <- stratiotikiExartPartyAll$ΚΚΕ*feb29[4]
+stratiotikiExartPartyAll$Σπαρτιάτες <- stratiotikiExartPartyAll$Σπαρτιάτες*feb29[5]
+stratiotikiExartPartyAll$Ελληνική_Λύση <- stratiotikiExartPartyAll$Ελληνική_Λύση*feb29[6]
+stratiotikiExartPartyAll$Νίκη <- stratiotikiExartPartyAll$Νίκη*feb29[7]
+stratiotikiExartPartyAll$Πλεύση_Ελευθερίας <- stratiotikiExartPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+stratiotikiExartPartyAll$Νέα_Αριστερά <- stratiotikiExartPartyAll$Νέα_Αριστερά*feb29[9]
+stratiotikiExartPartyAll$ΜΕΡΑ25 <- stratiotikiExartPartyAll$ΜΕΡΑ25*feb29[10]
+stratiotikiExartPartyAll <- stratiotikiExartPartyAll[,]
+stratiotikiExartPartyCORA <- CA(stratiotikiExartPartyAll, graph=FALSE)
+fviz_ca_biplot(stratiotikiExartPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(stratiotikiExartTemp2)
+```
+
+```{r}
+#| echo = FALSE
+kommataKoinvnia <- merge(x=kommataKoinvnia,y=stratiotikiExartTemp2,by="omada")
+```
+
+:::
+
+## Στην ΕΕ οι χώρες του Βορρά εκμεταλλεύονται τις χώρες του Νότου
+
+```{r}
+#| echo = FALSE
+EEekmetalSocial <- data.frame(
+  απάντηση = c("ΕΕεκμετάλλευσηΝότουΝΑΙ", "ΕΕεκμετάλλευσηΝότουΟΧΙ", "ΕΕεκμετάλλευσηΝότουΔΞ"),
+  σύνολο = c(68, 23, 9),
+  ηλικία17_34 = c(56, 32, 12),
+  ηλικία35_54 = c(66, 23, 11),
+  ηλικία55άνω = c(74, 20, 7),
+  Έως7000 = c(67, 19, 14),
+  από7001έως16000 = c(70, 21, 9),
+  από16001έως30000 = c(69, 23, 9),
+  Πάνω30000 = c(62, 31, 7),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(67, 21, 12),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(63, 26, 10),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(73, 20, 7),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(66, 27, 8),
+  ΑΝΕΡΓΟΣ = c(77, 14, 9),
+  ΟΙΚΙΑΚΑ = c(71, 12, 17)
+)
+
+EEekmetalParty <- data.frame(
+  απάντηση = c("ΕΕεκμετάλλευσηΝότουΝΑΙ", "ΕΕεκμετάλλευσηΝότουΟΧΙ", "ΕΕεκμετάλλευσηΝότουΔΞ"),
+  σύνολο = c(68, 23, 9),
+  ΝΔ = c(51, 41, 8),
+  ΣΥΡΙΖΑ = c(83, 8, 9),
+  ΠΑΣΟΚ = c(70, 20, 10),
+  ΚΚΕ = c(78, 12, 11),
+  Σπαρτιάτες = c(77, 12, 12),
+  Ελληνική_Λύση = c(81, 12, 6),
+  Νίκη = c(73, 14, 14),
+  Πλεύση_Ελευθερίας = c(74, 19, 6),
+  Νέα_Αριστερά = c(80, 14, 6),
+  ΜΕΡΑ25 = c(78, 15, 7),
+  Αριστερά_Κεντροαριστερά = c(75, 15, 9)
+)
+
+
+EEekmetal <- merge(x=EEekmetalSocial,y=EEekmetalParty,by=c("απάντηση","σύνολο"))
+EEekmetalTemp <- EEekmetal[,-1]
+row.names(EEekmetalTemp) <- EEekmetal[,1]
+EEekmetalTemp2 <- data.frame(t(EEekmetalTemp))
+EEekmetalTemp2$omada <- colnames(EEekmetalTemp)
+EEekmetalTemp2 <- EEekmetalTemp2[, c("omada", setdiff(names(EEekmetalTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+EEekmetalPartyTemp <- EEekmetalParty[,-c(1,2)]
+row.names(EEekmetalPartyTemp) <- EEekmetalParty[,1]
+EEekmetalPartyAll <- EEekmetalPartyTemp
+
+
+
+EEekmetalPartyAll$ΝΔ <- EEekmetalPartyAll$ΝΔ*feb29[1]
+EEekmetalPartyAll$ΣΥΡΙΖΑ <- EEekmetalPartyAll$ΣΥΡΙΖΑ*feb29[2]
+EEekmetalPartyAll$ΠΑΣΟΚ <- EEekmetalPartyAll$ΠΑΣΟΚ*feb29[3]
+EEekmetalPartyAll$ΚΚΕ <- EEekmetalPartyAll$ΚΚΕ*feb29[4]
+EEekmetalPartyAll$Σπαρτιάτες <- EEekmetalPartyAll$Σπαρτιάτες*feb29[5]
+EEekmetalPartyAll$Ελληνική_Λύση <- EEekmetalPartyAll$Ελληνική_Λύση*feb29[6]
+EEekmetalPartyAll$Νίκη <- EEekmetalPartyAll$Νίκη*feb29[7]
+EEekmetalPartyAll$Πλεύση_Ελευθερίας <- EEekmetalPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+EEekmetalPartyAll$Νέα_Αριστερά <- EEekmetalPartyAll$Νέα_Αριστερά*feb29[9]
+EEekmetalPartyAll$ΜΕΡΑ25 <- EEekmetalPartyAll$ΜΕΡΑ25*feb29[10]
+EEekmetalPartyAll <- EEekmetalPartyAll[,]
+EEekmetalPartyCORA <- CA(EEekmetalPartyAll, graph=FALSE)
+fviz_ca_biplot(EEekmetalPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(EEekmetalTemp2)
+```
+
+```{r}
+#| echo = FALSE
+kommataKoinvnia <- merge(x=kommataKoinvnia,y=EEekmetalTemp2,by="omada")
+```
+
+
+:::
+
+
+## Η αντιμετώπιση της κλιματικής κρίσης πρέπει να τεθεί πιο πάνω από οποιαδήποτε άλλη πολιτική προτεραιότητα
+
+```{r}
+#| echo = FALSE
+klimatikiKrisiSocial <- data.frame(
+  απάντηση = c("ΚλιματικήΚρίσηΠρώτηΝΑΙ", "ΚλιματικήΚρίσηΠρώτηΟΧΙ", "ΚλιματικήΚρίσηΠρώτηΔΞ"),
+  σύνολο = c(45, 47, 8),
+  ηλικία17_34 = c(40, 51, 9),
+  ηλικία35_54 = c(39, 53, 8),
+  ηλικία55άνω = c(53, 40, 7),
+  Έως7000 = c(38, 55, 7),
+  από7001έως16000 = c(44, 48, 8),
+  από16001έως30000 = c(50, 43, 7),
+  Πάνω30000 = c(47, 48, 5),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(42, 51, 7),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(40, 52, 8),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(60, 35, 5),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(45, 48, 7),
+  ΑΝΕΡΓΟΣ = c(35, 52, 13),
+  ΟΙΚΙΑΚΑ = c(33, 55, 12)
+)
+
+klimatikiKrisiParty <- data.frame(
+  απάντηση = c("ΚλιματικήΚρίσηΠρώτηΝΑΙ", "ΚλιματικήΚρίσηΠρώτηΟΧΙ", "ΚλιματικήΚρίσηΠρώτηΔΞ"),
+  σύνολο = c(45, 47, 8),
+  ΝΔ = c(57, 38, 5),
+  ΣΥΡΙΖΑ = c(53, 38, 9),
+  ΠΑΣΟΚ = c(63, 28, 8),
+  ΚΚΕ = c(27, 61, 13),
+  Σπαρτιάτες = c(27, 65, 8),
+  Ελληνική_Λύση = c(12, 82, 5),
+  Νίκη = c(24, 68, 8),
+  Πλεύση_Ελευθερίας = c(42, 58, 0),
+  Νέα_Αριστερά = c(63, 29, 8),
+  ΜΕΡΑ25 = c(59, 32, 10),
+  Αριστερά_Κεντροαριστερά = c(54, 38, 9)
+)
+
+
+klimatikiKrisi <- merge(x=klimatikiKrisiSocial,y=klimatikiKrisiParty,by=c("απάντηση","σύνολο"))
+klimatikiKrisiTemp <- klimatikiKrisi[,-1]
+row.names(klimatikiKrisiTemp) <- klimatikiKrisi[,1]
+klimatikiKrisiTemp2 <- data.frame(t(klimatikiKrisiTemp))
+klimatikiKrisiTemp2$omada <- colnames(klimatikiKrisiTemp)
+klimatikiKrisiTemp2 <- klimatikiKrisiTemp2[, c("omada", setdiff(names(klimatikiKrisiTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+klimatikiKrisiPartyTemp <- klimatikiKrisiParty[,-c(1,2)]
+row.names(klimatikiKrisiPartyTemp) <- klimatikiKrisiParty[,1]
+klimatikiKrisiPartyAll <- klimatikiKrisiPartyTemp
+
+
+
+klimatikiKrisiPartyAll$ΝΔ <- klimatikiKrisiPartyAll$ΝΔ*feb29[1]
+klimatikiKrisiPartyAll$ΣΥΡΙΖΑ <- klimatikiKrisiPartyAll$ΣΥΡΙΖΑ*feb29[2]
+klimatikiKrisiPartyAll$ΠΑΣΟΚ <- klimatikiKrisiPartyAll$ΠΑΣΟΚ*feb29[3]
+klimatikiKrisiPartyAll$ΚΚΕ <- klimatikiKrisiPartyAll$ΚΚΕ*feb29[4]
+klimatikiKrisiPartyAll$Σπαρτιάτες <- klimatikiKrisiPartyAll$Σπαρτιάτες*feb29[5]
+klimatikiKrisiPartyAll$Ελληνική_Λύση <- klimatikiKrisiPartyAll$Ελληνική_Λύση*feb29[6]
+klimatikiKrisiPartyAll$Νίκη <- klimatikiKrisiPartyAll$Νίκη*feb29[7]
+klimatikiKrisiPartyAll$Πλεύση_Ελευθερίας <- klimatikiKrisiPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+klimatikiKrisiPartyAll$Νέα_Αριστερά <- klimatikiKrisiPartyAll$Νέα_Αριστερά*feb29[9]
+klimatikiKrisiPartyAll$ΜΕΡΑ25 <- klimatikiKrisiPartyAll$ΜΕΡΑ25*feb29[10]
+klimatikiKrisiPartyAll <- klimatikiKrisiPartyAll[,]
+klimatikiKrisiPartyCORA <- CA(klimatikiKrisiPartyAll, graph=FALSE)
+fviz_ca_biplot(klimatikiKrisiPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(klimatikiKrisiTemp2)
+```
+
+```{r}
+#| echo = FALSE
+kommataKoinvnia <- merge(x=kommataKoinvnia,y=klimatikiKrisiTemp2,by="omada")
+```
+
+:::
+
+## Οι μετανάστες και οι πρόσφυγες δεν αποτελούν απειλή για την ασφάλεια της χώρας
+
+```{r}
+#| echo = FALSE
+metanastesApeiliSocial <- data.frame(
+  απάντηση = c("ΜετανάστεςΑπειλήΟΧΙ", "ΜετανάστεςΑπειλήΝΑΙ", "ΜετανάστεςΑπειλήΔΞ"),
+  σύνολο = c(35, 57, 8),
+  ηλικία17_34 = c(40, 52, 8),
+  ηλικία35_54 = c(29, 63, 9),
+  ηλικία55άνω = c(39, 54, 7),
+  Έως7000 = c(19, 75, 6),
+  από7001έως16000 = c(33, 61, 7),
+  από16001έως30000 = c(40, 52, 9),
+  Πάνω30000 = c(42, 50, 8),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(37, 54, 9),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(29, 62, 9),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(41, 53, 6),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(34, 58, 8),
+  ΑΝΕΡΓΟΣ = c(36, 61, 4),
+  ΟΙΚΙΑΚΑ = c(21, 69, 10)
+)
+
+metanastesApeiliParty <- data.frame(
+  απάντηση = c("ΜετανάστεςΑπειλήΟΧΙ", "ΜετανάστεςΑπειλήΝΑΙ", "ΜετανάστεςΑπειλήΔΞ"),
+  σύνολο = c(35, 57, 8),
+  ΝΔ = c(26, 66, 8),
+  ΣΥΡΙΖΑ = c(70, 24, 6),
+  ΠΑΣΟΚ = c(45, 42, 13),
+  ΚΚΕ = c(62, 31, 8),
+  Σπαρτιάτες = c(4, 96, 0),
+  Ελληνική_Λύση = c(2, 97, 1),
+  Νίκη = c(3, 92, 5),
+  Πλεύση_Ελευθερίας = c(29, 61, 10),
+  Νέα_Αριστερά = c(78, 6, 16),
+  ΜΕΡΑ25 = c(85, 15, 0),
+  Αριστερά_Κεντροαριστερά = c(67, 24, 9)
+)
+
+
+metanastesApeili <- merge(x=metanastesApeiliSocial,y=metanastesApeiliParty,by=c("απάντηση","σύνολο"))
+metanastesApeiliTemp <- metanastesApeili[,-1]
+row.names(metanastesApeiliTemp) <- metanastesApeili[,1]
+metanastesApeiliTemp2 <- data.frame(t(metanastesApeiliTemp))
+metanastesApeiliTemp2$omada <- colnames(metanastesApeiliTemp)
+metanastesApeiliTemp2 <- metanastesApeiliTemp2[, c("omada", setdiff(names(metanastesApeiliTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+metanastesApeiliPartyTemp <- metanastesApeiliParty[,-c(1,2)]
+row.names(metanastesApeiliPartyTemp) <- metanastesApeiliParty[,1]
+metanastesApeiliPartyAll <- metanastesApeiliPartyTemp
+
+
+metanastesApeiliPartyAll$ΝΔ <- metanastesApeiliPartyAll$ΝΔ*feb29[1]
+metanastesApeiliPartyAll$ΣΥΡΙΖΑ <- metanastesApeiliPartyAll$ΣΥΡΙΖΑ*feb29[2]
+metanastesApeiliPartyAll$ΠΑΣΟΚ <- metanastesApeiliPartyAll$ΠΑΣΟΚ*feb29[3]
+metanastesApeiliPartyAll$ΚΚΕ <- metanastesApeiliPartyAll$ΚΚΕ*feb29[4]
+metanastesApeiliPartyAll$Σπαρτιάτες <- metanastesApeiliPartyAll$Σπαρτιάτες*feb29[5]
+metanastesApeiliPartyAll$Ελληνική_Λύση <- metanastesApeiliPartyAll$Ελληνική_Λύση*feb29[6]
+metanastesApeiliPartyAll$Νίκη <- metanastesApeiliPartyAll$Νίκη*feb29[7]
+metanastesApeiliPartyAll$Πλεύση_Ελευθερίας <- metanastesApeiliPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+metanastesApeiliPartyAll$Νέα_Αριστερά <- metanastesApeiliPartyAll$Νέα_Αριστερά*feb29[9]
+metanastesApeiliPartyAll$ΜΕΡΑ25 <- metanastesApeiliPartyAll$ΜΕΡΑ25*feb29[10]
+metanastesApeiliPartyAll <- metanastesApeiliPartyAll[,]
+metanastesApeiliPartyCORA <- CA(metanastesApeiliPartyAll, graph=FALSE)
+fviz_ca_biplot(metanastesApeiliPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(metanastesApeiliTemp2)
+```
+
+```{r}
+#| echo = FALSE
+kommataKoinvnia <- merge(x=kommataKoinvnia,y=metanastesApeiliTemp2,by="omada")
+```
+
+
+:::
+
+## Δεν έχει σημασία το φύλο των γονέων για να είναι τα παιδιά ευτυχισμένα
+
+
+```{r}
+#| echo = FALSE
+fylogoneonSocial <- data.frame(
+  απάντηση = c("ΣημασιαΦύλοΓονέωνΟΧΙ", "ΣημασίαΦύλοΓονέωνΝΑΙ", "ΣημασίαΦύλοΓονέωνΔΞ"),
+  σύνολο = c(42, 52, 6),
+  ηλικία17_34 = c(53, 43, 4),
+  ηλικία35_54 = c(41, 53, 6),
+  ηλικία55άνω = c(40, 54, 6),
+  Έως7000 = c(38, 58, 4),
+  από7001έως16000 = c(41, 56, 3),
+  από16001έως30000 = c(44, 48, 8),
+  Πάνω30000 = c(47, 46, 6),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(38, 54, 8),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(43, 51, 6),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(40, 55, 5),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(42, 52, 7),
+  ΑΝΕΡΓΟΣ = c(46, 52, 2),
+  ΟΙΚΙΑΚΑ = c(38, 55, 7)
+)
+
+fylogoneonParty <- data.frame(
+  απάντηση = c("ΣημασιαΦύλοΓονέωνΟΧΙ", "ΣημασίαΦύλοΦονέωνΝΑΙ", "ΣημασίαΦύλοΦονέωνΔΞ"),
+  σύνολο = c(42, 52, 6),
+  ΝΔ = c(40, 53, 7),
+  ΣΥΡΙΖΑ = c(78, 16, 6),
+  ΠΑΣΟΚ = c(48, 47, 5),
+  ΚΚΕ = c(44, 47, 9),
+  Σπαρτιάτες = c(8, 88, 4),
+  Ελληνική_Λύση = c(4, 96, 0),
+  Νίκη = c(5, 93, 2),
+  Πλεύση_Ελευθερίας = c(61, 39, 0),
+  Νέα_Αριστερά = c(82, 12, 6),
+  ΜΕΡΑ25 = c(83, 7, 10),
+  Αριστερά_Κεντροαριστερά = c(70, 24, 6)
+)
+
+
+fylogoneon <- merge(x=fylogoneonSocial,y=fylogoneonParty,by=c("απάντηση","σύνολο"))
+fylogoneonTemp <- fylogoneon[,-1]
+row.names(fylogoneonTemp) <- fylogoneon[,1]
+fylogoneonTemp2 <- data.frame(t(fylogoneonTemp))
+fylogoneonTemp2$omada <- colnames(fylogoneonTemp)
+fylogoneonTemp2 <- fylogoneonTemp2[, c("omada", setdiff(names(fylogoneonTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+fylogoneonPartyTemp <- fylogoneonParty[,-c(1,2)]
+row.names(fylogoneonPartyTemp) <- fylogoneonParty[,1]
+fylogoneonPartyAll <- fylogoneonPartyTemp
+fylogoneonPartyAll$ΝΔ <- fylogoneonPartyAll$ΝΔ*feb29[1]
+fylogoneonPartyAll$ΣΥΡΙΖΑ <- fylogoneonPartyAll$ΣΥΡΙΖΑ*feb29[2]
+fylogoneonPartyAll$ΠΑΣΟΚ <- fylogoneonPartyAll$ΠΑΣΟΚ*feb29[3]
+fylogoneonPartyAll$ΚΚΕ <- fylogoneonPartyAll$ΚΚΕ*feb29[4]
+fylogoneonPartyAll$Σπαρτιάτες <- fylogoneonPartyAll$Σπαρτιάτες*feb29[5]
+fylogoneonPartyAll$Ελληνική_Λύση <- fylogoneonPartyAll$Ελληνική_Λύση*feb29[6]
+fylogoneonPartyAll$Νίκη <- fylogoneonPartyAll$Νίκη*feb29[7]
+fylogoneonPartyAll$Πλεύση_Ελευθερίας <- fylogoneonPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+fylogoneonPartyAll$Νέα_Αριστερά <- fylogoneonPartyAll$Νέα_Αριστερά*feb29[9]
+fylogoneonPartyAll$ΜΕΡΑ25 <- fylogoneonPartyAll$ΜΕΡΑ25*feb29[10]
+fylogoneonPartyAll <- fylogoneonPartyAll[,]
+fylogoneonPartyCORA <- CA(fylogoneonPartyAll, graph=FALSE)
+fviz_ca_biplot(fylogoneonPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(fylogoneonTemp2)
+```
+
+```{r}
+#| echo = FALSE
+kommataKoinvnia <- merge(x=kommataKoinvnia,y=fylogoneonTemp2,by='omada')
+```
+
+:::
+
+## Η Ελλάδα πρέπει να είναι μια χώρα ανοικτών και όχι κλειστών συνόρων
+
+```{r}
+#| echo = FALSE
+anoixtaSynoraSocial <- data.frame(
+  απάντηση = c("ΑνοιχτάΣύνοραΝΑΙ", "ΑνοιχτάΣύνοραΟΧΙ", "ΣημασίαΦύλοΦονέωνΔΞ"),
+  σύνολο = c(26, 67, 7),
+  ηλικία17_34 = c(28, 62, 9),
+  ηλικία35_54 = c(23, 69, 8),
+  ηλικία55άνω = c(28, 68, 5),
+  Έως7000 = c(16, 79, 5),
+  από7001έως16000 = c(25, 70, 6),
+  από16001έως30000 = c(31, 62, 7),
+  Πάνω30000 = c(27, 68, 5),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(26, 65, 9),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(24, 70, 6),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(30, 67, 4),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(26, 67, 7),
+  ΑΝΕΡΓΟΣ = c(29, 64, 7),
+  ΟΙΚΙΑΚΑ = c(14, 79, 7)
+)
+
+anoixtaSynoraParty <- data.frame(
+  απάντηση = c("ΑνοιχτάΣύνοραΝΑΙ", "ΑνοιχτάΣύνοραΟΧΙ", "ΣημασίαΦύλοΦονέωνΔΞ"),
+  σύνολο = c(26, 67, 7),
+  ΝΔ = c(12, 84, 4),
+  ΣΥΡΙΖΑ = c(56, 34, 10),
+  ΠΑΣΟΚ = c(35, 57, 8),
+  ΚΚΕ = c(55, 35, 11),
+  Σπαρτιάτες = c(4, 92, 4),
+  Ελληνική_Λύση = c(0, 99, 1),
+  Νίκη = c(2, 98, 0),
+  Πλεύση_Ελευθερίας = c(19, 77, 3),
+  Νέα_Αριστερά = c(73, 16, 12),
+  ΜΕΡΑ25 = c(73, 22, 5),
+  Αριστερά_Κεντροαριστερά = c(54, 35, 11)
+)
+
+
+anoixtaSynora <- merge(x=anoixtaSynoraSocial,y=anoixtaSynoraParty,by=c("απάντηση","σύνολο"))
+anoixtaSynoraTemp <- anoixtaSynora[,-1]
+row.names(anoixtaSynoraTemp) <- anoixtaSynora[,1]
+anoixtaSynoraTemp2 <- data.frame(t(anoixtaSynoraTemp))
+anoixtaSynoraTemp2$omada <- colnames(anoixtaSynoraTemp)
+anoixtaSynoraTemp2 <- anoixtaSynoraTemp2[, c("omada", setdiff(names(anoixtaSynoraTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+anoixtaSynoraPartyTemp <- anoixtaSynoraParty[,-c(1,2)]
+row.names(anoixtaSynoraPartyTemp) <- anoixtaSynoraParty[,1]
+anoixtaSynoraPartyAll <- anoixtaSynoraPartyTemp
+
+
+
+anoixtaSynoraPartyAll$ΝΔ <- anoixtaSynoraPartyAll$ΝΔ*feb29[1]
+anoixtaSynoraPartyAll$ΣΥΡΙΖΑ <- anoixtaSynoraPartyAll$ΣΥΡΙΖΑ*feb29[2]
+anoixtaSynoraPartyAll$ΠΑΣΟΚ <- anoixtaSynoraPartyAll$ΠΑΣΟΚ*feb29[3]
+anoixtaSynoraPartyAll$ΚΚΕ <- anoixtaSynoraPartyAll$ΚΚΕ*feb29[4]
+anoixtaSynoraPartyAll$Σπαρτιάτες <- anoixtaSynoraPartyAll$Σπαρτιάτες*feb29[5]
+anoixtaSynoraPartyAll$Ελληνική_Λύση <- anoixtaSynoraPartyAll$Ελληνική_Λύση*feb29[6]
+anoixtaSynoraPartyAll$Νίκη <- anoixtaSynoraPartyAll$Νίκη*feb29[7]
+anoixtaSynoraPartyAll$Πλεύση_Ελευθερίας <- anoixtaSynoraPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+anoixtaSynoraPartyAll$Νέα_Αριστερά <- anoixtaSynoraPartyAll$Νέα_Αριστερά*feb29[9]
+anoixtaSynoraPartyAll$ΜΕΡΑ25 <- anoixtaSynoraPartyAll$ΜΕΡΑ25*feb29[10]
+anoixtaSynoraPartyAll <- anoixtaSynoraPartyAll[,]
+anoixtaSynoraPartyCORA <- CA(anoixtaSynoraPartyAll, graph=FALSE)
+fviz_ca_biplot(anoixtaSynoraPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(anoixtaSynoraTemp2)
+```
+
+```{r}
+#| echo = FALSE
+kommataKoinvnia <- merge(x=kommataKoinvnia,y=anoixtaSynoraTemp2,by='omada')
+```
+
+
+:::
+
+## Το να είναι κάποιος Έλληνας δεν ταυτίζεται κατ’ ανάγκην με το να είναι και χριστιανός ορθόδοξος
+
+```{r}
+#| echo = FALSE
+
+
+ellChristSocial <- data.frame(
+  απάντηση = c("ΈλληναςΙΣΟΝχρ.ορθ.ΟΧΙ", "ΈλληναςΙΣΟΝχρ.ορθ.ΝΑΙ", "ΈλληναςΙΣΟΝχρ.ορθ.ΔΞ"),
+  σύνολο = c(76, 22, 2),
+  ηλικία17_34 = c(79, 17, 4),
+  ηλικία35_54 = c(72, 25, 3),
+  ηλικία55άνω = c(77, 20, 2),
+  Έως7000 = c(66, 33, 1),
+  από7001έως16000 = c(73, 23, 4),
+  από16001έως30000 = c(78, 20, 2),
+  Πάνω30000 = c(81, 17, 3),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(73, 25, 2),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(76, 21, 3),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(79, 18, 3),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(80, 18, 3),
+  ΑΝΕΡΓΟΣ = c(64, 35, 1),
+  ΟΙΚΙΑΚΑ = c(64, 36, 0)
+)
+
+ellChristParty <- data.frame(
+  απάντηση = c("ΈλληναςΙΣΟΝχρ.ορθ.ΟΧΙ", "ΈλληναςΙΣΟΝχρ.ορθ.ΝΑΙ", "ΈλληναςΙΣΟΝχρ.ορθ.ΔΞ"),
+  σύνολο = c(76, 22, 2),
+  ΝΔ = c(76, 21, 3),
+  ΣΥΡΙΖΑ = c(94, 6, 1),
+  ΠΑΣΟΚ = c(82, 16, 2),
+  ΚΚΕ = c(90, 8, 2),
+  Σπαρτιάτες = c(38, 62, 0),
+  Ελληνική_Λύση = c(42, 55, 3),
+  Νίκη = c(49, 46, 5),
+  Πλεύση_Ελευθερίας = c(74, 23, 3),
+  Νέα_Αριστερά = c(100, 0, 0),
+  ΜΕΡΑ25 = c(93, 2, 5),
+  Αριστερά_Κεντροαριστερά = c(92, 7, 1)
+)
+
+
+ellChrist <- merge(x=ellChristSocial,y=ellChristParty,by=c("απάντηση","σύνολο"))
+ellChristTemp <- ellChrist[,-1]
+row.names(ellChristTemp) <- ellChrist[,1]
+ellChristTemp2 <- data.frame(t(ellChristTemp))
+ellChristTemp2$omada <- colnames(ellChristTemp)
+ellChristTemp2 <- ellChristTemp2[, c("omada", setdiff(names(ellChristTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+ellChristPartyTemp <- ellChristParty[,-c(1,2)]
+row.names(ellChristPartyTemp) <- ellChristParty[,1]
+ellChristPartyAll <- ellChristPartyTemp
+ellChristPartyAll$ΝΔ <- ellChristPartyAll$ΝΔ*feb29[1]
+ellChristPartyAll$ΣΥΡΙΖΑ <- ellChristPartyAll$ΣΥΡΙΖΑ*feb29[2]
+ellChristPartyAll$ΠΑΣΟΚ <- ellChristPartyAll$ΠΑΣΟΚ*feb29[3]
+ellChristPartyAll$ΚΚΕ <- ellChristPartyAll$ΚΚΕ*feb29[4]
+ellChristPartyAll$Σπαρτιάτες <- ellChristPartyAll$Σπαρτιάτες*feb29[5]
+ellChristPartyAll$Ελληνική_Λύση <- ellChristPartyAll$Ελληνική_Λύση*feb29[6]
+ellChristPartyAll$Νίκη <- ellChristPartyAll$Νίκη*feb29[7]
+ellChristPartyAll$Πλεύση_Ελευθερίας <- ellChristPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+ellChristPartyAll$Νέα_Αριστερά <- ellChristPartyAll$Νέα_Αριστερά*feb29[9]
+ellChristPartyAll$ΜΕΡΑ25 <- ellChristPartyAll$ΜΕΡΑ25*feb29[10]
+ellChristPartyAll <- ellChristPartyAll[,]
+ellChristPartyCORA <- CA(ellChristPartyAll, graph=FALSE)
+fviz_ca_biplot(ellChristPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(ellChristTemp2)
+```
+
+```{r}
+#| echo = FALSE
+kommataKoinvnia <- merge(x=kommataKoinvnia,y=ellChristTemp2,by='omada')
+```
+
+:::
+
+## Πρέπει να υπάρξει χωρισμός εκκλησίας και κράτους
+
+```{r}
+#| echo = FALSE
+ekklisiaKratosSocial <- data.frame(
+  απάντηση = c("ΧωρισμόςΕκκλησίαςΚράτουςΝΑΙ", "ΧωρισμόςΕκκλησίαςΚράτουςΟΧΙ", "ΧωρισμόςΕκκλησίαςΚράτουςΔΞ"),
+  σύνολο = c(72, 22, 6),
+  ηλικία17_34 = c(66, 28, 6),
+  ηλικία35_54 = c(71, 23, 6),
+  ηλικία55άνω = c(76, 19, 5),
+  Έως7000 = c(66, 28, 6),
+  από7001έως16000 = c(70, 25, 5),
+  από16001έως30000 = c(76, 19, 5),
+  Πάνω30000 = c(74, 20, 6),
+  ΜΙΣΘΩΤΟΣ_ΔΗΜΟΣΙΟΥ = c(69, 23, 8),
+  ΜΙΣΘΩΤΟΣ_ΙΔΙΩΤΙΚΟΥ = c(67, 26, 7),
+  ΣΥΝΤΑΞΙΟΥΧΟΣ = c(79, 17, 4),
+  ΕΛΕΥΘ.ΕΠΑΓΓΕΛΜΑΤΙΑΣ_ΑΥΤΟΑΠΑΣΧΟΛΟΥΜΕΝΟΣ = c(77, 18, 5),
+  ΑΝΕΡΓΟΣ = c(67, 29, 4),
+  ΟΙΚΙΑΚΑ = c(81, 17, 2)
+)
+
+ekklisiaKratosParty <- data.frame(
+  απάντηση = c("ΧωρισμόςΕκκλησίαςΚράτουςΝΑΙ", "ΧωρισμόςΕκκλησίαςΚράτουςΟΧΙ", "ΧωρισμόςΕκκλησίαςΚράτουςΔΞ"),
+  σύνολο = c(72, 22, 6),
+  ΝΔ = c(70, 24, 6),
+  ΣΥΡΙΖΑ = c(94, 4, 2),
+  ΠΑΣΟΚ = c(83, 11, 6),
+  ΚΚΕ = c(91, 8, 1),
+  Σπαρτιάτες = c(46, 50, 4),
+  Ελληνική_Λύση = c(43, 49, 7),
+  Νίκη = c(22, 64, 14),
+  Πλεύση_Ελευθερίας = c(74, 26, 0),
+  Νέα_Αριστερά = c(100, 0, 0),
+  ΜΕΡΑ25 = c(93, 0, 7),
+  Αριστερά_Κεντροαριστερά = c(93, 5, 1)
+)
+
+
+ekklisiaKratos <- merge(x=ekklisiaKratosSocial,y=ekklisiaKratosParty,by=c("απάντηση","σύνολο"))
+ekklisiaKratosTemp <- ekklisiaKratos[,-1]
+row.names(ekklisiaKratosTemp) <- ekklisiaKratos[,1]
+ekklisiaKratosTemp2 <- data.frame(t(ekklisiaKratosTemp))
+ekklisiaKratosTemp2$omada <- colnames(ekklisiaKratosTemp)
+ekklisiaKratosTemp2 <- ekklisiaKratosTemp2[, c("omada", setdiff(names(ekklisiaKratosTemp2), "omada"))]
+
+```
+
+
+::: {.panel-tabset}
+
+#### Πόσο κοντά είναι τα κόμματα στα ΝΑΙ/ΟΧΙ; {.unnumbered }
+
+```{r}
+#| echo = FALSE
+
+ekklisiaKratosPartyTemp <- ekklisiaKratosParty[,-c(1,2)]
+row.names(ekklisiaKratosPartyTemp) <- ekklisiaKratosParty[,1]
+ekklisiaKratosPartyAll <- ekklisiaKratosPartyTemp
+ekklisiaKratosPartyAll$ΝΔ <- ekklisiaKratosPartyAll$ΝΔ*feb29[1]
+ekklisiaKratosPartyAll$ΣΥΡΙΖΑ <- ekklisiaKratosPartyAll$ΣΥΡΙΖΑ*feb29[2]
+ekklisiaKratosPartyAll$ΠΑΣΟΚ <- ekklisiaKratosPartyAll$ΠΑΣΟΚ*feb29[3]
+ekklisiaKratosPartyAll$ΚΚΕ <- ekklisiaKratosPartyAll$ΚΚΕ*feb29[4]
+ekklisiaKratosPartyAll$Σπαρτιάτες <- ekklisiaKratosPartyAll$Σπαρτιάτες*feb29[5]
+ekklisiaKratosPartyAll$Ελληνική_Λύση <- ekklisiaKratosPartyAll$Ελληνική_Λύση*feb29[6]
+ekklisiaKratosPartyAll$Νίκη <- ekklisiaKratosPartyAll$Νίκη*feb29[7]
+ekklisiaKratosPartyAll$Πλεύση_Ελευθερίας <- ekklisiaKratosPartyAll$Πλεύση_Ελευθερίας*feb29[8]
+ekklisiaKratosPartyAll$Νέα_Αριστερά <- ekklisiaKratosPartyAll$Νέα_Αριστερά*feb29[9]
+ekklisiaKratosPartyAll$ΜΕΡΑ25 <- ekklisiaKratosPartyAll$ΜΕΡΑ25*feb29[10]
+ekklisiaKratosPartyAll <- ekklisiaKratosPartyAll[,]
+ekklisiaKratosPartyCORA <- CA(ekklisiaKratosPartyAll, graph=FALSE)
+fviz_ca_biplot(ekklisiaKratosPartyCORA,
+               repel = TRUE, # Αποτρέπει την επικάλυψη ετικετών
+               col.row = "purple", # Χρώμα για τις γραμμές (πολιτικές ταυτότητες)
+               col.col = "orange",  # Χρώμα για τις στήλες (κόμματα)
+               title = "Γράφημα Διπλής Προβολής πολιτικών κομμάτων και απαντήσεων"
+               )
+
+```
+
+#### Πόσο κοντά είναι τα κόμματα στην εκάστοτε κοινωνική ομάδα; {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(ekklisiaKratosTemp2)
+```
+
+```{r}
+#| echo = FALSE
+kommataKoinvnia <- merge(x=kommataKoinvnia,y=ekklisiaKratosTemp2,by='omada')
+```
+
+:::
+
+## <i class="fa-solid fa-triangle-exclamation"></i> Τα κόμματα σε σχέση με τις κοινωνικές ομάδες για όλα τα ζητήματα
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+PoPrKlim_interactive2D(kommataKoinvnia)
+```
+
+
+<div class="alert-danger">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>
+
+
+
+σελ. 36 της έρευνας
+
+
+::: {.panel-tabset}
+
+### Κόμματα {.unnumbered }
+
+### Πολιτικές ταυτότητες {.unnumbered }
+
+:::
+
+
+
+
+
+

@@ -1,0 +1,15 @@
+{
+  "hash": "2ee25f80e9e17cf689abfcf30f1f33bb",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Κύματα Kondratiev\"\nauthor: \"Κώστας Κούδας\"\ncache: TRUE\ndate: \"2026-02-11\"\nformat:\n  html:\n    toc: true\n    number-sections: true\n    fig-cap: true\n---\n\n\n\n\n::: {.cell}\n\n:::\n\n\n<div class=\"alert-danger\">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>\n\n\nΣυντελεστής τζίνι. ΑΕΠ\n\n# Στατιστικός έλεγχος περιοδικότητας \n\nΤεστ. Να αναλύσω περισσότερο. Ίσως όμως και οκ.\n\n`\nif(!require(ptest)){\n    install.packages(\"ptest\")\n    library(ptest)\n}\n`\n\n\n::: {.cell}\n\n```{.r .cell-code}\n#ptestg(massExt)\n#ptestg(gamoiSynolots)\n#ptestg(yTs)\n```\n:::\n\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\n#ptestg(massExt, method = c(\"Fisher\", \"robust\", \"extended\", \"extendedRobust\",                     \"FisherRSR\"), multiple = FALSE)\n#ptestg(massExt,method=\"Fisher\")\n#ptestg(gamoiSynolots,method=\"Fisher\")\n# ptestg(massExt,method=\"robust\")\n# ptestg(massExt,method=\"extended\")\n# ptestg(massExt,method=\"extendedRobust\")\n# ptestg(massExt,method=\"FisherRSR\")\n```\n:::\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

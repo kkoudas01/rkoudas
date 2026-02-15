@@ -1,0 +1,457 @@
+---
+title: "Ραβδόγραμμα"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+
+
+
+# Απεικόνιση μίας μεταβλητής
+
+# Από λίστα τιμών
+
+Εδώ θ’ ασχοληθούμε πάλι με τα δεδομένα από τη [Γενική Γραμματεία Ισότητας](https://isotita.gr/wp-content/uploads/2019/04/%CE%A0%CE%B1%CF%81%CE%B1%CF%84%CE%B7%CF%81%CE%B7%CF%84%CE%AE%CF%81%CE%B9%CE%BF-%CE%93%CE%93%CE%99%CE%A6-19%CE%BF-%CE%95%CE%BD%CE%B7%CE%BC%CE%B5%CF%81%CF%89%CF%84%CE%B9%CE%BA%CF%8C-%CE%A3%CE%B7%CE%BC%CE%B5%CE%AF%CF%89%CE%BC%CE%B1-%CE%93%CF%85%CE%BD%CE%B1%CE%B9%CE%BA%CE%B5%CE%AF%CE%B1-%CE%91%CE%BD%CE%B5%CF%81%CE%B3%CE%AF%CE%B1.pdf), όπως κάναμε στην ενότητα [Κυκλικό διάγραμμα](piechart.html).
+
+Είναι φανερό ότι το κυκλικό διάγραμμα δεν μπορεί ν’ απεικονίσει ευδιάκριτα μικροδιαφορές που μπορεί να έχουν οι τιμές. Αν, όμως, μας ενδιαφέρει αυτό, αλλά όχι τόσο η σύγκριση με το σύνολο, το ιδανικό είναι το ραβδόγραμμα.
+
+Θα ασχοληθούμε αρχικά με κάτι απλό. Θα φτιάξουμε αρχικά ένα γρήγορο ραβδόγραμμα που να απεικονίζει την εργασιακή κατάσταση των αντρών, δηλαδή να δείχνει πόσοι άντρες είναι απασχολούμενοι, πόσοι άνεργοι και πόσοι μη ενεργοί και οι τιμές να συγκρίνονται εύκολα μεταξύ τους.
+
+Για να γίνει αυτό στην R θα χρειαστούμε την λίστα με τα αντίστοιχα νούμερα (`posa`) και φυσικά τι αντιπροσωπεύει το κάθε ένα (`etiketes`). Μαζί με τη διαγραφή των προηγουμένων έχουμε τις παρακάτω εντολές:
+
+```{r}
+rm(list = ls())
+posa <- c(2249.7, 388.3, 1760.6)
+etiketes <- c("apasx_antras", "anerg_antras", "mh_energ_antras")
+```
+
+και το ραβδόγραμμα είναι έτοιμο να φτιαχτεί:
+
+```{r}
+barplot(posa, names.arg = etiketes)
+```
+
+Πριν προχωρήσουμε σε κάτι άλλο, θα εξετάσουμε κάποιες επιπλέον παραμέτρους της συνάρτησης `barplot()`. Γράφοντας:
+
+```{r}
+barplot(posa,
+        names.arg = etiketes,
+        main = "Apasxolisi stoys antres",
+        xlab = "ergasiaki katastasi",
+        ylab = "xiliades andron",
+        col = "blue",
+        density = 10)
+```
+
+-   δώσαμε τίτλο στο γράφημά μας τον «Apasxolisi stoys antres» (`main = "Apasxolisi stoys antres"`),
+-   δώσαμε τίτλο στον οριζόντιο άξονα «ergasiaki katastasi» (`xlab = "ergasiaki katastasi"`),
+-   δώσαμε τίτλο στον κατακόρυφο άξονα «xiliades andron» (`ylab = "xiliades andron"`),
+-   χρωματίσαμε μπλε τις μπάρες (`col = "blue"`) και
+-   γραμμοσκιάσαμε τις μπάρες (εδώ δώσαμε `density = 10`, αν δίναμε πχ `density = 20`, η γραμμοσκίαση θα ήταν πιο πυκνή).
+
+Ας πειραματιστούμε κι άλλο λίγο με κάποιες άλλες παραμέτρους:
+
+```{r}
+barplot(posa,
+        names.arg = etiketes,
+        main = "Apasxolisi stoys antres",
+        xlab = "xiliades andron",
+        ylab = "ergasiaki katastasi",
+        col = "blue",
+        horiz = TRUE)
+```
+
+Εδώ:
+
+-   δώσαμε πάλι τίτλο στο γράφημά μας τον «Apasxolisi stoys antres» (`main = "Apasxolisi stoys antres"`)
+-   δώσαμε τίτλο στον οριζόντιο άξονα «xiliades andron» (`ylab = "xiliades andron"`),
+-   δώσαμε τίτλο στον κατακόρυφο άξονα «ergasiaki katastasi» (`xlab = "ergasiaki katastasi"`),
+-   χρωματίσαμε μπλε τις μπάρες (`col = "blue"`),
+-   διώξαμε τη γραμμοσκίαση (σβήσαμε την παράμετρο `density`) και
+-   κάναμε οριζόντιο το ραβδόγραμμα (`horiz = TRUE`)
+
+# Από πίνακα δεδομένων
+
+Σε αυτό το σημείο θα δούμε και ένα επιπλέον πακέτο της R, το `ggplot2`, που μας επιτρέπει να κάνουμε περισσότερα ακόμα με τα γραφήματά μας. Προς τούτο το εγκαθιστούμε και το φορτώνουμε:
+
+```{r}
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+```
+
+Πρώτα, όμως, χρειαζόμαστε έναν πίνακα δεδομένων, οπότε ξαναγράφουμε (βλ. [Κυκλικό διάγραμμα](piechart.html)):
+
+```{r}
+filo <- c("gynaika", "andras")
+apasx <- c(1584, 2249.7)
+anerg <- c(492.8, 388.3)
+mh_energ <- c(2650.9, 1760.6)
+Apasxolisi <- data.frame(FYLO=filo, APASXOLOYMENOS=apasx, ANERGOS=anerg, MH_ENERGOS=mh_energ)
+```
+
+Ακολούθως, γράφοντας:
+
+```{r}
+AnergFylo <- ggplot(data=Apasxolisi, aes(x=FYLO, y=ANERGOS))
+AnergFylo + geom_bar(stat="identity")
+```
+
+Αυτό που έγινε, ήταν ότι από τον πίνακα `Apasxolisi` (`data=Apasxolisi`):
+
+```{r}
+#| echo = F
+Apasxolisi
+```
+
+-   φτιάξαμε μία μπάρα για κάθε φύλο (`x=FYLO`) και
+-   με ύψος όσοι και οι άνεργοι του φύλλου αυτού (`y=ANERGOS`).
+
+Αν θελήσουμε να έχουμε το πλήθος των γυναικών ανά εργασιακή κατηγορία, τότε θα πρέπει να αναστρέψουμε τον πίνακα: οι γραμμές να γίνουν στήλες και οι στήλες γραμμές. Για να το πετύχουμε αυτό γράφουμε:
+
+```{r}
+katastasi <- colnames(Apasxolisi)
+katastasi <- katastasi[-1]
+apasxG <- as.numeric(as.vector(Apasxolisi[1,c(2:4)]))
+apasxA <- as.numeric(as.vector(Apasxolisi[2,c(2:4)]))
+```
+
+οπότε ο ζητούμενος πίνακας είναι ο:
+
+```{r}
+ApasxAntistr <- data.frame(KATASTASH=katastasi, GYNAIKES=apasxG, ANTRES=apasxA)
+ApasxAntistr
+```
+
+Κατά συνέπεια, το ραβδόγραμμα που λέγαμε φτιάχνεται γράφοντας:
+
+```{r}
+GynApasx <- ggplot(data=ApasxAntistr, aes(x=KATASTASH, y=GYNAIKES))
+GynApasx + geom_bar(stat="identity")
+```
+
+Οπότε:
+
+-   φτιάξαμε μία μπάρα για κάθε εργασιακή κατάσταση (`x=KATASTASH`) και
+-   με ύψος όσες και οι γυναίκες της κατάστασης αυτής (`y=GYNAIKES`).
+
+Στην περίπτωση που θέλουμε τις μπάρες οριζόντιες εκτελούμε την εντολή:
+
+```{r}
+GynApasx + geom_bar(stat="identity") + coord_flip()
+```
+
+Αν θέλουμε να βάλουμε λίγο χρώμα στη ζωή μας, γράφουμε εντός του `geom_bar()` την επιλογή `stat="identity", color="blue", fill="red"`, δηλαδή έχουμε:
+
+```{r}
+GynApasx + geom_bar(stat="identity", color="blue", fill="red")
+```
+
+κι έτσι απέκτησε το ραβδόγραμμα κόκκινο γέμισμα και μπλε περίγραμμα.
+
+Υπάρχει και η επιλογή να διαφοροποιηθεί το χρώμα της κάθε μπάρας. Αυτό επιτυγχάνεται γράφοντας:
+
+```{r}
+GynApasxMultyCol1 <- ggplot(data=ApasxAntistr, aes(x=KATASTASH, y=GYNAIKES, color=KATASTASH))
+GynApasxMultyCol1 + geom_bar(stat="identity", fill="white")
+```
+
+ή
+
+```{r}
+GynApasxMultyCol2 <- ggplot(data=ApasxAntistr, aes(x=KATASTASH, y=GYNAIKES, fill=KATASTASH))
+GynApasxMultyCol2 + geom_bar(stat="identity")
+```
+
+Αν θέλουμε κάθε μπάρα να συνοδεύεται και από την αντίστοιχη τιμή της, τότε γράφουμε:
+
+```{r}
+GynApasx + geom_bar(stat="identity") + geom_text(aes(label=GYNAIKES), vjust=1.6, color="white", size=3.5)
+```
+
+Κι έτσι έχουμε το αρχικό μας ραβδόγραμμα με τιμές. Φυσικά, μπορούσαμε να έχουμε, αντί για `GynApasx`, το `GynApasxMultyCol1` ή το `GynApasxMultyCol2`, αν θέλαμε να βάλουμε τιμές στα χρωματιστά ραβδογράμματα.
+
+Συγκεκριμένα, όσον αφορά τη συνάρτηση geom_text, δίνοντας τιμές στην παράμετρο:
+
+-   `color=` προσδιορίζουμε το χρώμα,
+-   `size=` προσδιορίζουμε το μέγεθος της γραμματοσειράς,
+-   `vjust=` προσδιορίζουμε την απόσταση προς τα κάτω από την κορυφή της κάθε μπάρας, άρα βάζοντας αρνητικές τιμές η ετικέτα ανεβαίνει πάνω από την μπάρα.
+
+# Απεικόνιση πολλών μεταβλητών
+
+Ας υποθέσουμε τώρα ότι θέλουμε ν’ απεικονίσουμε την εργασιακή κατάσταση των αντρών και των γυναικών μαζί. Προς τούτο θα χρειαστεί να αναδιαμορφώσουμε πάλι τον πίνακα. Αυτό θα γίνει ακολουθώντας τις οδηγίες από την ενότητα [Αναδιαμόρφωση πίνακα](pinakes.html#4_Αναδιαμόρφωση_πίνακα):
+
+```{r}
+#| message = F
+if(!require(reshape)){
+    install.packages("reshape")
+    library(reshape)
+}
+if(!require(reshape2)){
+    install.packages("reshape2")
+    library(reshape2)
+}
+ApasxMakri <- melt(data = Apasxolisi, 
+                       id.vars = c("FYLO"),
+                       measure.vars = c("APASXOLOYMENOS","ANERGOS","MH_ENERGOS"),
+                       variable.name = "KATASTASI",
+                       value.name = "PLHTHOS")
+```
+
+Ακολούθως, γράφουμε:
+
+```{r}
+EllFyla <- ggplot(data=ApasxMakri, aes(x=FYLO, y=PLHTHOS, fill=KATASTASI))
+EllFyla + geom_bar(stat="identity")
+```
+
+κι έτσι έχουμε ένα ραβδόγραμμα που απεικονίζει το πλήθος των ανδρών και των γυναικών στην Ελλάδα, όπου η κάθε μπάρα έχει χρωματιστεί με βάση την εργασιακή κατάσταση στο κάθε φύλο.
+
+Γράφοντας από την άλλη αυτό:
+
+```{r}
+EllApasx <- ggplot(data=ApasxMakri, aes(x=KATASTASI, y=PLHTHOS, fill=FYLO))
+EllApasx + geom_bar(stat="identity")
+```
+
+έχουμε ένα ραβδόγραμμα που απεικονίζει το πλήθος των ανθρώπων σε κάθε εργασιακή κατάσταση, όπου η κάθε μπάρα έχει χρωματιστεί με βάση τα φύλα που υπάρχουν σε κάθε κατάσταση.
+
+Πολλές φορές βολεύει να είναι οι αντίστοιχες μπάρες δίπλα-δίπλα κι όχι η μία πάνω στην άλλη. Αυτό επιτυγχάνεται γράφοντας `position=position_dodge()` εντός του `geom_bar()`. Έτσι γράφουμε:
+
+```{r}
+EllFyla + geom_bar(stat="identity",position=position_dodge())
+```
+
+αν θέλουμε να ομαδοποιηθούν οι μπάρες με βάση τα φύλα.
+
+Επίσης μπορούμε να γράψουμε:
+
+```{r}
+EllApasx + geom_bar(stat="identity",position=position_dodge())
+```
+
+αν θέλουμε να ομαδοποιηθούν με βάση την εργασιακή κατάσταση.
+
+Φυσικά, μπορούμε κι εδώ να βάλουμε ετικέτες με τα νούμερα των αντίστοιχων μπαρών, γράφοντας:
+
+```{r}
+EllFyla + 
+  geom_bar(stat="identity",position=position_dodge()) +
+  geom_text(aes(label=PLHTHOS), vjust=1.6, color="white", position = position_dodge(0.9), size=3.5)
+```
+
+ή
+
+```{r}
+EllApasx + 
+  geom_bar(stat="identity",position=position_dodge()) +
+  geom_text(aes(label=PLHTHOS), vjust=1.6, color="white", position = position_dodge(0.9), size=3.5)
+```
+
+Ανάλογα σε ποιο ραβδόγραμμμα θέλουμε να επισυνάψουμε ετικέτες.
+
+Συνολικά ο κώδικά μας έχει ως εξής:
+
+```{r}
+#| eval = F
+rm(list = ls())
+posa <- c(2249.7, 388.3, 1760.6)
+etiketes <- c("apasx_antras", "anerg_antras", "mh_energ_antras")
+barplot(posa, names.arg = etiketes)
+barplot(posa,
+        names.arg = etiketes,
+        main = "Apasxolisi stoys antres",
+        xlab = "ergasiaki katastasi",
+        ylab = "xiliades andron",
+        col = "blue",
+        density = 20)
+barplot(posa,
+        names.arg = etiketes,
+        main = "Apasxolisi stoys antres",
+        xlab = "xiliades andron",
+        ylab = "ergasiaki katastasi",
+        col = "blue",
+        horiz = TRUE)
+install.packages("ggplot2")
+library(ggplot2)
+filo <- c("gynaika", "andras")
+apasx <- c(1584, 2249.7)
+anerg <- c(492.8, 388.3)
+mh_energ <- c(2650.9, 1760.6)
+Apasxolisi <- data.frame(FYLO=filo, APASXOLOYMENOS=apasx, ANERGOS=anerg, MH_ENERGOS=mh_energ)
+AnergFylo <- ggplot(data=Apasxolisi, aes(x=FYLO, y=ANERGOS))
+AnergFylo + geom_bar(stat="identity")
+katastasi <- colnames(Apasxolisi)
+katastasi <- katastasi[-1]
+apasxG <- as.numeric(as.vector(Apasxolisi[1,c(2:4)]))
+apasxA <- as.numeric(as.vector(Apasxolisi[2,c(2:4)]))
+ApasxAntistr <- data.frame(KATASTASH=katastasi, GYNAIKES=apasxG, ANTRES=apasxA)
+ApasxAntistr
+GynApasx <- ggplot(data=ApasxAntistr, aes(x=KATASTASH, y=GYNAIKES))
+GynApasx + geom_bar(stat="identity")
+GynApasx + geom_bar(stat="identity") + coord_flip()
+GynApasx + geom_bar(stat="identity", color="blue", fill="red")
+GynApasxMultyCol1 <- ggplot(data=ApasxAntistr, aes(x=KATASTASH, y=GYNAIKES, color=KATASTASH))
+GynApasxMultyCol1 + geom_bar(stat="identity", fill="white")
+GynApasxMultyCol2 <- ggplot(data=ApasxAntistr, aes(x=KATASTASH, y=GYNAIKES, fill=KATASTASH))
+GynApasxMultyCol2 + geom_bar(stat="identity")
+GynApasx + geom_bar(stat="identity") + geom_text(aes(label=GYNAIKES), vjust=1.6, color="white", size=3.5)
+if(!require(reshape)){
+    install.packages("reshape")
+    library(reshape)
+}
+if(!require(reshape2)){
+    install.packages("reshape2")
+    library(reshape2)
+}
+ApasxMakri <- melt(data = Apasxolisi, 
+                       id.vars = c("FYLO"),
+                       measure.vars = c("APASXOLOYMENOS","ANERGOS","MH_ENERGOS"),
+                       variable.name = "KATASTASI",
+                       value.name = "PLHTHOS")
+EllFyla <- ggplot(data=ApasxMakri, aes(x=FYLO, y=PLHTHOS, fill=KATASTASI))
+EllFyla + geom_bar(stat="identity")
+EllApasx <- ggplot(data=ApasxMakri, aes(x=KATASTASI, y=PLHTHOS, fill=FYLO))
+EllApasx + geom_bar(stat="identity")
+EllFyla + geom_bar(stat="identity",position=position_dodge())
+EllApasx + geom_bar(stat="identity",position=position_dodge())
+EllFyla + 
+  geom_bar(stat="identity",position=position_dodge()) +
+  geom_text(aes(label=PLHTHOS), vjust=1.6, color="white", position = position_dodge(0.9), size=3.5)
+EllApasx + 
+  geom_bar(stat="identity",position=position_dodge()) +
+  geom_text(aes(label=PLHTHOS), vjust=1.6, color="white", position = position_dodge(0.9), size=3.5)
+```
+
+# Διόρθωση σειράς
+
+Στην παρούσα ενότητα θ’ ασχοληθούμε με τον πίνακα `parabiaseis19` που φτιάξαμε στην ενότητα Συγχώνευση πινάκων κάτω-κάτω της ενότητας [Προσθήκη στοιχείων σε πίνακα](pinakes.html#3_Προσθήκη_στοιχείων_σε_πίνακα), αφού πρώτα διαγράψουμε τις μεταβλητές των προηγούμενων ενοτήτων:
+
+```{r}
+rm(list = ls())
+```
+
+Είχαμε, όπως είπαμε, τα κάτωθι αρχεία:
+
+-   *ydataParab.xlsx* (για τα θαλάσια συμβάντα):
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+if(!require(readxl)){
+    install.packages("readxl")
+    library(readxl)
+}
+ydataParab <- readxl::read_excel("ydataParab.xlsx")
+knitr::kable(ydataParab) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "max-content", height = "200px")
+```
+
+-   και *enaerParab.xlsx* (για τα εναέρια):
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+if(!require(readxl)){
+    install.packages("readxl")
+    library(readxl)
+}
+enaerParab <- readxl::read_excel("enaerParab.xlsx")
+knitr::kable(enaerParab) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+Κι αυτά τα συμπυκνώσαμε σ' ένα πίνακα ονόματι `parabiaseis19`:
+
+```{r}
+#| message = F
+# Από προηγούμενη φορά
+EXY_19 <- ydataParab[ydataParab$ETOS==2019,c("MHNAS","PARAB_EXY")]
+EEX_19 <- enaerParab[enaerParab$ETOS==2019,c("MHNAS","PARAB_EEX")]
+EXY_19$EIDOS <- rep("EXY",12)
+EEX_19$EIDOS <- rep("EEX",12)
+names(EXY_19)[names(EXY_19) == "PARAB_EXY"] <- "PARABIASEIS"
+names(EEX_19)[names(EEX_19) == "PARAB_EEX"] <- "PARABIASEIS"
+if(!require(dplyr)){
+    install.packages("dplyr")
+    library(dplyr)
+}
+parabiaseis19 <- bind_rows(EXY_19, EEX_19)
+```
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(parabiaseis19) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "max-content", height = "200px")
+```
+
+Θέλοντας να φτιάξουμε ένα ραβδόγραμμα με τις εν λόγω παραβιάσεις εκτελούμε τον κώδικα:
+
+```{r}
+parabiaseisRab <- ggplot(data=parabiaseis19, aes(x=MHNAS, y=PARABIASEIS, fill=EIDOS))
+parabiaseisRab + geom_bar(stat="identity")
+```
+
+Όπως βλέπουμε, βγαίνει ένα «ανορθόδοξο» ραδόγραμμα. Οι μήνες έχουν αλλάξει σειρά!
+
+Για την ακρίβεια οι μήνες μπήκαν σε αλφαβητική σειρά, ως κάποια τυχαία ονόματα χωρίς κάποια ιδιότητα που να προκαθορίζει τη σειρά τους. Για ν’ αποφύγουμε αυτό το πρόβλημα θα χρησιμοποιήσουμε τη συνάρτηση `xlim()`. Αυτό θα γίνει αρχικά γράφοντας:
+
+```{r}
+mines <- c("Ir","Fe","Mr","Ar","Ma","In","Il","Au","Se","Ok","No","De")
+```
+
+και ακολούθως:
+
+```{r}
+parabiaseisRab + geom_bar(stat="identity") + xlim(mines)
+```
+
+Οπότε έχουμε τους μήνες βαλμένους στη σωστή χρονολογική σειρά.
+
+Ο κώδικας που χρησιμοποιήσαμε στην παρούσα ενότητα ήταν ο:
+
+```{r}
+#| eval = F
+rm(list = ls())
+# Από προηγούμενη φορά
+EXY_19 <- ydataParab[ydataParab$ETOS==2019,c("MHNAS","PARAB_EXY")]
+EEX_19 <- enaerParab[enaerParab$ETOS==2019,c("MHNAS","PARAB_EEX")]
+EXY_19$EIDOS <- rep("EXY",12)
+EEX_19$EIDOS <- rep("EEX",12)
+names(EXY_19)[names(EXY_19) == "PARAB_EXY"] <- "PARABIASEIS"
+names(EEX_19)[names(EEX_19) == "PARAB_EEX"] <- "PARABIASEIS"
+if(!require(dplyr)){
+    install.packages("dplyr")
+    library(dplyr)
+}
+parabiaseis19 <- bind_rows(EXY_19, EEX_19)
+# Νέος κώδικας
+parabiaseisRab <- ggplot(data=parabiaseis19, aes(x=MHNAS, y=PARABIASEIS, fill=EIDOS))
+parabiaseisRab + geom_bar(stat="identity")
+mines <- c("Ir","Fe","Mr","Ar","Ma","In","Il","Au","Se","Ok","No","De")
+parabiaseisRab + geom_bar(stat="identity") + xlim(mines)
+```
+
+
+

@@ -1,0 +1,263 @@
+---
+title: "Αστρόγραμμα"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+```{r}
+#| echo = F
+rm(list = ls())
+```
+
+Στο παρόν άρθρο θα εξετάσουμε τις παραβάσεις/παραβιάσεις του ελληνικού εναέριου χώρου. Θα τις εξετάσουμε από το αρχείο enaerParab.xlsx.
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+if(!require(readxl)){
+    install.packages("readxl")
+    library(readxl)
+}
+enaerParab <- readxl::read_excel("enaerParab.xlsx")
+knitr::kable(enaerParab) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+Οι στήλες αρχικά ήταν ΠΑΡΑΒΑΣΕΙΣ ΚΕΚ (ICAO), ΠΑΡΑΒΙΑΣΕΙΣ ΕΕΧ, ΟΠΛΙΣΜΕΝΟΙ ΣΧΗΜΑΤΙΣΜΟΙ, `ΕΜΠΛΟΚΕΣ`, ΥΠΕΡΠΤΗΣΗ ΕΘΝΙΚΟΥ ΕΔΑΦΟΥΣ, ΣΥΝΟΛΟ ΑΕΡΟΣΚΑΦΩΝ κι έχουν μετονομαστεί σε `ETOS`, `MHNAS`, `PARAB_KEK`, `PARAB_EEX`, `OPL_SXHM`, `EMPLOKES` και `YPERPT_ETH_ED`.
+
+Αυτό που θα κάνουμε εδώ είναι να συγκρίνουμε τις παραβάσεις ΚΕΚ (ICAO), τις παραβιάσεις ΕΕΧ, τους οπλισμένους σχηματισμούς, τις εμπλοκές και τις υπερπτήσεις εθνικού εδάφους από μήνα σε μήνα του 2009, ώστε να δούμε αν υπάρχουν διαφοροποιήσεις μέσα στο έτος. Επίσης θα μελετήσουμε ξεχωριστά τους καλοκαιρινούς μήνες.
+
+Αρχικά γράφουμε:
+
+```{r}
+e_a <- enaerParab[enaerParab$ETOS == 2009, -c(1,8)]
+e_aKALOK <- e_a[6:8,]
+```
+
+Ώστε να συλλέξουμε τα δεδομένα που θέλουμε.
+
+Ακολούθως εγκαθιστούμε το πακέτο `fmsb`, μιας και θα μας χρειαστεί για το γράφημα με το οποίο θα συγκρίνουμε τις παραβάσεις/παραβιάσεις των μηνών αυτών.
+
+```{r}
+#| message = F
+if(!require(fmsb)){
+    install.packages("fmsb")
+    library(fmsb)
+}
+```
+
+Ακολούθως δημιουργούμε τις συναρτήσεις `astrogramma1()` και `astrogramma()`, οι οποίες θα κάνουν τη δουλειά που θέλουμε. Εμείς θα χρησιμοποιούμε μόνο την `astrogramma`. Η `astrogramma1` είναι βοηθητική.
+
+```{r}
+astrogramma1 <- function(dedomena, xroma = rainbow(length(dedomena[,1])), 
+                         vlabels = colnames(dedomena)[-1], vlcex = 0.7, title = NULL, ...){
+  m <- min(dedomena[,-1])
+  M <- max(dedomena[,-1])
+  n <- length(dedomena[1,])
+  m_row <- rep(m, n-1)
+  M_row <- rep(M, n-1)
+  max_min <- rbind(M_row, m_row)
+  rownames(max_min) <- c("Max", "Min")
+  rownames(dedomena) <- dedomena[,1]
+  data <- dedomena[,-1]
+  colnames(max_min) <- colnames(data)
+  data <- rbind(max_min,data)
+  radarchart(
+    data, axistype = 1,
+    # Customize the polygon
+    pcol = xroma, pfcol = scales::alpha(xroma, 0.5), plwd = 2, plty = 1,
+    # Customize the grid
+    cglcol = "grey", cglty = 1, cglwd = 0.8,
+    # Customize the axis
+    axislabcol = "grey", 
+    # Variable labels
+    vlcex = vlcex, vlabels = vlabels,
+    caxislabels = (0:5)*(M/5), title = title, ...
+  )
+  for (k in 1:length(data[,1])){
+    rn <- dedomena[k,1]
+    mtext(rn, side = 1, line = k-1, col = xroma[k], adj = 0.5)
+  }
+   
+}
+ 
+astrogramma <- function(dedomena, mazi = T, xroma = rainbow(length(dedomena[,1])), 
+                        vlabels = colnames(dedomena)[-1], vlcex = 0.7, title = NULL, ...) {
+  if (mazi) {
+    astrogramma1(dedomena, xroma, 
+                 vlabels, vlcex, title, ...)
+  } else {
+    op <- par(mar = c(1, 1, 1, 1))
+    par(mfrow = c(3,2))
+    nn <- length(dedomena[,1])
+    for (i in 1:nn){
+      df0 <- dedomena[i,]
+      astrogramma1(df0, xroma = rainbow(nn)[i])
+    }
+    par(op)
+  }
+}
+```
+
+Ακολούθως γράφουμε:
+
+```{r}
+#| eval = F
+astrogramma(e_aKALOK)
+```
+
+Και μας εξάγεται το μήνυμα σφάλματος `Error in .rowNamesDF<-(x, value = value) : invalid 'row.names' length`.
+
+Αυτό οφείλεται στο ότι δεν είναι ο πίνακας δεδομένων μας σε κατάλληλη για τη συνάρτηση μορφή. Δεν θα εμβαθύνουμε στους λόγους αυτού του προβλήματος, απλά θα πούμε ότι αυτό λύνεται εύκολα μέσω της συνάρτησης `as.data.frame()`. Σε αυτήν θα εκχωρήσουμε ως όρισμα τον πίνακα που μας ενδιαφέρει. Δηλαδή γράφουμε:
+
+```{r}
+e_aKALOK_PD <- as.data.frame(e_aKALOK)
+```
+
+Οπότε γράφουμε:
+
+```{r}
+astrogramma(e_aKALOK_PD)
+```
+
+Έχουμε τα αστρογράμματά μας. Βέβαια, το ένα έχει σχεδιαστεί πάνω από το άλλο κι αυτό ίσως ενοχλήσει κάποιους. Αυτό μπορούμε να το διορθώσουμε, γράφοντας απλώς `FALSE` σαν δεύτερο όρισμα στη συνάρτηση `astrogramma()`.
+
+```{r}
+astrogramma(e_aKALOK_PD, FALSE)
+```
+
+Έτσι έχουμε τα ξεχωριστά αστρογράμματα για τους μήνες που θέλαμε.
+
+Στο σημείο αυτό είναι ώρα να πούμε πώς λειτουργούνε τα αστρογράμματα:
+
+-   Στις άκρες ενός πολυγώνου βρίσκονται τα ονόματα των μεταβλητών που μας ενδιαφέρουν. Εδώ είναι οι παραβάσεις ΚΕΚ (`PARAB_KEK`), οι παραβιάσεις ΕΕΧ (`PARAB_EEX`), οι οπλισμένοι σχηματισμοί (`OPL_SXHM`), οι εμπλοκές (`EMPLOKES`) και οι υπερπτήσεις εθνικού εδάφους (`YPERPT_ETH_ED`).
+
+-   Η τιμή της μεταβλητής υποδηλώνεται από ένα σημείο σε μια απόσταση από το κέντρο του πολυγώνου. Όσο μεγαλύτερη είναι η τιμή της μεταβλητής, τόσο πιο μακριά από το κέντρο του πολυγώνου θα βρίσκεται το σημείο. Εκεί θα πάνε οι κορυφές του αστρογράμματος.
+
+-   Ενώνουμε όλα τα σημεία αυτά κι έχουμε το αστρόγραμμα.
+
+Έτσι, βλέπουμε ότι οι παραβάσεις ΚΕΚ είναι σαφώς λιγότερες από τις παραβιάσεις ΕΕΧ. Μπορούμε επίσης να δούμε ότι η κατανομή αυτών των παραβάσεων/παραβιάσεων δεν αλλάζει ουσιοδώς στους τρεις αυτούς καλοκαιρινούς μήνες.
+
+Πριν προχωρήσουμε στη μελέτη μας, θα πρέπει να επισημάνουμε εδώ ότι ο πίνακας δεδομένων μας θα πρέπει να είναι σε συγκεκριμένη μορφή. Θα πρέπει οι μεταβλητές που θα αποτελούν τις κορυφές του αστρογράμματος να είναι τα ονόματα των στηλών μας (εδώ είναι τα είδη παραβάσεων/παραβιάσεων). Επίσης οι στήλες μας θα πρέπει να είναι αποκλειστικά αυτές, και μόνο η πρώτη στήλη να είναι οι τιμές του πλαισίου στο οποίο εξετάζουμε τις μεταβλητές μας (εδώ η πρώτη στήλη ήταν οι μήνες).
+
+Πάμε, λοιπόν να δούμε τα αστρογράμματα και για όλους τους μήνες του έτους. Γράφουμε:
+
+```{r}
+#| eval = F
+astrogramma(e_a)
+```
+
+Οπότε και πάλι προκύπτει το μνήμα σφάλματος `Error in .rowNamesDF<-(x, value = value) : invalid 'row.names' length`.
+
+Αυτό, όπως και πριν, το διορθώνουμε γράφοντας:
+
+```{r}
+e_a_PD <- as.data.frame(e_a)
+```
+
+και με την κάτωθι εντολή έχουμε τα αστρογράμματα:
+
+```{r}
+astrogramma(e_a_PD)
+```
+
+Εδώ τα πράγματα είναι ακόμα πιο ενοχλητικά από πριν. Όχι μόνο το ένα αστρόγραμμα επικαλύπτει το άλλο, αλλά και οι ετικέτες των μηνών έχουν βγει εκτός της εικόνας. Οπότε γράφουμε εναλλακτικά:
+
+```{r}
+astrogramma(e_a_PD, FALSE)
+```
+
+Ο κώδικας που χρησιμοποιήσαμε είναι ο παρακάτω:
+
+```{r}
+#| eval = F
+e_a <- enaerParab[enaerParab$ETOS == 2009, -c(1,8)]
+e_aKALOK <- e_a[6:8,]
+if(!require(fmsb)){
+    install.packages("fmsb")
+    library(fmsb)
+}
+astrogramma1 <- function(dedomena, xroma = rainbow(length(dedomena[,1])), 
+                         vlabels = colnames(dedomena)[-1], vlcex = 0.7, title = NULL, ...){
+  m <- min(dedomena[,-1])
+  M <- max(dedomena[,-1])
+  n <- length(dedomena[1,])
+  m_row <- rep(m, n-1)
+  M_row <- rep(M, n-1)
+  max_min <- rbind(M_row, m_row)
+  rownames(max_min) <- c("Max", "Min")
+  rownames(dedomena) <- dedomena[,1]
+  data <- dedomena[,-1]
+  colnames(max_min) <- colnames(data)
+  data <- rbind(max_min,data)
+  radarchart(
+    data, axistype = 1,
+    # Customize the polygon
+    pcol = xroma, pfcol = scales::alpha(xroma, 0.5), plwd = 2, plty = 1,
+    # Customize the grid
+    cglcol = "grey", cglty = 1, cglwd = 0.8,
+    # Customize the axis
+    axislabcol = "grey", 
+    # Variable labels
+    vlcex = vlcex, vlabels = vlabels,
+    caxislabels = (0:5)*(M/5), title = title, ...
+  )
+  for (k in 1:length(data[,1])){
+    rn <- dedomena[k,1]
+    mtext(rn, side = 1, line = k-1, col = xroma[k], adj = 0.5)
+  }
+   
+}
+ 
+astrogramma <- function(dedomena, mazi = T, xroma = rainbow(length(dedomena[,1])), 
+                        vlabels = colnames(dedomena)[-1], vlcex = 0.7, title = NULL, ...) {
+  if (mazi) {
+    astrogramma1(dedomena, xroma, 
+                 vlabels, vlcex, title, ...)
+  } else {
+    op <- par(mar = c(1, 1, 1, 1))
+    par(mfrow = c(3,2))
+    nn <- length(dedomena[,1])
+    for (i in 1:nn){
+      df0 <- dedomena[i,]
+      astrogramma1(df0, xroma = rainbow(nn)[i])
+    }
+    par(op)
+  }
+}
+astrogramma(e_aKALOK)
+e_aKALOK_PD <- as.data.frame(e_aKALOK)
+astrogramma(e_aKALOK_PD)
+astrogramma(e_aKALOK_PD, FALSE)
+astrogramma(e_a)
+e_a_PD <- as.data.frame(e_a)
+astrogramma(e_a_PD)
+astrogramma(e_a_PD, FALSE)
+```
+
+
+
+
+
+
+
+
+
+
+
+

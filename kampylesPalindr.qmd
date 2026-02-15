@@ -1,0 +1,189 @@
+---
+title: "Καμπύλες παλινδρόμησης"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+# Πολυωνυμική και άλλων συναρτήσεων παλινδρόμηση
+
+Η γραμμική παλινδρόμηση (βλ. ενότητες [Γραμμική παλινδρόμηση](eytheiesPalindr.html#1_Γραμμική_παλινδρόμηση) και [Ποσοστημοριακή παλινδρόμηση](eytheiesPalindr.html#2_Ποσοστημοριακή_παλινδρόμηση)) μάς παρέχουν απλές εκφράσεις, αλλά όχι τις καλύτερες δυνατές προσεγγίσεις, όπως είδαμε. Μία λελογισμένη έκπτωση στην απλότητα, ώστε ν’ αυξηθεί η ακρίβεια, μπορούμε να πετύχουμε ψάχνοντας μια πολυωνυμική έκφραση της μίας μεταβλητής συναρτήσει της άλλης.
+
+Εδώ, όπως και στις προαναφερθείσες ενότητες, θα χρησιμοποιήσουμε δεδομένα του OECD για τον αριθμό των γιατρών και των νοσοκόμων ανά χίλιους κατοίκους. Αυτά, όπως είπαμε, αποθηκεύτηκαν στα αρχεία doctorsPer1000.csv και nurcesPer1000.csv και τα παρουσιάζουμε, αφού πρώτα διαγράψουμε ό,τι είχαμε αποθηκεύσει.
+
+```{r}
+rm(list = ls())
+```
+
+-   **doctorsPer1000.csv**
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+doctorsPer1000 <- read.csv("doctorsPer1000.csv", na.string = "")
+knitr::kable(head(doctorsPer1000, n=100)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+-   **nurcesPer1000.csv**
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+nurcesPer1000 <- read.csv("nurcesPer1000.csv", na.string = "")
+knitr::kable(head(nurcesPer1000, n=100)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+Θέλουμε να δούμε αν μπορούμε να εκφράσουμε τους γιατρούς ως ένα πολυώνυμο τετάρτου βαθμού με μεταβλητή τις νοσοκόμες, να επιτύχουμε την πολυωνυμική παλινδρόμηση τετάρτου βαθμού. Δηλαδή να έχουμε κάτι τέτοιο:
+
+$$[giatroi]=\alpha+\beta\cdot[nosok]+\gamma\cdot[nosok]^2+\delta\cdot[nosok]^3+\varepsilon\cdot[nosok]^4$$
+
+Αρχικά αυτά ενοποιήθηκαν, κατά τα γνωστά (βλ. υποενότητα «Συγχώνευση πινάκων δίπλα-δίπλα» της [Προσθήκη στοιχείων σε πίνακα](pinakes.html#3_Προσθήκη_στοιχείων_σε_πίνακα)), γράφοντας:
+
+```{r}
+DocNurc <- merge(doctorsPer1000,nurcesPer1000,by=c("LOCATION","TIME"))
+```
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(head(DocNurc, n=100)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+και ακολούθως ορίζουμε:
+
+```{r}
+giatroi <- DocNurc$Value.x
+nosok <- DocNurc$Value.y
+```
+
+Για να βρούμε τους αριθμούς $\alpha$, $\beta$, $\gamma$, $\delta$ και $\varepsilon$ γράφουμε:
+
+```{r}
+lm(giatroi ~ nosok + I(nosok^2) + I(nosok^3)+I(nosok^4))
+```
+
+Όπερ σημαίνει ότι:
+
+-   $\alpha=-0.298571$
+
+-   $\beta=1.430165$
+
+-   $\gamma=-0.207341$
+
+-   $\delta=0.012481$
+
+-   $\varepsilon=-0.000258$
+
+Επομένως:
+
+$$[giatroi]=-0.298571+1.430165\cdot[nosok]-0.207341\cdot[nosok]^2+0.012481\cdot[nosok]^3-0.000258\cdot[nosok]^4$$
+
+Αν δοκιμάσουμε τώρα να δούμε των πρόβλεψη του αριθμού των γιατρών, στην περίπτωση που έχουμε 2.23 νοσοκόμους ανά χίλιους κατοίκους, τότε έχουμε:
+
+$$-0.298571+1.430165\cdot2.23-0.207341\cdot2.23^2+0.012481\cdot2.23^3-0.000258\cdot2.23^4=1.9916$$
+
+Δηλαδή περίπου 2 γιατρούς ανά χίλιους κατοίκους.
+
+Για να σχεδιάσουμε την πολυωνυμική παλινδρόμηση θα χρειαστούμε πάλι το πακέτο `ggplot2`, οπότε γράφουμε:
+
+```{r}
+#| message = F
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+```
+
+
+και ακολούθως:
+
+```{r}
+DocNurcPl <- ggplot(DocNurc, aes(x = Value.y, y = Value.x))
+DocNurcPl + geom_point() + geom_smooth(method = lm, formula = y ~ x+I(x^2)+I(x^3)+I(x^4))
+```
+
+Στα παραπάνω θελήσαμε να βρούμε ένα πολυώνυμο 4ου βαθμού που να παρεμβάλλεται μεταξύ των πραγματικών τιμών. Φυσικά στη θέση του πολυωνύμου θα μπορούσαμε να διαλέξουμε οποιαδήποτε άλλη συνάρτηση. Θα μπορούσαμε πχ να θέλουμε κάτι τέτοιο:
+
+$$[giatroi]=\alpha+\beta\cdot\log([nosok])$$
+
+Τοιαύτη περιπτώσει θα μπορούσαμε να γράψουμε:
+
+```{r}
+lm(giatroi ~ I(log(nosok)))
+```
+
+Από την παραπάνω απάντηση συμπεραίνουμε:
+
+-   $\alpha=1.3053$
+
+-   $\beta=0.8884$
+Επομένως:
+
+
+$$[giatroi]=1.3053+0.8884\cdot\log([nosok])$$
+
+Τέλος, σχεδιάζουμε την εν λόγω καμπύλη γράφοντας:
+
+```{r}
+DocNurcPl + geom_point() + geom_smooth(method = lm, formula = y ~ I(log(x)))
+```
+
+
+
+# Τοπική παλινδρόμηση
+
+Είδαμε ότι είναι πολύ χρήσιμο να έχουμε μια καμπύλη που να προσεγγίζει καλά τα σημεία του διαγράμματος διασποράς. Είδαμε επίσης ότι όσο περισσότερο ρίχνουμε τις προσδοκίες μας όσον αφορά την απλότητα του τύπου της καμπύλης, τόσο περισσότερο μπορούμε να κερδίζουμε μια καμπύλη που να αναπαριστά πιστότερα τα σημεία του διαγράμματος διασποράς. Αν ρίξουμε εντελώς τις προσδοκίες μας, ως προς τον διαθέσιμο τύπο της καμπύλης, τότε έχουμε μια ακόμα πιστότερη καμπύλη, την τοπική παλινδρόμηση.
+
+Για να σχεδιάσουμε την τοπική παλινδρόμηση θα χρειαστούμε πάλι το πακέτο ggplot2, οπότε γράφουμε:
+
+```{r}
+DocNurcPl + geom_point() + geom_smooth()
+```
+
+Εν προκειμένω δεν έχουμε συγκεκριμένο τύπο για την καμπύλη αυτή. Φυσικά, έχουμε κάθε δικαίωμα να υποψιαστούμε τη μορφή της συνάρτησης και μετά να χρησιμοποιήσουμε όσα μάθαμε στην ενότητα [Πολυωνυμική και άλλων συναρτήσεων παλινδρόμηση].
+
+Συνολικά γράψαμε τον κώδικα αυτόν:
+
+```{r}
+#| eval = F
+rm(list = ls())
+DocNurc <- merge(doctorsPer1000,nurcesPer1000,by=c("LOCATION","TIME"))
+giatroi <- DocNurc$Value.x
+nosok <- DocNurc$Value.y
+lm(giatroi ~ nosok + I(nosok^2) + I(nosok^3)+I(nosok^4))
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+DocNurcPl <- ggplot(DocNurc, aes(x = Value.y, y = Value.x))
+DocNurcPl + geom_point() + geom_smooth(method = lm, formula = y ~ x+I(x^2)+I(x^3)+I(x^4))
+lm(giatroi ~ I(log(nosok)))
+DocNurcPl + geom_point() + geom_smooth(method = lm, formula = y ~ I(log(x)))
+DocNurcPl + geom_point() + geom_smooth()
+```
+
+
+
+
+

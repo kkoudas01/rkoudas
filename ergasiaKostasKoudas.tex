@@ -1,0 +1,3225 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Εργασία για το μάθημα Μηχανική Μάθηση},
+  pdfauthor={Κώστας Κούδας},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Εργασία για το μάθημα Μηχανική Μάθηση}
+\author{Κώστας Κούδας}
+\date{2026-01-26}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\section{Υπόβαθρο}\label{ux3c5ux3c0ux3ccux3b2ux3b1ux3b8ux3c1ux3bf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Για την αισθητική παρουσίαση}
+\NormalTok{knitr}\SpecialCharTok{::}\NormalTok{opts\_chunk}\SpecialCharTok{$}\FunctionTok{set}\NormalTok{(}\AttributeTok{echo =} \ConstantTok{TRUE}\NormalTok{)}
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(kableExtra))\{}
+  \FunctionTok{install.packages}\NormalTok{(}\StringTok{"kableExtra"}\NormalTok{)}
+  \FunctionTok{library}\NormalTok{(kableExtra)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Η παρούσα σελίδα είναι η υλοποίηση της εργασίας του μαθήματος Μηχανική
+Μάθηση του Τμήματος Πληροφορικής του Ιονίου Πανεπιστημίου. Διαδάσκων
+καθηγητής
+\href{https://di.ionio.gr/gr/department/staff/1072-giannakis/}{\textbf{Κώστας
+Γιαννάκης}}. Ακολουθεί η εκφώνησή της:
+
+Αν δεν μπορείτε να δείτε το pdf της εργασίας, κάντε κλικ εδώ για να
+κατεβάσετε το αρχείο.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Πακέτα}
+
+\CommentTok{\# Για τα γραφήματα που θα χρειαστούν}
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(ggplot2))\{}
+  \FunctionTok{install.packages}\NormalTok{(}\StringTok{"ggplot2"}\NormalTok{)}
+  \FunctionTok{library}\NormalTok{(ggplot2)}
+\NormalTok{\}}
+
+\CommentTok{\# Για ιστόγραμμα σε συνδυασμό με θηκόγραμμα}
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(packHV))\{}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"packHV"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(packHV)}
+\NormalTok{\}}
+
+\CommentTok{\# Για grid{-}plot}
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(GGally))\{}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"GGally"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(GGally)}
+\NormalTok{\}}
+
+\CommentTok{\# Για δέντρα αποφάσεων}
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(rpart))\{}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"rpart"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(rpart)}
+\NormalTok{\}}
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(rpart.plot))\{}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"rpart.plot"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(rpart.plot)}
+\NormalTok{\}}
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(caret))\{}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"caret"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(caret)}
+\NormalTok{\}}
+
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(tidymodels))\{}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"tidymodels"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(tidymodels)}
+\NormalTok{\}}
+
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(class))\{}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"class"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(class)}
+\NormalTok{\}}
+
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(nnet))\{}\CommentTok{\# για τα νευρωνικά δίκτυα}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"nnet"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(nnet)}
+\NormalTok{\}}
+
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(factoextra))\{}\CommentTok{\# για k{-}means}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"factoextra"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(factoextra)}
+\NormalTok{\}}
+
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(cluster))\{}\CommentTok{\# για elbow method}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"cluster"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(cluster)}
+\NormalTok{\}}
+
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(plotly))\{}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"plotly"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(plotly)}
+\NormalTok{\}}
+
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(factoextra))\{}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"factoextra"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(factoextra)}
+\NormalTok{\}}
+
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(dbscan))\{}\CommentTok{\# για dbscan}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"dbscan"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(dbscan)}
+\NormalTok{\}}
+
+\ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(ranger))\{}\CommentTok{\# για αυτόματο random forest}
+    \FunctionTok{install.packages}\NormalTok{(}\StringTok{"ranger"}\NormalTok{)}
+    \FunctionTok{library}\NormalTok{(ranger)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Εισαγωγή και παρουσίαση
+δεδομένων}\label{ux3b5ux3b9ux3c3ux3b1ux3b3ux3c9ux3b3ux3ae-ux3baux3b1ux3b9-ux3c0ux3b1ux3c1ux3bfux3c5ux3c3ux3afux3b1ux3c3ux3b7-ux3b4ux3b5ux3b4ux3bfux3bcux3adux3bdux3c9ux3bd}
+
+Αρχικά καθαρίζουμε τη μνήμη της R.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{rm}\NormalTok{(}\AttributeTok{list =} \FunctionTok{ls}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+Ακολούθως εισάγουμε τα δεδομένα μας.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mushrooms }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"mushrooms\_clean.csv"}\NormalTok{,}
+                     \AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{sep =} \StringTok{","}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Καθόσον ο Α.Μ. του γράφοντος είναι \textbf{inf2021102} οι τιμές των
+δεδομένων αλλοιώνονται, σύμφωνα με τις οδηγίες του διδάσκοντος ως
+ακολούθως:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Ο Α.Μ.}
+\NormalTok{student\_id }\OtherTok{\textless{}{-}} \StringTok{"inf2021102"}
+\CommentTok{\# Αφαιρούμε το τμήμα "inf" του Α.Μ.}
+\NormalTok{student\_id }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{gsub}\NormalTok{(}\StringTok{"[\^{}0{-}9]"}\NormalTok{, }\StringTok{""}\NormalTok{, student\_id))}
+\CommentTok{\# Η βάση της τυχαιότητας}
+\FunctionTok{set.seed}\NormalTok{(student\_id)}
+\CommentTok{\# Συλλέγουμε κάποιες τυχαίες γραμμές από το mushrooms}
+\NormalTok{sampled\_mushrooms }\OtherTok{\textless{}{-}}\NormalTok{ mushrooms[}\FunctionTok{sample}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(mushrooms), }\DecValTok{15000}\NormalTok{), ]}
+\CommentTok{\# Συλλέγουμε κάποιες τυχαίες στήλες από το mushrooms}
+\NormalTok{sampled\_mushrooms }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms[, }\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\FunctionTok{sample}\NormalTok{(}\DecValTok{2}\SpecialCharTok{:}\FunctionTok{ncol}\NormalTok{(sampled\_mushrooms), }\DecValTok{9}\NormalTok{))]}
+\end{Highlighting}
+\end{Shaded}
+
+Ας δούμε αν όλα πάνε καλά. Καταρχάς, θα πρέπει να έχουμε 15000 γραμμές.
+Γράφουμε:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{nrow}\NormalTok{(sampled\_mushrooms) }\CommentTok{\# 15000 γραμμές;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 15000
+\end{verbatim}
+
+Όλα βαίνουν καλώς, οπότε προχωράμε στον έλεγχο των στηλών. Θα πρέπει να
+είναι 10. Γράφουμε:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ncol}\NormalTok{(sampled\_mushrooms) }\CommentTok{\# 10 στήλες;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 10
+\end{verbatim}
+
+Η διαδικασία πρέπει να είναι εντάξει, οπότε ας ρίξουμε μια ματιά στα
+δεδομένα μας. Επειδή ο πίνακας ήταν πλατύς, θεωρήθηκε χρήσιμο να
+παρουσιαστεί με τη βοήθεια των συναρτήσεων \texttt{kable()} και
+\texttt{kable\_styling}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}\FunctionTok{head}\NormalTok{(sampled\_mushrooms)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable\_styling}\NormalTok{(}\StringTok{"striped"}\NormalTok{, }\AttributeTok{full\_width =}\NormalTok{ T) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{scroll\_box}\NormalTok{(}\AttributeTok{width =} \StringTok{"100\%"}\NormalTok{, }\AttributeTok{height =} \StringTok{"max{-}content"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtabu} to \linewidth {>{\raggedright}X>{\raggedright}X>{\raggedleft}X>{\raggedright}X>{\raggedleft}X>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedleft}X>{\raggedright}X>{\raggedright}X}
+\toprule
+ & class & Feature\_7 & Feature\_11 & Feature\_6 & Feature\_2 & Feature\_10 & Feature\_8 & Feature\_1 & Feature\_5 & Feature\_4\\
+\midrule
+40828 & p & 25.02 & u & 14.69 & x & d & y & 12.49 & o & FALSE\\
+26825 & p & 26.70 & a & 6.68 & f & d & w & 18.91 & w & TRUE\\
+9321 & e & 3.14 & a & 4.92 & b & g & y & 3.04 & w & FALSE\\
+15313 & p & 12.79 & a & 4.35 & x & d & w & 5.11 & w & TRUE\\
+3074 & e & 20.14 & u & 27.41 & f & d & n & 18.98 & w & FALSE\\
+\addlinespace
+38361 & p & 5.18 & a & 5.05 & x & d & e & 3.54 & e & FALSE\\
+\bottomrule
+\end{longtabu}
+
+Ας ρίξουμε μια πιο προσεκτική ματιά στον πίνακα.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Μια αναλυτικότερη εικόνα των δεδομένων μας}
+\FunctionTok{str}\NormalTok{(sampled\_mushrooms)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    15000 obs. of  10 variables:
+##  $ class     : chr  "p" "p" "e" "p" ...
+##  $ Feature_7 : num  25.02 26.7 3.14 12.79 20.14 ...
+##  $ Feature_11: chr  "u" "a" "a" "a" ...
+##  $ Feature_6 : num  14.69 6.68 4.92 4.35 27.41 ...
+##  $ Feature_2 : chr  "x" "f" "b" "x" ...
+##  $ Feature_10: chr  "d" "d" "g" "d" ...
+##  $ Feature_8 : chr  "y" "w" "y" "w" ...
+##  $ Feature_1 : num  12.49 18.91 3.04 5.11 18.98 ...
+##  $ Feature_5 : chr  "o" "w" "w" "w" ...
+##  $ Feature_4 : logi  FALSE TRUE FALSE TRUE FALSE FALSE ...
+\end{verbatim}
+
+Βλέπουμε ότι:
+
+\begin{itemize}
+\item
+  οι μεταβλητές \texttt{class}, \texttt{Feature\_11},
+  \texttt{Feature\_2}, \texttt{Feature\_10}, \texttt{Feature\_8} και
+  \texttt{Feature\_5} είναι απλές συμβολοσειρές,
+\item
+  οι μεταβλητές \texttt{Feature\_7}, \texttt{Feature\_6} και
+  \texttt{Feature\_1} είναι αριθμητικές τιμές (όχι απαραιτήτως
+  ακέραιες),
+\item
+  η μεταβλητή \texttt{Feature\_4} είναι λογική.
+\end{itemize}
+
+Ας κάνουμε λίγο βαθύτερη την πρώτη αυτή παρατήρηση των δεδομένων μας.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Μια αναλυτικότερη εικόνα των δεδομένων μας}
+\FunctionTok{summary}\NormalTok{(sampled\_mushrooms)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     class             Feature_7       Feature_11          Feature_6       Feature_2        
+##  Length:15000       Min.   :  0.00   Length:15000       Min.   : 0.000   Length:15000      
+##  Class :character   1st Qu.:  5.17   Class :character   1st Qu.: 4.630   Class :character  
+##  Mode  :character   Median : 10.26   Mode  :character   Median : 5.960   Mode  :character  
+##                     Mean   : 12.23                      Mean   : 6.577                     
+##                     3rd Qu.: 16.87                      3rd Qu.: 7.760                     
+##                     Max.   :102.48                      Max.   :32.430                     
+##   Feature_10         Feature_8           Feature_1       Feature_5         Feature_4      
+##  Length:15000       Length:15000       Min.   : 0.440   Length:15000       Mode :logical  
+##  Class :character   Class :character   1st Qu.: 3.470   Class :character   FALSE:12362    
+##  Mode  :character   Mode  :character   Median : 5.900   Mode  :character   TRUE :2638     
+##                                        Mean   : 6.753                                     
+##                                        3rd Qu.: 8.600                                     
+##                                        Max.   :62.340
+\end{verbatim}
+
+Μεταφράζουμε σε απλά ελληνικά τον πίνακα παρακάτω. Συγχρόνως
+οπτικοποιούμε τα εν λόγω αποτελέσματα.
+
+\subsection*{}\label{section}
+\addcontentsline{toc}{subsection}{}
+
+\subsubsection*{Μεταβλητή
+class}\label{ux3bcux3b5ux3c4ux3b1ux3b2ux3bbux3b7ux3c4ux3ae-class}
+\addcontentsline{toc}{subsubsection}{Μεταβλητή class}
+
+\begin{itemize}
+\item
+  \textbf{Τύπος μεταβλητής:} κατηγορική
+\item
+  \textbf{Αριθμός καταχωρήσεων:} 15000
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(sampled\_mushrooms, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ class)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill =} \StringTok{"orange"}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# Το ραβδόγραμμα}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Ραβδόγραμμα της μεταβλητής class"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Κατηγορίες της μεταβλητής class"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Συχνότητα"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{( }\CommentTok{\# Για ετικέτες συχνοτήτων}
+  \AttributeTok{stat =} \StringTok{\textquotesingle{}count\textquotesingle{}}\NormalTok{,  }
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{label =} \FunctionTok{after\_stat}\NormalTok{(count)),}
+  \AttributeTok{vjust =} \SpecialCharTok{{-}}\FloatTok{0.5}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-10-1.pdf}}
+
+\subsubsection*{Μεταβλητή
+Feature\_7}\label{ux3bcux3b5ux3c4ux3b1ux3b2ux3bbux3b7ux3c4ux3ae-feature_7}
+\addcontentsline{toc}{subsubsection}{Μεταβλητή Feature\_7}
+
+\begin{itemize}
+\item
+  \textbf{Τύπος μεταβλητής:} αριθμητική
+\item
+  \textbf{Ελάχιστη τιμή:} 0
+\item
+  \textbf{1ο τεταρτημόριο:} 5.17
+\item
+  \textbf{Διάμεσος:} 10.26
+\item
+  \textbf{Μέση τιμή:} 12.226284
+\item
+  \textbf{3ο τεταρτημόριο:} 16.87
+\item
+  \textbf{Μέγιστη τιμή:} 102.48
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(sampled\_mushrooms, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Feature\_7)) }\SpecialCharTok{+}
+  \CommentTok{\# Το ιστόγραμμα}
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{bins =} \DecValTok{30}\NormalTok{, }\AttributeTok{fill =} \StringTok{"orange"}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# Το bins πήγε γιατί έβγαζε μήνυμα «\textasciigrave{}stat\_bin()\textasciigrave{} using \textasciigrave{}bins = 30\textasciigrave{}. Pick better value with \textasciigrave{}binwidth\textasciigrave{}.»}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"ιστόγραμμα της μεταβλητής Feature\_7"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Τιμές της μεταβλητής Feature\_7"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Συχνότητα"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-11-1.pdf}}
+
+\subsubsection*{Μεταβλητή
+Feature\_11}\label{ux3bcux3b5ux3c4ux3b1ux3b2ux3bbux3b7ux3c4ux3ae-feature_11}
+\addcontentsline{toc}{subsubsection}{Μεταβλητή Feature\_11}
+
+\begin{itemize}
+\item
+  \textbf{Τύπος μεταβλητής:} κατηγορική
+\item
+  \textbf{Αριθμός καταχωρήσεων:} 15000
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(sampled\_mushrooms, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Feature\_11)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill =} \StringTok{"orange"}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# Το ραβδόγραμμα}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Ραβδόγραμμα της μεταβλητής Feature\_11"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Κατηγορίες της μεταβλητής Feature\_11"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Συχνότητα"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{( }\CommentTok{\# Για ετικέτες συχνοτήτων}
+  \AttributeTok{stat =} \StringTok{\textquotesingle{}count\textquotesingle{}}\NormalTok{,  }
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{label =} \FunctionTok{after\_stat}\NormalTok{(count)),}
+  \AttributeTok{vjust =} \SpecialCharTok{{-}}\FloatTok{0.5}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-12-1.pdf}}
+
+\subsubsection*{Μεταβλητή
+Feature\_6}\label{ux3bcux3b5ux3c4ux3b1ux3b2ux3bbux3b7ux3c4ux3ae-feature_6}
+\addcontentsline{toc}{subsubsection}{Μεταβλητή Feature\_6}
+
+\begin{itemize}
+\item
+  \textbf{Τύπος μεταβλητής:} αριθμητική
+\item
+  \textbf{Ελάχιστη τιμή:} 0
+\item
+  \textbf{1ο τεταρτημόριο:} 4.63
+\item
+  \textbf{Διάμεσος:} 5.96
+\item
+  \textbf{Μέση τιμή:} 6.5773807
+\item
+  \textbf{3ο τεταρτημόριο:} 7.76
+\item
+  \textbf{Μέγιστη τιμή:} 32.43
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(sampled\_mushrooms, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Feature\_6)) }\SpecialCharTok{+}
+  \CommentTok{\# Το ιστόγραμμα}
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{bins =} \DecValTok{30}\NormalTok{, }\AttributeTok{fill =} \StringTok{"orange"}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# Το bins πήγε γιατί έβγαζε μήνυμα «\textasciigrave{}stat\_bin()\textasciigrave{} using \textasciigrave{}bins = 30\textasciigrave{}. Pick better value with \textasciigrave{}binwidth\textasciigrave{}.»}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"ιστόγραμμα της μεταβλητής Feature\_6"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Τιμές της μεταβλητής Feature\_6"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Συχνότητα"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-13-1.pdf}}
+
+\subsubsection*{Μεταβλητή
+Feature\_2}\label{ux3bcux3b5ux3c4ux3b1ux3b2ux3bbux3b7ux3c4ux3ae-feature_2}
+\addcontentsline{toc}{subsubsection}{Μεταβλητή Feature\_2}
+
+\begin{itemize}
+\item
+  \textbf{Τύπος μεταβλητής:} κατηγορική
+\item
+  \textbf{Αριθμός καταχωρήσεων:} 15000
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(sampled\_mushrooms, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Feature\_2)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill =} \StringTok{"orange"}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# Το ραβδόγραμμα}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Ραβδόγραμμα της μεταβλητής Feature\_2"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Κατηγορίες της μεταβλητής Feature\_2"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Συχνότητα"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{( }\CommentTok{\# Για ετικέτες συχνοτήτων}
+  \AttributeTok{stat =} \StringTok{\textquotesingle{}count\textquotesingle{}}\NormalTok{,  }
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{label =} \FunctionTok{after\_stat}\NormalTok{(count)),}
+  \AttributeTok{vjust =} \SpecialCharTok{{-}}\FloatTok{0.5}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-14-1.pdf}}
+
+\subsubsection*{Μεταβλητή
+Feature\_10}\label{ux3bcux3b5ux3c4ux3b1ux3b2ux3bbux3b7ux3c4ux3ae-feature_10}
+\addcontentsline{toc}{subsubsection}{Μεταβλητή Feature\_10}
+
+\begin{itemize}
+\item
+  \textbf{Τύπος μεταβλητής:} κατηγορική
+\item
+  \textbf{Αριθμός καταχωρήσεων:} 15000
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(sampled\_mushrooms, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Feature\_10)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill =} \StringTok{"orange"}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# Το ραβδόγραμμα}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Ραβδόγραμμα της μεταβλητής Feature\_10"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Κατηγορίες της μεταβλητής Feature\_10"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Συχνότητα"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{( }\CommentTok{\# Για ετικέτες συχνοτήτων}
+  \AttributeTok{stat =} \StringTok{\textquotesingle{}count\textquotesingle{}}\NormalTok{,  }
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{label =} \FunctionTok{after\_stat}\NormalTok{(count)),}
+  \AttributeTok{vjust =} \SpecialCharTok{{-}}\FloatTok{0.5}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-15-1.pdf}}
+
+\subsubsection*{Μεταβλητή
+Feature\_8}\label{ux3bcux3b5ux3c4ux3b1ux3b2ux3bbux3b7ux3c4ux3ae-feature_8}
+\addcontentsline{toc}{subsubsection}{Μεταβλητή Feature\_8}
+
+\begin{itemize}
+\item
+  \textbf{Τύπος μεταβλητής:} κατηγορική
+\item
+  \textbf{Αριθμός καταχωρήσεων:} 15000
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(sampled\_mushrooms, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Feature\_8)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill =} \StringTok{"orange"}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# Το ραβδόγραμμα}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Ραβδόγραμμα της μεταβλητής Feature\_8"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Κατηγορίες της μεταβλητής Feature\_8"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Συχνότητα"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{( }\CommentTok{\# Για ετικέτες συχνοτήτων}
+  \AttributeTok{stat =} \StringTok{\textquotesingle{}count\textquotesingle{}}\NormalTok{,  }
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{label =} \FunctionTok{after\_stat}\NormalTok{(count)),}
+  \AttributeTok{vjust =} \SpecialCharTok{{-}}\FloatTok{0.5}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-16-1.pdf}}
+
+\subsubsection*{Μεταβλητή
+Feature\_1}\label{ux3bcux3b5ux3c4ux3b1ux3b2ux3bbux3b7ux3c4ux3ae-feature_1}
+\addcontentsline{toc}{subsubsection}{Μεταβλητή Feature\_1}
+
+\begin{itemize}
+\item
+  \textbf{Τύπος μεταβλητής:} αριθμητική
+\item
+  \textbf{Ελάχιστη τιμή:} 0.44
+\item
+  \textbf{1ο τεταρτημόριο:} 3.47
+\item
+  \textbf{Διάμεσος:} 5.9
+\item
+  \textbf{Μέση τιμή:} 6.753178
+\item
+  \textbf{3ο τεταρτημόριο:} 8.6
+\item
+  \textbf{Μέγιστη τιμή:} 62.34
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(sampled\_mushrooms, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Feature\_1)) }\SpecialCharTok{+}
+  \CommentTok{\# Το ιστόγραμμα}
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{bins =} \DecValTok{30}\NormalTok{, }\AttributeTok{fill =} \StringTok{"orange"}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# Το bins πήγε γιατί έβγαζε μήνυμα «\textasciigrave{}stat\_bin()\textasciigrave{} using \textasciigrave{}bins = 30\textasciigrave{}. Pick better value with \textasciigrave{}binwidth\textasciigrave{}.»}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"ιστόγραμμα της μεταβλητής Feature\_1"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Τιμές της μεταβλητής Feature\_1"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Συχνότητα"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-17-1.pdf}}
+
+\subsubsection*{Μεταβλητή
+Feature\_5}\label{ux3bcux3b5ux3c4ux3b1ux3b2ux3bbux3b7ux3c4ux3ae-feature_5}
+\addcontentsline{toc}{subsubsection}{Μεταβλητή Feature\_5}
+
+\begin{itemize}
+\item
+  \textbf{Τύπος μεταβλητής:} κατηγορική
+\item
+  \textbf{Αριθμός καταχωρήσεων:} 15000
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(sampled\_mushrooms, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Feature\_5)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill =} \StringTok{"orange"}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# Το ραβδόγραμμα}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Ραβδόγραμμα της μεταβλητής Feature\_5"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Κατηγορίες της μεταβλητής Feature\_5"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Συχνότητα"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{( }\CommentTok{\# Για ετικέτες συχνοτήτων}
+  \AttributeTok{stat =} \StringTok{\textquotesingle{}count\textquotesingle{}}\NormalTok{,  }
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{label =} \FunctionTok{after\_stat}\NormalTok{(count)),}
+  \AttributeTok{vjust =} \SpecialCharTok{{-}}\FloatTok{0.5}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-18-1.pdf}}
+
+\subsubsection*{Μεταβλητή
+Feature\_4}\label{ux3bcux3b5ux3c4ux3b1ux3b2ux3bbux3b7ux3c4ux3ae-feature_4}
+\addcontentsline{toc}{subsubsection}{Μεταβλητή Feature\_4}
+
+\begin{itemize}
+\item
+  \textbf{Τύπος μεταβλητής:} λογική
+\item
+  \textbf{Αριθμός από «Σωστό»:} 2638
+\item
+  \textbf{Αριθμός από «Λάθος»:} 12362
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(sampled\_mushrooms, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Feature\_4)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill =} \StringTok{"orange"}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# Το ραβδόγραμμα}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Ραβδόγραμμα της μεταβλητής Feature\_4"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Κατηγορίες της μεταβλητής Feature\_4"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Συχνότητα"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{( }\CommentTok{\# Για ετικέτες συχνοτήτων}
+  \AttributeTok{stat =} \StringTok{\textquotesingle{}count\textquotesingle{}}\NormalTok{,  }
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{label =} \FunctionTok{after\_stat}\NormalTok{(count)),}
+  \AttributeTok{vjust =} \SpecialCharTok{{-}}\FloatTok{0.5}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-19-1.pdf}}
+
+\subsection*{}\label{section-1}
+\addcontentsline{toc}{subsection}{}
+
+\section{Συνολική προεπεξεργασία
+δεδομένων}\label{ux3c3ux3c5ux3bdux3bfux3bbux3b9ux3baux3ae-ux3c0ux3c1ux3bfux3b5ux3c0ux3b5ux3beux3b5ux3c1ux3b3ux3b1ux3c3ux3afux3b1-ux3b4ux3b5ux3b4ux3bfux3bcux3adux3bdux3c9ux3bd}
+
+Στο σημείο αυτό παρατηρούμε πως οι κατηγορικές μεταβλητές
+\texttt{class}, \texttt{Feature\_11}, \texttt{Feature\_2},
+\texttt{Feature\_10}, \texttt{Feature\_8} και \texttt{Feature\_5} δεν
+είναι τελικά απλές συμβολοσειρές. Το μικρό πληθος διαφορετικών τιμών,
+όπως και η ανάγκη να τις παραστήσουμε σε ραβδογράμματα υποδεικνύουν ότι
+είναι παράγοντες. Συνεπώς θα κάνουμε και την ανάλογη τροποποίηση στο
+αρχικό μας dataframe.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Οι κατηγορικές μας}
+\NormalTok{categorical\_cols }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"class"}\NormalTok{, }\StringTok{"Feature\_11"}\NormalTok{, }\StringTok{"Feature\_2"}\NormalTok{, }\StringTok{"Feature\_10"}\NormalTok{, }\StringTok{"Feature\_8"}\NormalTok{, }\StringTok{"Feature\_5"}\NormalTok{)}
+
+\CommentTok{\# Εφαρμόζουμε τη συνάρτηση as.factor σε κάθε μία τους}
+\NormalTok{sampled\_mushrooms[, categorical\_cols] }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(}
+\NormalTok{  sampled\_mushrooms[, categorical\_cols], }
+\NormalTok{  as.factor}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Πριν προχωρήσουμε, ας ελέγξουμε αν όλα βαίνουν καλώς.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Έχουν αλλάξει όντως σε factor οι μεταβλητές;}
+\FunctionTok{str}\NormalTok{(sampled\_mushrooms)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    15000 obs. of  10 variables:
+##  $ class     : Factor w/ 2 levels "e","p": 2 2 1 2 1 2 2 1 1 2 ...
+##  $ Feature_7 : num  25.02 26.7 3.14 12.79 20.14 ...
+##  $ Feature_11: Factor w/ 4 levels "a","s","u","w": 3 1 1 1 3 1 1 2 1 3 ...
+##  $ Feature_6 : num  14.69 6.68 4.92 4.35 27.41 ...
+##  $ Feature_2 : Factor w/ 7 levels "b","c","f","o",..: 7 3 1 7 3 7 1 4 6 1 ...
+##  $ Feature_10: Factor w/ 8 levels "d","g","h","l",..: 1 1 2 1 1 1 2 1 4 5 ...
+##  $ Feature_8 : Factor w/ 13 levels "b","e","f","g",..: 13 12 13 12 7 2 7 5 12 7 ...
+##  $ Feature_1 : num  12.49 18.91 3.04 5.11 18.98 ...
+##  $ Feature_5 : Factor w/ 12 levels "b","e","f","g",..: 7 11 11 11 11 2 6 12 11 4 ...
+##  $ Feature_4 : logi  FALSE TRUE FALSE TRUE FALSE FALSE ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Παρατηρούμε τις διαφορές της σύνοψης στις εν λόγω μεταβλητές}
+\FunctionTok{summary}\NormalTok{(sampled\_mushrooms[, categorical\_cols])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  class    Feature_11 Feature_2   Feature_10      Feature_8      Feature_5   
+##  e:6633   a:7393     b:1412    d      :10914   w      :5725   w      :4515  
+##  p:8367   s: 685     c: 436    g      : 1895   n      :4341   n      :2356  
+##           u:5581     f:3311    l      :  787   y      :1888   y      :2323  
+##           w:1341     o: 866    m      :  690   g      : 646   p      :1504  
+##                      p: 610    h      :  504   o      : 515   g      :1020  
+##                      s:1783    w      :   99   e      : 513   f      : 871  
+##                      x:6582    (Other):  111   (Other):1372   (Other):2411
+\end{verbatim}
+
+Πριν προχωρήσουμε, θα κάνουμε έναν έλεγχο για τυχόν διπλότυπα.
+Ακολουθούμε τις συμβουλές του
+\href{https://www.geeksforgeeks.org/r-language/identify-and-remove-duplicate-data-in-r/}{geeksforgeeks}
+για να εντοπίσουμε το πλήθος των διπλοτύπων:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Πόσα διπλότυπα;}
+\FunctionTok{sum}\NormalTok{(}\FunctionTok{duplicated}\NormalTok{(sampled\_mushrooms))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 28
+\end{verbatim}
+
+Βλέπουμε ότι έχουμε 28 διπλότυπα. Τα εξοστρακίζουμε ως ακολούθως:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Απόρριψη διπλοτύπων}
+\NormalTok{sampled\_mushrooms }\OtherTok{\textless{}{-}} \FunctionTok{unique}\NormalTok{(sampled\_mushrooms)}
+\end{Highlighting}
+\end{Shaded}
+
+Ελέγχουμε επίσης για ελλειπούσες τιμές (\textbf{\texttt{ΝΑ}}).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(sampled\_mushrooms))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+Έχουμε 0 ελλειπούσες τιμές, άρα το επόμενο βήμα δεν προσφέρει απολύτως
+τύποτα. Το παραθέτουμε απλώς στα πλαίσια μιας γενικότερης προσέγγισης.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sampled\_mushrooms }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms[}\FunctionTok{complete.cases}\NormalTok{(sampled\_mushrooms),]}
+\end{Highlighting}
+\end{Shaded}
+
+Κι ας ρίξουμε μια ματιά στο νέο μας dataframe.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Dataframe χωρίς διπλότυπα;}
+\FunctionTok{str}\NormalTok{(sampled\_mushrooms)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    14972 obs. of  10 variables:
+##  $ class     : Factor w/ 2 levels "e","p": 2 2 1 2 1 2 2 1 1 2 ...
+##  $ Feature_7 : num  25.02 26.7 3.14 12.79 20.14 ...
+##  $ Feature_11: Factor w/ 4 levels "a","s","u","w": 3 1 1 1 3 1 1 2 1 3 ...
+##  $ Feature_6 : num  14.69 6.68 4.92 4.35 27.41 ...
+##  $ Feature_2 : Factor w/ 7 levels "b","c","f","o",..: 7 3 1 7 3 7 1 4 6 1 ...
+##  $ Feature_10: Factor w/ 8 levels "d","g","h","l",..: 1 1 2 1 1 1 2 1 4 5 ...
+##  $ Feature_8 : Factor w/ 13 levels "b","e","f","g",..: 13 12 13 12 7 2 7 5 12 7 ...
+##  $ Feature_1 : num  12.49 18.91 3.04 5.11 18.98 ...
+##  $ Feature_5 : Factor w/ 12 levels "b","e","f","g",..: 7 11 11 11 11 2 6 12 11 4 ...
+##  $ Feature_4 : logi  FALSE TRUE FALSE TRUE FALSE FALSE ...
+\end{verbatim}
+
+Βλέπουμε ότι πλέον έχουμε 14972 τιμές για κάθε μεταβλητή, αντί των
+αρχικών 15000. Όπερ σημαίνει ότι αφαιρέθηκαν τα διπλότυπα που
+εντοπίσαμε.
+
+Κλείνοντας με τη συνολική προεπεξεργασία των δεδομένων μας, ας ρίξουμε
+μια νέα ματιά εν συνόλω μέσω ενός grid-plot. Προς τούτο θα
+χρησιμοποιήσουμε τη συνάρτηση \texttt{ggpairs()} του πακέτου
+\texttt{GGally} ακολουθώντας τις οδηγίες από
+\href{https://ggobi.github.io/ggally/articles/ggpairs.html}{εδώ}.
+Κατόπιν υποδίξεως του διδάσκοντος δεν θα απεικονίσουμε όλα τα δεδομένα
+του \texttt{sampled\_mushrooms}, αλλά 1000 τυχαίες γραμμές του εν λόγω
+dataframe:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Η βάση της τυχαιότητας ορίζεται ίδια με πριν}
+\FunctionTok{set.seed}\NormalTok{(student\_id)}
+
+\CommentTok{\# Ορίζουμε μια λίστα 1000 τυχαίων αριθμών από το σύνολο \{1, 2, 3, 4,...,15000\}}
+\NormalTok{sampleR }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(sampled\_mushrooms), }\AttributeTok{size =} \DecValTok{1000}\NormalTok{, }\AttributeTok{replace=}\NormalTok{F)}
+
+\CommentTok{\# Φτιάχνουμε το grid{-}plot από 1000 τυχαίες γραμμές του sampled\_mushrooms}
+\FunctionTok{ggpairs}\NormalTok{(sampled\_mushrooms[sampleR,])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## plot: [1, 1] [>---------------------------------------------------------------] 1% est: 0s
+## plot: [1, 2] [>---------------------------------------------------------------] 2% est: 8s
+## plot: [1, 3] [=>--------------------------------------------------------------] 3% est:12s
+## plot: [1, 4] [==>-------------------------------------------------------------] 4% est:12s
+## plot: [1, 5] [==>-------------------------------------------------------------] 5% est:13s
+## plot: [1, 6] [===>------------------------------------------------------------] 6% est:13s
+## plot: [1, 7] [===>------------------------------------------------------------] 7% est:13s
+## plot: [1, 8] [====>-----------------------------------------------------------] 8% est:13s
+## plot: [1, 9] [=====>----------------------------------------------------------] 9% est:13s
+## plot: [1, 10] [=====>---------------------------------------------------------] 10% est:13s
+## plot: [2, 1] [======>---------------------------------------------------------] 11% est:13s
+## `stat_bin()` using `bins = 30`. Pick better value `binwidth`. plot: [2, 2]
+## [=======>--------------------------------------------------------] 12% est:14s plot: [2, 3]
+## [=======>--------------------------------------------------------] 13% est:14s plot: [2, 4]
+## [========>-------------------------------------------------------] 14% est:13s plot: [2, 5]
+## [=========>------------------------------------------------------] 15% est:13s plot: [2, 6]
+## [=========>------------------------------------------------------] 16% est:13s plot: [2, 7]
+## [==========>-----------------------------------------------------] 17% est:13s plot: [2, 8]
+## [===========>----------------------------------------------------] 18% est:15s plot: [2, 9]
+## [===========>----------------------------------------------------] 19% est:15s plot: [2, 10]
+## [============>--------------------------------------------------] 20% est:15s plot: [3, 1]
+## [============>---------------------------------------------------] 21% est:14s plot: [3, 2]
+## [=============>--------------------------------------------------] 22% est:14s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [3, 3]
+## [==============>-------------------------------------------------] 23% est:15s plot: [3, 4]
+## [==============>-------------------------------------------------] 24% est:14s plot: [3, 5]
+## [===============>------------------------------------------------] 25% est:14s plot: [3, 6]
+## [================>-----------------------------------------------] 26% est:14s plot: [3, 7]
+## [================>-----------------------------------------------] 27% est:13s plot: [3, 8]
+## [=================>----------------------------------------------] 28% est:13s plot: [3, 9]
+## [==================>---------------------------------------------] 29% est:13s plot: [3, 10]
+## [==================>--------------------------------------------] 30% est:13s plot: [4, 1]
+## [===================>--------------------------------------------] 31% est:12s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [4, 2]
+## [===================>--------------------------------------------] 32% est:12s plot: [4, 3]
+## [====================>-------------------------------------------] 33% est:12s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [4, 4]
+## [=====================>------------------------------------------] 34% est:12s plot: [4, 5]
+## [=====================>------------------------------------------] 35% est:12s plot: [4, 6]
+## [======================>-----------------------------------------] 36% est:11s plot: [4, 7]
+## [=======================>----------------------------------------] 37% est:11s plot: [4, 8]
+## [=======================>----------------------------------------] 38% est:11s plot: [4, 9]
+## [========================>---------------------------------------] 39% est:11s plot: [4, 10]
+## [========================>--------------------------------------] 40% est:11s plot: [5, 1]
+## [=========================>--------------------------------------] 41% est:11s plot: [5, 2]
+## [==========================>-------------------------------------] 42% est:11s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [5, 3]
+## [===========================>------------------------------------] 43% est:11s plot: [5, 4]
+## [===========================>------------------------------------] 44% est:11s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [5, 5]
+## [============================>-----------------------------------] 45% est:11s plot: [5, 6]
+## [============================>-----------------------------------] 46% est:11s plot: [5, 7]
+## [=============================>----------------------------------] 47% est:11s plot: [5, 8]
+## [==============================>---------------------------------] 48% est:10s plot: [5, 9]
+## [==============================>---------------------------------] 49% est:10s plot: [5, 10]
+## [===============================>-------------------------------] 50% est:10s plot: [6, 1]
+## [================================>-------------------------------] 51% est:10s plot: [6, 2]
+## [================================>-------------------------------] 52% est:10s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [6, 3]
+## [=================================>------------------------------] 53% est:10s plot: [6, 4]
+## [==================================>-----------------------------] 54% est:10s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [6, 5]
+## [==================================>-----------------------------] 55% est:10s plot: [6, 6]
+## [===================================>----------------------------] 56% est:10s plot: [6, 7]
+## [===================================>----------------------------] 57% est:10s plot: [6, 8]
+## [====================================>---------------------------] 58% est: 9s plot: [6, 9]
+## [=====================================>--------------------------] 59% est: 9s plot: [6, 10]
+## [=====================================>-------------------------] 60% est: 9s plot: [7, 1]
+## [======================================>-------------------------] 61% est: 9s plot: [7, 2]
+## [=======================================>------------------------] 62% est: 9s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [7, 3]
+## [=======================================>------------------------] 63% est: 9s plot: [7, 4]
+## [========================================>-----------------------] 64% est: 9s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [7, 5]
+## [=========================================>----------------------] 65% est:10s plot: [7, 6]
+## [=========================================>----------------------] 66% est:11s plot: [7, 7]
+## [==========================================>---------------------] 67% est:11s plot: [7, 8]
+## [===========================================>--------------------] 68% est:10s plot: [7, 9]
+## [===========================================>--------------------] 69% est:10s plot: [7, 10]
+## [===========================================>-------------------] 70% est:10s plot: [8, 1]
+## [============================================>-------------------] 71% est: 9s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [8, 2]
+## [=============================================>------------------] 72% est: 9s plot: [8, 3]
+## [==============================================>-----------------] 73% est: 8s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [8, 4]
+## [==============================================>-----------------] 74% est: 8s plot: [8, 5]
+## [===============================================>----------------] 75% est: 8s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [8, 6]
+## [================================================>---------------] 76% est: 8s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [8, 7]
+## [================================================>---------------] 77% est: 7s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [8, 8]
+## [=================================================>--------------] 78% est: 7s plot: [8, 9]
+## [==================================================>-------------] 79% est: 7s plot: [8, 10]
+## [=================================================>-------------] 80% est: 6s plot: [9, 1]
+## [===================================================>------------] 81% est: 6s plot: [9, 2]
+## [===================================================>------------] 82% est: 6s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [9, 3]
+## [====================================================>-----------] 83% est: 6s plot: [9, 4]
+## [=====================================================>----------] 84% est: 5s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [9, 5]
+## [=====================================================>----------] 85% est: 5s plot: [9, 6]
+## [======================================================>---------] 86% est: 5s plot: [9, 7]
+## [=======================================================>--------] 87% est: 5s plot: [9, 8]
+## [=======================================================>--------] 88% est: 4s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [9, 9]
+## [========================================================>-------] 89% est: 4s plot: [9, 10]
+## [========================================================>------] 90% est: 4s plot: [10, 1]
+## [========================================================>------] 91% est: 3s plot: [10, 2]
+## [=========================================================>-----] 92% est: 3s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [10, 3]
+## [==========================================================>----] 93% est: 3s plot: [10, 4]
+## [==========================================================>----] 94% est: 2s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [10, 5]
+## [===========================================================>---] 95% est: 2s plot: [10, 6]
+## [===========================================================>---] 96% est: 1s plot: [10, 7]
+## [============================================================>--] 97% est: 1s plot: [10, 8]
+## [=============================================================>-] 98% est: 1s `stat_bin()`
+## using `bins = 30`. Pick better value `binwidth`. plot: [10, 9]
+## [=============================================================>-] 99% est: 0s plot: [10, 10]
+## [==============================================================]100% est: 0s
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-28-1.pdf}}
+
+\section{Δέντρα
+αποφάσεων}\label{ux3b4ux3adux3bdux3c4ux3c1ux3b1-ux3b1ux3c0ux3bfux3c6ux3acux3c3ux3b5ux3c9ux3bd}
+
+\subsection{Απλή μοντελοποίηση - όλα τα
+δεδομένα}\label{ux3b1ux3c0ux3bbux3ae-ux3bcux3bfux3bdux3c4ux3b5ux3bbux3bfux3c0ux3bfux3afux3b7ux3c3ux3b7---ux3ccux3bbux3b1-ux3c4ux3b1-ux3b4ux3b5ux3b4ux3bfux3bcux3adux3bdux3b1}
+
+Στην ενότητα αυτή θα ακολουθήσουμε τις οδηγίες του
+\href{https://www.oreilly.com/library/view/introduction-to-machine/9781491976432/}{Introduction
+to Machine Learning with R}. Έτσι, αρχικά υπολογίζουμε το 75\% των
+γραμμών και το στρογυλοποιούμε, διότι (προφανώς) θα πρέπει να είναι
+ακέραιος, κάθόσον ακολούθως θα επιλέξουμε το 75\% των γραμμών.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Η βάση της τυχαιότητας ορίζεται ίδια με πριν}
+\FunctionTok{set.seed}\NormalTok{(student\_id)}
+
+\CommentTok{\# Υπολογίζουμε το 75\% των γραμμών}
+\NormalTok{sample\_size }\OtherTok{\textless{}{-}} \FunctionTok{floor}\NormalTok{(}\FloatTok{0.75} \SpecialCharTok{*} \FunctionTok{nrow}\NormalTok{(sampled\_mushrooms))}
+\CommentTok{\# Επιλέγουμε τυχαία τους δείκτες των γραμμών που θα χρησιμοποιήσουμε για εκπαίδευση}
+\NormalTok{train\_index }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(sampled\_mushrooms), }\AttributeTok{size =}\NormalTok{ sample\_size, }\AttributeTok{replace=}\NormalTok{F)}
+\end{Highlighting}
+\end{Shaded}
+
+Κατόπιν ορίζουμε το σύνολο εκπαίδευσης (75\% των γραμμών) και το σύνολο
+ελέγχου (τα υπόλοιπα).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Δημιουργία των συνόλων εκπαίδευσης κι ελέγχου}
+\NormalTok{train\_set }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms[train\_index, ]}
+\NormalTok{test\_set }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms[}\SpecialCharTok{{-}}\NormalTok{train\_index, ]}
+\end{Highlighting}
+\end{Shaded}
+
+Το δέντρο μας είναι έτοιμο να φτιαχτεί. Καθόσον θέλουμε να προβλέπουμε
+τη μεταβλητή \texttt{class} χρησιμοποιώντας όλες τις υπόλοιπες στήλες,
+γράφουμε \texttt{class\ \textasciitilde{}\ .}, σε αντίθεση με τις
+μετέπειτα προσεγγίσεις που θα γράφουμε π.χ.
+\texttt{class\ \textasciitilde{}\ Feature\_7\ +\ Feature\_11},
+εξετάζοντας έτσι την \texttt{class} μόνο βάσει των \texttt{Feature\_7}
+και \texttt{Feature\_11}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Δημιουργία του δέντρου}
+\NormalTok{tree\_full }\OtherTok{\textless{}{-}} \FunctionTok{rpart}\NormalTok{(class }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }
+                   \AttributeTok{data =}\NormalTok{ train\_set, }
+                   \AttributeTok{method =} \StringTok{"class"} \CommentTok{\# Για συνεχείς μεταβλητές "anova" ΝΑ ΔΩ!!!}
+\NormalTok{                   )}
+\CommentTok{\# Οπτικοποίηση με το rpart.plot, καθόσον βγαίνει ευκρινέστερο από το plot}
+\FunctionTok{rpart.plot}\NormalTok{(tree\_full, }\AttributeTok{main =} \StringTok{"Δέντρο Απόφασης (Όλα τα χαρακτηριστικά)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-31-1.pdf}}
+
+Ας εξετάσουμε τώρα πόσο καλές προβλέψεις δίνει το μοντέλο μας.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{prediction }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(tree\_full, test\_set, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)}
+\NormalTok{(predictionTable }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(prediction, test\_set}\SpecialCharTok{$}\NormalTok{class))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           
+## prediction    e    p
+##          e 1196  489
+##          p  404 1654
+\end{verbatim}
+
+Αναλυτικότερα, ο πίνακας αυτός λέει τα παρακάτω:
+
+\begin{itemize}
+\item
+  Διαπιστώθηκαν ορθώς ως εδώδιμα (\texttt{e}) 1196 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως εδώδιμα (\texttt{e}) 489 μανιτάρια.
+\item
+  Διαπιστώθηκαν ορθώς ως δηλητηριώδη (\texttt{p}) 1654 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως δηλητηριώδη (\texttt{p}) 404 μανιτάρια.
+\end{itemize}
+
+\subsection{\texorpdfstring{Απλή μοντελοποίηση - \texttt{Feature\_7} και
+\texttt{Feature\_11}}{Απλή μοντελοποίηση - Feature\_7 και Feature\_11}}\label{ux3b1ux3c0ux3bbux3ae-ux3bcux3bfux3bdux3c4ux3b5ux3bbux3bfux3c0ux3bfux3afux3b7ux3c3ux3b7---feature_7-ux3baux3b1ux3b9-feature_11}
+
+Ας πάμε τώρα να φτιάξουμε δέντρα χρησιμοποιώντας μέρος των διαθέσιμων
+χαρακτηριστικών. Σε πρώτη φάση θα λάβουμε υπ' όψιν μόνο τα
+\texttt{Feature\_7} και \texttt{Feature\_11}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Μοντέλο 2: Χρήση μόνο των Feature\_7 και Feature\_11}
+\NormalTok{tree\_part1 }\OtherTok{\textless{}{-}} \FunctionTok{rpart}\NormalTok{(class }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Feature\_7 }\SpecialCharTok{+}\NormalTok{ Feature\_11, }
+                    \AttributeTok{data =}\NormalTok{ train\_set, }
+                    \AttributeTok{method =} \StringTok{"class"}\NormalTok{)}
+\FunctionTok{rpart.plot}\NormalTok{(tree\_part1, }\AttributeTok{main =} \StringTok{"Δέντρο Απόφασης (Χαρακτηριστικά Feature\_7 και Feature\_11)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-33-1.pdf}}
+
+Ας εξετάσουμε και τις αντίστοιχες προβλέψεις.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{prediction1 }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(tree\_part1, test\_set, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)}
+\NormalTok{(predictionTable1 }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(prediction1, test\_set}\SpecialCharTok{$}\NormalTok{class))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            
+## prediction1    e    p
+##           e 1127  922
+##           p  473 1221
+\end{verbatim}
+
+Ο παραπάνω πίνακας λέει τα κάτωθι:
+
+\begin{itemize}
+\item
+  Διαπιστώθηκαν ορθώς ως εδώδιμα (\texttt{e}) 1127 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως εδώδιμα (\texttt{e}) 922 μανιτάρια.
+\item
+  Διαπιστώθηκαν ορθώς ως δηλητηριώδη (\texttt{p}) 1221 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως δηλητηριώδη (\texttt{p}) 473 μανιτάρια.
+\end{itemize}
+
+\subsection{\texorpdfstring{Απλή μοντελοποίηση - \texttt{Feature\_6},
+\texttt{Feature\_2} και
+\texttt{Feature\_4}}{Απλή μοντελοποίηση - Feature\_6, Feature\_2 και Feature\_4}}\label{ux3b1ux3c0ux3bbux3ae-ux3bcux3bfux3bdux3c4ux3b5ux3bbux3bfux3c0ux3bfux3afux3b7ux3c3ux3b7---feature_6-feature_2-ux3baux3b1ux3b9-feature_4}
+
+Ας κάνουμε κι ένα άλλο δέντρο βασισμένο σε άλλα χαρακτηριστικά,
+συγκεκριμένα τα \texttt{Feature\_6}, \texttt{Feature\_2} και
+\texttt{Feature\_4}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Μοντέλο 3: Χρήση των Feature\_6, Feature\_2 και Feature\_4}
+\NormalTok{tree\_part2 }\OtherTok{\textless{}{-}} \FunctionTok{rpart}\NormalTok{(class }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Feature\_6 }\SpecialCharTok{+}\NormalTok{ Feature\_2 }\SpecialCharTok{+}\NormalTok{ Feature\_4, }
+                    \AttributeTok{data =}\NormalTok{ train\_set, }
+                    \AttributeTok{method =} \StringTok{"class"}\NormalTok{)}
+\FunctionTok{rpart.plot}\NormalTok{(tree\_part2, }\AttributeTok{main =} \StringTok{"Δέντρο Απόφασης (Χαρακτηριστικά Feature\_6 + Feature\_2 + Feature\_4)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-35-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{prediction2 }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(tree\_part2, test\_set, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)}
+\NormalTok{(predictionTable2 }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(prediction2, test\_set}\SpecialCharTok{$}\NormalTok{class))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            
+## prediction2    e    p
+##           e 1101  871
+##           p  499 1272
+\end{verbatim}
+
+Ο παραπάνω πίνακας λέει τα κάτωθι:
+
+\begin{itemize}
+\item
+  Διαπιστώθηκαν ορθώς ως εδώδιμα (\texttt{e}) 1101 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως εδώδιμα (\texttt{e}) 871 μανιτάρια.
+\item
+  Διαπιστώθηκαν ορθώς ως δηλητηριώδη (\texttt{p}) 1272 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως δηλητηριώδη (\texttt{p}) 499 μανιτάρια.
+\end{itemize}
+
+\subsection{Με initial\_split}\label{ux3bcux3b5-initial_split}
+
+Στην υποενότητα αυτή θα ακολουθήσουμε μια πιο αυτοματοποιημένη, αλλά και
+πιο στατιστικά αμερόληπτη μέθοδο. Συγκεκριμένα, προκειμένου να
+καταλήγουμε σε αντιπροσωπευτικό δείγμα (όχι bias), θα πρέπει οι
+αναλογίες των τιμών της \texttt{class} να είναι παρόμοιες σε κάθε δείγμα
+που θα διαλέξουμε. Προς τούτο θα ακολουθήσουμε τις οδηγίες του
+\href{https://www.routledge.com/Practical-Machine-Learning-with-R-Tutorials-and-Case-Studies/Lange/p/book/9781032434056}{Practical
+Machine Learning with R} και θα χρησιμοποιήσουμε τη συνάρτηση
+\texttt{initial\_split()} του πακέτου \texttt{tidymodels}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Η βάση της τυχαιότητας ορίζεται ίδια με πριν}
+\FunctionTok{set.seed}\NormalTok{(student\_id)}
+
+\CommentTok{\# Το prop έχει προεπιλογή το 0.75}
+\NormalTok{Split7525 }\OtherTok{=} \FunctionTok{initial\_split}\NormalTok{(sampled\_mushrooms, }\AttributeTok{prop =} \FloatTok{0.75}\NormalTok{, }\AttributeTok{strata =}\NormalTok{ class)}
+
+\CommentTok{\# Εξαγωγή των συνόλων:}
+\NormalTok{trainIS }\OtherTok{=} \FunctionTok{training}\NormalTok{(Split7525)}
+\NormalTok{testIS  }\OtherTok{=} \FunctionTok{testing}\NormalTok{(Split7525)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Μοντέλο initial\_split}
+\NormalTok{treeIS }\OtherTok{\textless{}{-}} \FunctionTok{rpart}\NormalTok{(class }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }
+                    \AttributeTok{data =}\NormalTok{ trainIS, }
+                    \AttributeTok{method =} \StringTok{"class"}\NormalTok{)}
+\FunctionTok{rpart.plot}\NormalTok{(treeIS, }\AttributeTok{main =} \StringTok{"Δέντρο Απόφασης (Όλα τα χαρακτηριστικά {-} με initial\_split)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-38-1.pdf}}
+
+Ας δούμε και τις προβλέψεις που κάνει αυτό το μοντέλο.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{predictionIS }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(treeIS, testIS, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)}
+\NormalTok{(predictionTableIS }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(predictionIS, testIS}\SpecialCharTok{$}\NormalTok{class))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##             
+## predictionIS    e    p
+##            e 1172  537
+##            p  487 1548
+\end{verbatim}
+
+Ο παραπάνω πίνακας λέει τα κάτωθι:
+
+\begin{itemize}
+\item
+  Διαπιστώθηκαν ορθώς ως εδώδιμα (\texttt{e}) 1172 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως εδώδιμα (\texttt{e}) 537 μανιτάρια.
+\item
+  Διαπιστώθηκαν ορθώς ως δηλητηριώδη (\texttt{p}) 1548 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως δηλητηριώδη (\texttt{p}) 487 μανιτάρια.
+\end{itemize}
+
+\subsection{Με
+createDataPartition}\label{ux3bcux3b5-createdatapartition}
+
+Στα ίδια πλαίσια είναι και η συνάρτηση \texttt{createDataPartition()}
+του πακέτου \texttt{caret}. Ο γράφων βρήκε αυτή την προσέγγιση
+\href{https://www.geeksforgeeks.org/r-language/decision-tree-in-r-programming/}{εδώ}.
+Η άποψη LLM που ρώτησε (DeepSeek, Gemini και ChatGPT) είναι ότι η
+συνάρτηση \texttt{createDataPartition()} του πακέτου \texttt{caret}
+κάνει την ίδια δουλειά με τη συνάρτηση \texttt{initial\_split()} του
+πακέτου \texttt{tidymodels}, την οποία χρησιμοποιήσαμε σε προηγούμενη
+ενότητα. Παραταύτα, για λόγους επαλήθευσης των λεγομένων τους, αλλά και
+μετέπειτα αξιοποίησης του πακέτου \texttt{caret} ο γράφων προχώρησε και
+στη μελέτη με την \texttt{createDataPartition()}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Η βάση της τυχαιότητας ορίζεται ίδια με πριν}
+\FunctionTok{set.seed}\NormalTok{(student\_id)}
+
+\CommentTok{\# Διατηρεί την αναλογία της μεταβλητής \textquotesingle{}class\textquotesingle{}}
+\NormalTok{train\_index\_caret }\OtherTok{\textless{}{-}} \FunctionTok{createDataPartition}\NormalTok{(}
+\NormalTok{  sampled\_mushrooms}\SpecialCharTok{$}\NormalTok{class,}
+  \AttributeTok{p =} \FloatTok{0.75}\NormalTok{,}
+  \AttributeTok{list =} \ConstantTok{FALSE} \CommentTok{\# Για να μου βγάλει vector}
+\NormalTok{  )}
+
+\NormalTok{trainCaret }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms[train\_index\_caret, ]}
+\NormalTok{testCaret  }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms[}\SpecialCharTok{{-}}\NormalTok{train\_index\_caret, ]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Μοντέλο caret}
+\NormalTok{treeCaret }\OtherTok{\textless{}{-}} \FunctionTok{rpart}\NormalTok{(class }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ trainCaret, }\AttributeTok{method =} \StringTok{"class"}\NormalTok{)}
+\FunctionTok{rpart.plot}\NormalTok{(treeCaret, }\AttributeTok{main =} \StringTok{"Δέντρο Απόφασης (Όλα τα χαρακτηριστικά {-} με caret)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-41-1.pdf}}
+
+Ας δούμε και τις προβλέψεις που κάνει αυτό το μοντέλο.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{predictionC }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(treeCaret, testCaret, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)}
+\NormalTok{(predictionTableC }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(predictionC, testCaret}\SpecialCharTok{$}\NormalTok{class))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            
+## predictionC    e    p
+##           e 1171  537
+##           p  487 1547
+\end{verbatim}
+
+Ο παραπάνω πίνακας λέει τα κάτωθι:
+
+\begin{itemize}
+\item
+  Διαπιστώθηκαν ορθώς ως εδώδιμα (\texttt{e}) 1171 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως εδώδιμα (\texttt{e}) 537 μανιτάρια.
+\item
+  Διαπιστώθηκαν ορθώς ως δηλητηριώδη (\texttt{p}) 1547 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως δηλητηριώδη (\texttt{p}) 487 μανιτάρια.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Συνάρτηση που επιστρέφει το Accuracy από το αντικείμενο της caret}
+\NormalTok{evaluate\_model\_caret }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(model, test\_set) \{}
+\NormalTok{  pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(model, test\_set, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)}
+  \CommentTok{\# Το confusionMatrix θέλει τα levels να είναι factors}
+\NormalTok{  cm }\OtherTok{\textless{}{-}} \FunctionTok{confusionMatrix}\NormalTok{(}\AttributeTok{data =}\NormalTok{ pred, }\AttributeTok{reference =} \FunctionTok{as.factor}\NormalTok{(test\_set}\SpecialCharTok{$}\NormalTok{class))}
+  \FunctionTok{return}\NormalTok{(cm}\SpecialCharTok{$}\NormalTok{overall[}\StringTok{\textquotesingle{}Accuracy\textquotesingle{}}\NormalTok{])}
+\NormalTok{\}}
+
+\CommentTok{\# Εκτύπωση αποτελεσμάτων}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Full Model Accuracy:"}\NormalTok{, }\FunctionTok{evaluate\_model\_caret}\NormalTok{(tree\_full\_c, test\_data\_c)))}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Subset 1 Accuracy:"}\NormalTok{, }\FunctionTok{evaluate\_model\_caret}\NormalTok{(tree\_sub1\_c, test\_data\_c)))}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Subset 2 Accuracy:"}\NormalTok{, }\FunctionTok{evaluate\_model\_caret}\NormalTok{(tree\_sub2\_c, test\_data\_c)))}
+
+\CommentTok{\# Αν θέλεις να δεις ΟΛΑ τα στατιστικά για το πρώτο μοντέλο:}
+\NormalTok{pred\_full }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(tree\_full\_c, test\_data\_c, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)}
+\FunctionTok{confusionMatrix}\NormalTok{(pred\_full, }\FunctionTok{as.factor}\NormalTok{(test\_data\_c}\SpecialCharTok{$}\NormalTok{class))}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Αξιολόγηση
+δέντρων}\label{ux3b1ux3beux3b9ux3bfux3bbux3ccux3b3ux3b7ux3c3ux3b7-ux3b4ux3adux3bdux3c4ux3c1ux3c9ux3bd}
+
+Πριν προχωρήσουμε στην αξιολόγηση των δέντρων που δημιουργήσαμε,
+αναφέρουμε τις έννοιες βάσει των οποίων θα αξιολογηθούν:
+
+\begin{itemize}
+\item
+  \textbf{Ακρίβεια} (\emph{accuracy}) είναι το ποσοστό των εύστοχων
+  απαντήσεων, δηλαδή το ποσοστό των απαντήσεων που τα μανητάρια
+  ανιχνεύτηκαν ορθώς ως εδώδιμα ή δηλητηριώδη.
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    Μαθηματικά μιλώντας, είναι η ποσότητα:
+  \end{enumerate}
+
+  \[
+  \dfrac{[TruePoisonous]+[TrueEdible]}{[TruePoisonous]+[TrueEdible]+[FalsePoisonous]+[FalseEdible]}
+  \]
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{1}
+  \tightlist
+  \item
+    Προγραμματιστικά μιλώντας είναι η συνάρτηση:
+  \end{enumerate}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{accuracyFunc }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(myTable)\{}
+\NormalTok{  (myTable[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{]}\SpecialCharTok{+}\NormalTok{myTable[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{])}\SpecialCharTok{/}\NormalTok{(myTable[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{]}\SpecialCharTok{+}\NormalTok{myTable[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{]}\SpecialCharTok{+}\NormalTok{myTable[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{]}\SpecialCharTok{+}\NormalTok{myTable[}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\item
+  \textbf{Ευστοχία} (\emph{precision}) είναι το ποσοστό των ορθών
+  απαντήσεων από τις γνωματεύσεις «Είναι εδώδιμο».
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    Μαθηματικά μιλώντας, είναι η ποσότητα:
+  \end{enumerate}
+
+  \[
+  \dfrac{[TrueEdible]}{[TrueEdible]+[FalseEdible]}
+  \]
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{1}
+  \tightlist
+  \item
+    Προγραμματιστικά μιλώντας είναι η συνάρτηση:
+  \end{enumerate}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{precisionFunc }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(myTable)\{}
+\NormalTok{  (myTable[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{])}\SpecialCharTok{/}\NormalTok{(myTable[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{]}\SpecialCharTok{+}\NormalTok{myTable[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\item
+  \textbf{Ανάκληση} ή \textbf{ευαισθησία} (\emph{recall} ή
+  \emph{sensitivity}) είναι το ποσοστό των εύστοχων απαντήσεων που
+  δίνονται όταν εξετάζονται εδώδιμα μανιτάρια.
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    Μαθηματικά μιλώντας, είναι η ποσότητα:
+  \end{enumerate}
+
+  \[
+  \dfrac{[TrueEdible]}{[TrueEdible]+[FalsePoisonous]}
+  \]
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{1}
+  \tightlist
+  \item
+    Προγραμματιστικά μιλώντας είναι η συνάρτηση:
+  \end{enumerate}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{recallFunc }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(myTable)\{}
+\NormalTok{  (myTable[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{])}\SpecialCharTok{/}\NormalTok{(myTable[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{]}\SpecialCharTok{+}\NormalTok{myTable[}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\item
+  \textbf{Ειδικότητα} (\emph{specificity}) είναι το ποσοστό των εύστοχων
+  απαντήσεων που δίνονται όταν εξετάζονται δηλητιριώδη μανιτάρια.
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    Μαθηματικά μιλώντας, είναι η ποσότητα:
+  \end{enumerate}
+
+  \[
+  \dfrac{[TruePoisonous]}{[TruePoisonous]+[FalseEdible]}
+  \]
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{1}
+  \tightlist
+  \item
+    Προγραμματιστικά μιλώντας είναι η συνάρτηση:
+  \end{enumerate}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{specificityFunc }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(myTable)\{}
+\NormalTok{  (myTable[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{])}\SpecialCharTok{/}\NormalTok{(myTable[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{]}\SpecialCharTok{+}\NormalTok{myTable[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Θα παρουσιάσουμε την αξιολόγηση των δέντρων που φτιάξαμε με έναν πίνακα.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{SampleTree.AllFeatures }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FunctionTok{accuracyFunc}\NormalTok{(predictionTable),}\FunctionTok{precisionFunc}\NormalTok{(predictionTable),}\FunctionTok{recallFunc}\NormalTok{(predictionTable),}\FunctionTok{specificityFunc}\NormalTok{(predictionTable))}
+
+\NormalTok{SampleTree.Features7}\FloatTok{.11} \OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FunctionTok{accuracyFunc}\NormalTok{(predictionTable1),}\FunctionTok{precisionFunc}\NormalTok{(predictionTable1),}\FunctionTok{recallFunc}\NormalTok{(predictionTable1),}\FunctionTok{specificityFunc}\NormalTok{(predictionTable1))}
+
+\NormalTok{SampleTree.Features2.}\FloatTok{4.6} \OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FunctionTok{accuracyFunc}\NormalTok{(predictionTable2),}\FunctionTok{precisionFunc}\NormalTok{(predictionTable2),}\FunctionTok{recallFunc}\NormalTok{(predictionTable2),}\FunctionTok{specificityFunc}\NormalTok{(predictionTable2))}
+
+\NormalTok{InitialSplitTree.AllFeatures }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FunctionTok{accuracyFunc}\NormalTok{(predictionTableIS),}\FunctionTok{precisionFunc}\NormalTok{(predictionTableIS),}\FunctionTok{recallFunc}\NormalTok{(predictionTableIS),}\FunctionTok{specificityFunc}\NormalTok{(predictionTableIS))}
+
+\NormalTok{CaretSplitTree.AllFeatures }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FunctionTok{accuracyFunc}\NormalTok{(predictionTableC),}\FunctionTok{precisionFunc}\NormalTok{(predictionTableC),}\FunctionTok{recallFunc}\NormalTok{(predictionTableC),}\FunctionTok{specificityFunc}\NormalTok{(predictionTableC))}
+
+\NormalTok{resultsDF }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(SampleTree.AllFeatures, SampleTree.Features7}\FloatTok{.11}\NormalTok{, SampleTree.Features2.}\FloatTok{4.6}\NormalTok{, InitialSplitTree.AllFeatures, CaretSplitTree.AllFeatures)}
+
+\FunctionTok{rownames}\NormalTok{(resultsDF) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"accuracy"}\NormalTok{, }\StringTok{"precision"}\NormalTok{, }\StringTok{"recall"}\NormalTok{, }\StringTok{"specificity"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}\FunctionTok{head}\NormalTok{(resultsDF)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable\_styling}\NormalTok{(}\StringTok{"striped"}\NormalTok{, }\AttributeTok{full\_width =}\NormalTok{ T) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{scroll\_box}\NormalTok{(}\AttributeTok{width =} \StringTok{"100\%"}\NormalTok{, }\AttributeTok{height =} \StringTok{"max{-}content"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtabu} to \linewidth {>{\raggedright}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X}
+\toprule
+ & SampleTree.AllFeatures & SampleTree.Features7.11 & SampleTree.Features2.4.6 & InitialSplitTree.AllFeatures & CaretSplitTree.AllFeatures\\
+\midrule
+accuracy & 0.7614213 & 0.6273043 & 0.6339834 & 0.7264957 & 0.7263495\\
+precision & 0.7097923 & 0.5500244 & 0.5583164 & 0.6857812 & 0.6855972\\
+recall & 0.7475000 & 0.7043750 & 0.6881250 & 0.7064497 & 0.7062726\\
+specificity & 0.7718152 & 0.5697620 & 0.5935604 & 0.7424460 & 0.7423225\\
+\bottomrule
+\end{longtabu}
+
+Βλέπουμε ότι το να εξετάσουμε όλα τα χαρακτηριστικά των μανηταριών δίνει
+καλύτερα μέτρα επίδοσης, όπερ αναμενόμενον. Επίσης οι συναρτήσεις
+\texttt{initial\_split()} και \texttt{createDataPartition()} παρήγαγαν
+παρόμοιας αξιοπιστίας αποτελέσματα, όπως είχαμε ενημερωθεί από διάφορα
+LLM. Αυτό το οποίο δεν ήταν αναμενόμενο είναι η εμφανής υστέρηση των
+αποτελεσμάτων που έκαναν χρήση των συναρτήσεων \texttt{initial\_split()}
+και \texttt{createDataPartition()}, έναντι της απλής δειγματοληψίας
+(\texttt{sample}).
+
+Τα εν λόγω αποτελέσματα προκάλεσαν έκπληξη στον γράφοντα. Μία σκέψη ήταν
+ότι οι εν λόγω συναρτήσεις δεν σού αυξάνουν την ακρίβεια της γενίκευσης,
+αλλά την βεβαιότητα ότι η γενίκευση που επιτυγχάνει το μοντέλο θα έχει
+όντως αυτή την ακρίβεια. Από την άλλη η τοποθέτηση LLM (DeepSeek) επί
+του ζητήματος ήταν:
+
+\begin{quote}
+Παρόλο που το stratified sampling θεωρητικά είναι καλύτερο, μπορεί να
+έχει προβλήματα όταν:
+
+\begin{itemize}
+\item
+  Οι κλάσεις είναι ήδη ισορροπημένες (όπως φαίνεται στα δεδομένα σου).
+\item
+  Η διαστρωμάτωση δημιουργεί πιο «δύσκολα» test sets.
+\item
+  Το δέντρο δεν μπορεί να γενικεύσει καλά στα stratified splits.
+\end{itemize}
+\end{quote}
+
+Στα πλαίσια αυτά επιχειρήθηκε αναλυτικότερη μελέτη χρησιμοποιώντας τη
+συνάρτηση \texttt{confusionMatrix()} του πακέτου \texttt{caret}.
+
+\subsection*{}\label{section-2}
+\addcontentsline{toc}{subsection}{}
+
+\subsubsection*{Για το απλό μοντέλο που χρησιμοποιεί όλα τα
+χαρακτηριστικά}\label{ux3b3ux3b9ux3b1-ux3c4ux3bf-ux3b1ux3c0ux3bbux3cc-ux3bcux3bfux3bdux3c4ux3adux3bbux3bf-ux3c0ux3bfux3c5-ux3c7ux3c1ux3b7ux3c3ux3b9ux3bcux3bfux3c0ux3bfux3b9ux3b5ux3af-ux3ccux3bbux3b1-ux3c4ux3b1-ux3c7ux3b1ux3c1ux3b1ux3baux3c4ux3b7ux3c1ux3b9ux3c3ux3c4ux3b9ux3baux3ac}
+\addcontentsline{toc}{subsubsection}{Για το απλό μοντέλο που
+χρησιμοποιεί όλα τα χαρακτηριστικά}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{confusionMatrix}\NormalTok{(prediction, }\FunctionTok{as.factor}\NormalTok{(test\_set}\SpecialCharTok{$}\NormalTok{class))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    e    p
+##          e 1196  489
+##          p  404 1654
+##                                          
+##                Accuracy : 0.7614         
+##                  95% CI : (0.7474, 0.775)
+##     No Information Rate : 0.5725         
+##     P-Value [Acc > NIR] : < 2e-16        
+##                                          
+##                   Kappa : 0.5158         
+##                                          
+##  Mcnemar's Test P-Value : 0.00494        
+##                                          
+##             Sensitivity : 0.7475         
+##             Specificity : 0.7718         
+##          Pos Pred Value : 0.7098         
+##          Neg Pred Value : 0.8037         
+##              Prevalence : 0.4275         
+##          Detection Rate : 0.3195         
+##    Detection Prevalence : 0.4502         
+##       Balanced Accuracy : 0.7597         
+##                                          
+##        'Positive' Class : e              
+## 
+\end{verbatim}
+
+\subsubsection*{Για το απλό μοντέλο που χρησιμοποιεί μόνο τα
+χαρακτηριστικά Feature\_7 και
+Feature\_11}\label{ux3b3ux3b9ux3b1-ux3c4ux3bf-ux3b1ux3c0ux3bbux3cc-ux3bcux3bfux3bdux3c4ux3adux3bbux3bf-ux3c0ux3bfux3c5-ux3c7ux3c1ux3b7ux3c3ux3b9ux3bcux3bfux3c0ux3bfux3b9ux3b5ux3af-ux3bcux3ccux3bdux3bf-ux3c4ux3b1-ux3c7ux3b1ux3c1ux3b1ux3baux3c4ux3b7ux3c1ux3b9ux3c3ux3c4ux3b9ux3baux3ac-feature_7-ux3baux3b1ux3b9-feature_11}
+\addcontentsline{toc}{subsubsection}{Για το απλό μοντέλο που
+χρησιμοποιεί μόνο τα χαρακτηριστικά Feature\_7 και Feature\_11}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{confusionMatrix}\NormalTok{(prediction1, }\FunctionTok{as.factor}\NormalTok{(test\_set}\SpecialCharTok{$}\NormalTok{class))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    e    p
+##          e 1127  922
+##          p  473 1221
+##                                           
+##                Accuracy : 0.6273          
+##                  95% CI : (0.6116, 0.6428)
+##     No Information Rate : 0.5725          
+##     P-Value [Acc > NIR] : 5.238e-12       
+##                                           
+##                   Kappa : 0.2647          
+##                                           
+##  Mcnemar's Test P-Value : < 2.2e-16       
+##                                           
+##             Sensitivity : 0.7044          
+##             Specificity : 0.5698          
+##          Pos Pred Value : 0.5500          
+##          Neg Pred Value : 0.7208          
+##              Prevalence : 0.4275          
+##          Detection Rate : 0.3011          
+##    Detection Prevalence : 0.5474          
+##       Balanced Accuracy : 0.6371          
+##                                           
+##        'Positive' Class : e               
+## 
+\end{verbatim}
+
+\subsubsection*{Για το απλό μοντέλο που χρησιμοποιεί μόνο τα
+χαρακτηριστικά Feature\_6, Feature\_2 και
+Feature\_4}\label{ux3b3ux3b9ux3b1-ux3c4ux3bf-ux3b1ux3c0ux3bbux3cc-ux3bcux3bfux3bdux3c4ux3adux3bbux3bf-ux3c0ux3bfux3c5-ux3c7ux3c1ux3b7ux3c3ux3b9ux3bcux3bfux3c0ux3bfux3b9ux3b5ux3af-ux3bcux3ccux3bdux3bf-ux3c4ux3b1-ux3c7ux3b1ux3c1ux3b1ux3baux3c4ux3b7ux3c1ux3b9ux3c3ux3c4ux3b9ux3baux3ac-feature_6-feature_2-ux3baux3b1ux3b9-feature_4}
+\addcontentsline{toc}{subsubsection}{Για το απλό μοντέλο που
+χρησιμοποιεί μόνο τα χαρακτηριστικά Feature\_6, Feature\_2 και
+Feature\_4}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{confusionMatrix}\NormalTok{(prediction2, }\FunctionTok{as.factor}\NormalTok{(test\_set}\SpecialCharTok{$}\NormalTok{class))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    e    p
+##          e 1101  871
+##          p  499 1272
+##                                           
+##                Accuracy : 0.634           
+##                  95% CI : (0.6183, 0.6494)
+##     No Information Rate : 0.5725          
+##     P-Value [Acc > NIR] : 1.099e-14       
+##                                           
+##                   Kappa : 0.2736          
+##                                           
+##  Mcnemar's Test P-Value : < 2.2e-16       
+##                                           
+##             Sensitivity : 0.6881          
+##             Specificity : 0.5936          
+##          Pos Pred Value : 0.5583          
+##          Neg Pred Value : 0.7182          
+##              Prevalence : 0.4275          
+##          Detection Rate : 0.2941          
+##    Detection Prevalence : 0.5269          
+##       Balanced Accuracy : 0.6408          
+##                                           
+##        'Positive' Class : e               
+## 
+\end{verbatim}
+
+\subsubsection*{Για το μοντέλο που χρησιμοποιεί όλα τα χαρακτηριστικά
+(initial\_split)}\label{ux3b3ux3b9ux3b1-ux3c4ux3bf-ux3bcux3bfux3bdux3c4ux3adux3bbux3bf-ux3c0ux3bfux3c5-ux3c7ux3c1ux3b7ux3c3ux3b9ux3bcux3bfux3c0ux3bfux3b9ux3b5ux3af-ux3ccux3bbux3b1-ux3c4ux3b1-ux3c7ux3b1ux3c1ux3b1ux3baux3c4ux3b7ux3c1ux3b9ux3c3ux3c4ux3b9ux3baux3ac-initial_split}
+\addcontentsline{toc}{subsubsection}{Για το μοντέλο που χρησιμοποιεί όλα
+τα χαρακτηριστικά (initial\_split)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{confusionMatrix}\NormalTok{(predictionIS, }\FunctionTok{as.factor}\NormalTok{(testIS}\SpecialCharTok{$}\NormalTok{class))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    e    p
+##          e 1172  537
+##          p  487 1548
+##                                           
+##                Accuracy : 0.7265          
+##                  95% CI : (0.7119, 0.7407)
+##     No Information Rate : 0.5569          
+##     P-Value [Acc > NIR] : <2e-16          
+##                                           
+##                   Kappa : 0.4475          
+##                                           
+##  Mcnemar's Test P-Value : 0.1257          
+##                                           
+##             Sensitivity : 0.7064          
+##             Specificity : 0.7424          
+##          Pos Pred Value : 0.6858          
+##          Neg Pred Value : 0.7607          
+##              Prevalence : 0.4431          
+##          Detection Rate : 0.3130          
+##    Detection Prevalence : 0.4565          
+##       Balanced Accuracy : 0.7244          
+##                                           
+##        'Positive' Class : e               
+## 
+\end{verbatim}
+
+\subsubsection*{Για το μοντέλο που χρησιμοποιεί όλα τα χαρακτηριστικά
+(createDataPartition)}\label{ux3b3ux3b9ux3b1-ux3c4ux3bf-ux3bcux3bfux3bdux3c4ux3adux3bbux3bf-ux3c0ux3bfux3c5-ux3c7ux3c1ux3b7ux3c3ux3b9ux3bcux3bfux3c0ux3bfux3b9ux3b5ux3af-ux3ccux3bbux3b1-ux3c4ux3b1-ux3c7ux3b1ux3c1ux3b1ux3baux3c4ux3b7ux3c1ux3b9ux3c3ux3c4ux3b9ux3baux3ac-createdatapartition}
+\addcontentsline{toc}{subsubsection}{Για το μοντέλο που χρησιμοποιεί όλα
+τα χαρακτηριστικά (createDataPartition)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{confusionMatrix}\NormalTok{(predictionC, }\FunctionTok{as.factor}\NormalTok{(testCaret}\SpecialCharTok{$}\NormalTok{class))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    e    p
+##          e 1171  537
+##          p  487 1547
+##                                           
+##                Accuracy : 0.7263          
+##                  95% CI : (0.7118, 0.7406)
+##     No Information Rate : 0.5569          
+##     P-Value [Acc > NIR] : <2e-16          
+##                                           
+##                   Kappa : 0.4472          
+##                                           
+##  Mcnemar's Test P-Value : 0.1257          
+##                                           
+##             Sensitivity : 0.7063          
+##             Specificity : 0.7423          
+##          Pos Pred Value : 0.6856          
+##          Neg Pred Value : 0.7606          
+##              Prevalence : 0.4431          
+##          Detection Rate : 0.3129          
+##    Detection Prevalence : 0.4564          
+##       Balanced Accuracy : 0.7243          
+##                                           
+##        'Positive' Class : e               
+## 
+\end{verbatim}
+
+\subsection*{}\label{section-3}
+\addcontentsline{toc}{subsection}{}
+
+Εξετάζοντας το
+\href{https://rasbt.github.io/mlxtend/user_guide/evaluate/mcnemar/}{Mcnemar's
+Test P-Value} βλέπουμε ότι τα δέντρα που χρησιμοποίησαν τις συναρτήσεις
+\texttt{initial\_split()} και \texttt{createDataPartition()} ναι μεν
+υστερούν σε αξιοπιστία, αλλά δίνουν πιο ισορροπημένα αποτελέσματα σε
+σχέση με τη μέθοδο της απλής δειγματοληψίας (αυτή ειχε p-τιμή αρκετά
+μικρότερη του 0.05). Δηλαδή δεν ευνοούν τα λάθη τύπου «διάγνωση
+δηλητηριώδους ως εδώδιμου» έναντι λαθών τύπου «διάγνωση εδώδιμου ως
+δηλητηριώδους». Και σε αυτό το σημείο τελειώνει η μελέτη αυτής της
+ενότητας.
+
+\section{Random forest}\label{random-forest}
+
+\subsection{Με το
+χέρι}\label{ux3bcux3b5-ux3c4ux3bf-ux3c7ux3adux3c1ux3b9}
+
+Σύμφωνα με την εργασία ο αριθμός των δέντρων έπρεπε να είναι \(1000\).
+Αυτό, όμως, έκανε τον υπολογιστή του γράφοντος να κολλήσει, επομένως
+ήταν αναπόδραστο το να μειωθεί ο αριθμός τους σε \(10\). Ο γράφων
+επιφυλάσσεται για τη μελέτη 1000 δέντρων στην επόμενη ενότητα, που θα
+γίνει το τυχαίο δάσος με έτοιμη συνάρτηση της R.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{n\_trees }\OtherTok{\textless{}{-}} \DecValTok{10}
+\end{Highlighting}
+\end{Shaded}
+
+Αρχινάμε τη δημιουργία του δάσους.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(student\_id)}
+
+\NormalTok{forest\_models }\OtherTok{\textless{}{-}} \FunctionTok{replicate}\NormalTok{(n\_trees, \{}
+  \CommentTok{\# Δημιουργία bootstrap δείγματος}
+\NormalTok{  bootstrap\_sample }\OtherTok{\textless{}{-}}\NormalTok{ train\_set[}\FunctionTok{sample}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(train\_set), }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{), ]}
+  
+  \CommentTok{\# Εκπαίδευση και επιστροφή του δέντρου}
+  \FunctionTok{rpart}\NormalTok{(class }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ bootstrap\_sample, }\AttributeTok{method =} \StringTok{"class"}\NormalTok{, }
+        \AttributeTok{control =} \FunctionTok{rpart.control}\NormalTok{(}\AttributeTok{minsplit =} \DecValTok{2}\NormalTok{, }\AttributeTok{cp =} \FloatTok{0.01}\NormalTok{))}
+\NormalTok{\}, }
+\AttributeTok{simplify =} \ConstantTok{FALSE}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Ας δούμε τώρα τι προβλέψεις κάνει το κάθε μοντέλο.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{all\_preds }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(forest\_models,}\CommentTok{\# τα δέντρα που φτιάξαμε}
+\NormalTok{                    predict,}\CommentTok{\# εφαρμόζουμε την predict σε κάθε ένα τους}
+                    \AttributeTok{newdata =}\NormalTok{ test\_set, }\AttributeTok{type =} \StringTok{"class"} \CommentTok{\# οι παράμετροι της predict}
+\NormalTok{                    )}
+\end{Highlighting}
+\end{Shaded}
+
+Ακολούθως ψάχνουμε να βρούμε τις πιο διαδεδομένες προβλέψεις των δέντρων
+για κάθε περίπτωση.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{final\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(all\_preds, }\CommentTok{\# οι προβλέψεις μας}
+                           \DecValTok{1}\NormalTok{, }\CommentTok{\# εφαρμογή της παρακάτω συνάρτησης σε κάθε γραμμή (2 για στήλες)}
+                           \ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{names}\NormalTok{(}\FunctionTok{which.max}\NormalTok{(}\FunctionTok{table}\NormalTok{(x))) }\CommentTok{\# Εύρεση της πρόβλεψης (names) με τη μέγιστη (which.max) συχνότητα (table)}
+\NormalTok{                           )}
+
+\NormalTok{final\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(final\_predictions, }\AttributeTok{levels =} \FunctionTok{levels}\NormalTok{(test\_set}\SpecialCharTok{$}\NormalTok{class))}
+\end{Highlighting}
+\end{Shaded}
+
+Τώρα μπορούμε να φτιάξουμε έναν πίνακα με τις προβλέψεις μας.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(rf\_conf\_matrix }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(Πρόβλεψη }\OtherTok{=}\NormalTok{ final\_predictions, Πραγματικό }\OtherTok{=}\NormalTok{ test\_set}\SpecialCharTok{$}\NormalTok{class))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         Πραγματικό
+## Πρόβλεψη    e    p
+##        e 1273  498
+##        p  327 1645
+\end{verbatim}
+
+Σύμφωνα με τον πίνακα αυτόν η ακρίβεια είναι 0.7795886. Το γεγονός ότι
+είναι τόσο μικρή οφείλεται στον μκρό αριθμό δέντρων, απόρροια των
+δυνατοτήτων του υπολογιστή του γράφοντος. Για ακριβέστερες προβλέψεις
+χρησιμοποιώντας περισσότερα δέντρα θα αξιοποιήσουμε πακέτα της R που
+κάνουν πρακτικά τη δουλειά με C++, άρα πολύ γρηγορότερα.
+
+\subsection{Αυτόματο}\label{ux3b1ux3c5ux3c4ux3ccux3bcux3b1ux3c4ux3bf}
+
+Για την αυτοματοποιημένη διαδικασία του τυχαίου δάσους, μπορούμε να
+απευθυνθούμε στα πακέτα \texttt{randomForest} και \texttt{ranger}.
+Σύμφωνα με
+\href{https://www.css.cornell.edu/faculty/dgr2/_static/files/R_html/CompareRandomForestPackages.html}{αυτή
+την ανάλυση} και \href{https://arxiv.org/pdf/1508.04409}{αυτή την
+εργασία} το \texttt{ranger} είναι προτιμότερο.
+
+Σε πρώτη φάση εκπαιδεύουμε το μοντέλο μας.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(student\_id)}
+
+\NormalTok{rf\_model }\OtherTok{\textless{}{-}} \FunctionTok{ranger}\NormalTok{(}
+  \AttributeTok{formula =}\NormalTok{ class }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }
+  \AttributeTok{data    =}\NormalTok{ train\_set, }
+  \AttributeTok{num.trees =} \DecValTok{1000}\NormalTok{, }\CommentTok{\# Πλέον μπορούμε να έχουμε 1000 δέντρα}
+  \AttributeTok{importance =} \StringTok{\textquotesingle{}impurity\textquotesingle{}} \CommentTok{\# Για να δούμε τη σημαντικότητα των μεταβλητών}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Ακολούθως ας δούμε και το τι θα μπορέσει να προβλέψει. Αρχικά φτιάχνουμε
+τη λίστα με τις προβλέψεις επί του συνόλου ελέγχου.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{rf\_preds }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(rf\_model, }\AttributeTok{data =}\NormalTok{ test\_set)}
+\NormalTok{final\_predictions }\OtherTok{\textless{}{-}}\NormalTok{ rf\_preds}\SpecialCharTok{$}\NormalTok{predictions}
+\end{Highlighting}
+\end{Shaded}
+
+Ακολούθως πάμε να δούμε πόσα κατάφερε να προβλέψει σωστά και πόσα λάθος.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{rf\_conf\_matrix }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(Πρόβλεψη }\OtherTok{=}\NormalTok{ final\_predictions, Πραγματικό }\OtherTok{=}\NormalTok{ test\_set}\SpecialCharTok{$}\NormalTok{class)}
+\NormalTok{rf\_conf\_matrix}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         Πραγματικό
+## Πρόβλεψη    e    p
+##        e 1564   36
+##        p   36 2107
+\end{verbatim}
+
+Από τα παραπάνω, καταλαβαίνουμε ότι έχουμε ακρίβεια 0.9807641.
+
+Το πακέτο \texttt{ranger} παρέχει τη δυνατότητα να αξιολογήσουμε τη
+συμβολή του κάθε χαρακτηριστικού στην ταξινόμηση των μανηταριών. Θα
+δώσουμε την τιμή 100 στο χαρακτηριστικό που έχει τη μέγιστη
+σημαντικότητα, έτσι τα υπόλοιπα θα έχουν σημαντικότητες που θα είναι
+ποσοστά αυτής.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{imp }\OtherTok{\textless{}{-}} \FunctionTok{importance}\NormalTok{(rf\_model)}
+\NormalTok{normalized\_imp }\OtherTok{\textless{}{-}}\NormalTok{ (imp }\SpecialCharTok{/} \FunctionTok{max}\NormalTok{(imp)) }\SpecialCharTok{*} \DecValTok{100}
+\FunctionTok{sort}\NormalTok{(normalized\_imp, }\AttributeTok{decreasing =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  Feature_7  Feature_6  Feature_1  Feature_5  Feature_8  Feature_2 Feature_10  Feature_4 
+##  100.00000   79.48800   68.06332   58.24996   54.04559   40.37648   23.33637   23.01842 
+## Feature_11 
+##   15.66153
+\end{verbatim}
+
+Ας δούμε και γραφικά τα παραπάνω.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Μετατροπή του διανύσματος σε Data Frame}
+\NormalTok{imp\_df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Feature =} \FunctionTok{names}\NormalTok{(normalized\_imp),}
+  \AttributeTok{Importance =} \FunctionTok{as.numeric}\NormalTok{(normalized\_imp)}
+\NormalTok{)}
+
+\CommentTok{\# Δημιουργία του γραφήματος}
+\FunctionTok{ggplot}\NormalTok{(imp\_df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{reorder}\NormalTok{(Feature, Importance), }\AttributeTok{y =}\NormalTok{ Importance)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }\AttributeTok{fill =} \StringTok{"steelblue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{coord\_flip}\NormalTok{() }\SpecialCharTok{+}  \CommentTok{\# Αντιστροφή αξόνων για να διαβάζονται τα ονόματα}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Σημαντικότητα Μεταβλητών"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Χαρακτηριστικά"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Σημαντικότητα (0{-}100)"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-64-1.pdf}}
+
+΄
+
+\section{Πλησιέστεροι
+γείτονες}\label{ux3c0ux3bbux3b7ux3c3ux3b9ux3adux3c3ux3c4ux3b5ux3c1ux3bfux3b9-ux3b3ux3b5ux3afux3c4ux3bfux3bdux3b5ux3c2}
+
+\subsection{Προεργασία}\label{ux3c0ux3c1ux3bfux3b5ux3c1ux3b3ux3b1ux3c3ux3afux3b1}
+
+Επειδή η μέθοδος k-NN δεν μπορεί να επεξεργαστεί μη-αριθμητικά δεδομένα,
+μετατρέπουμε όλες τις μεταβλητές σε αριθμητικές. Η προτινόμενη μέθοδος
+από διάφορα LLM που ρωτήθηκαν (Gemini και ChatGPT) είναι μέσω του
+συνδυασμού των συναρτήσεων \texttt{dummyVars()} και \texttt{predict()}
+του πακέτου \texttt{caret}.
+
+Προς τούτο πρώτα απομονώνουμε τη μεταβλητή στόχου (\texttt{class}) και
+ξεχωρίζουμε τις μεταβλητές των χαρακτηριστικών (\texttt{Feature\_n}).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{y }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms}\SpecialCharTok{$}\NormalTok{class}
+\NormalTok{x }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms[, }\SpecialCharTok{{-}}\FunctionTok{which}\NormalTok{(}\FunctionTok{names}\NormalTok{(sampled\_mushrooms) }\SpecialCharTok{==} \StringTok{"class"}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+Και τώρα ήρθε η ώρα για την «αριθμητικοποίηση» των μεταβλητών μας.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x\_dummies }\OtherTok{\textless{}{-}} \FunctionTok{dummyVars}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ x)}
+\NormalTok{x\_numeric }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(x\_dummies, }\AttributeTok{newdata =}\NormalTok{ x)}
+\end{Highlighting}
+\end{Shaded}
+
+Με αυτή την προσέγγιση κάθε κατηγορική ή λογική μεταβλητή μετατρέπεται
+σε ένα σύνολο διανυσμάτων. Συγκεκριμένα, αν μία κατηγορική μεταβλητή
+(\(X\)) παίρνει \(n\) πιθανές τιμές (\(a_1, a_2,\dots,a_n\)), τότε η
+\(X\) «σπάει» σε \(n\) διανύσματα
+(\(\vec{x_1}, \vec{x_2},\dots,\vec{x_n}\)), όπου \textbf{στη \(i\)-στή
+συντεταγμένη του \(\vec{x_j}\) είναι το \(1\), αν η \(i\)-στή
+συντεταγμένη της \(X\) έχει την τιμή \(a_j\), αλλιώς είναι \(0\)}. Από
+μια διαφορετική οπτική γωνία ειδομένο, μπορούμε να πούμε ότι κάθε τιμή
+της \(X\) αντιπροσωπεύεται από ένα διάνυσμα βάσης (\(\vec{e_j}\)) του
+\(\mathbb{R}^n\).
+
+Εν πάση περιπτώσει, προχωράμε. Ακολούθως, κανονικοποιούμε τα δεδομένα
+μας, ώστε να έχουν όλες οι μεταβλητές μέση τιμή \(0\) και τυπική
+απόκλιση \(1\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x\_scaled }\OtherTok{\textless{}{-}} \FunctionTok{scale}\NormalTok{(x\_numeric)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Με class (μέθοδος
+Hold-out)}\label{ux3bcux3b5-class-ux3bcux3adux3b8ux3bfux3b4ux3bfux3c2-hold-out}
+
+Αρχικά επανενώνουμε τη μεταβλητή \texttt{class} με τα χαρακτηριστικά.
+Προς τούτο θα φτιάξουμε έναν νέο dataframe, ώστε το
+\texttt{sampled\_mushrooms} να παραμείνει ως έχει.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sampled\_mushroomsNEW }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(x\_scaled)}
+\NormalTok{sampled\_mushroomsNEW}\SpecialCharTok{$}\NormalTok{class }\OtherTok{\textless{}{-}}\NormalTok{ y}
+\end{Highlighting}
+\end{Shaded}
+
+Ακολούθως καθορίζουμε το δείγμα εκπαίδευσης και το βήμα ελέγχου μέσω της
+συνάρτησης \texttt{createDataPartition()}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Η βάση της τυχαιότητας ορίζεται ίδια με πριν}
+\FunctionTok{set.seed}\NormalTok{(student\_id)}
+
+\CommentTok{\# Δείκτες γραμμών που θα επιλεγούν για εκπαίδευση}
+\NormalTok{train\_index }\OtherTok{\textless{}{-}} \FunctionTok{createDataPartition}\NormalTok{(sampled\_mushroomsNEW}\SpecialCharTok{$}\NormalTok{class, }\AttributeTok{p =} \FloatTok{0.75}\NormalTok{, }\AttributeTok{list =} \ConstantTok{FALSE}\NormalTok{)}
+
+\CommentTok{\# Τα features εκπαίδευσης}
+\NormalTok{train\_x }\OtherTok{\textless{}{-}}\NormalTok{ x\_scaled[train\_index, ]}
+\CommentTok{\# Τα features ελέγχου}
+\NormalTok{test\_x  }\OtherTok{\textless{}{-}}\NormalTok{ x\_scaled[}\SpecialCharTok{{-}}\NormalTok{train\_index, ]}
+
+\CommentTok{\# Εκπαίδευση class}
+\NormalTok{train\_y }\OtherTok{\textless{}{-}}\NormalTok{ y[train\_index]}
+\CommentTok{\# Έλεγχος class}
+\NormalTok{test\_y  }\OtherTok{\textless{}{-}}\NormalTok{ y[}\SpecialCharTok{{-}}\NormalTok{train\_index]}
+\end{Highlighting}
+\end{Shaded}
+
+Είμαστε τώρα έτοιμοι να προχωρήσουμε στην εκτέλεση της k-NN.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knn\_pred }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}
+  \AttributeTok{train =}\NormalTok{ train\_x, }\CommentTok{\# Τα δεδομένα που ξέρει το μοντέλο}
+  \AttributeTok{test =}\NormalTok{ test\_x, }\CommentTok{\# Τα δεδομένα που πρέπει να μαντέψει}
+  \AttributeTok{cl =}\NormalTok{ train\_y, }\CommentTok{\# Οι σωστές απαντήσεις για τα δεδομένα εκπαίδευσης}
+  \AttributeTok{k =} \DecValTok{5} \CommentTok{\# Ο αριθμός των γειτόνων (εν προκειμένω βάζουμε 5 αυθαίρετα)}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+Κλείνουμε την υποενότητα αυτή με μια αξιολόγηση αυτού που πετύχαμε.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(predictionK\_NN.class }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(Προβλεπόμενα }\OtherTok{=}\NormalTok{ knn\_pred, Πραγματικά }\OtherTok{=}\NormalTok{ test\_y))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##             Πραγματικά
+## Προβλεπόμενα    e    p
+##            e 1582   64
+##            p   76 2020
+\end{verbatim}
+
+Ο παραπάνω πίνακας λέει τα κάτωθι:
+
+\begin{itemize}
+\item
+  Διαπιστώθηκαν ορθώς ως εδώδιμα (\texttt{e}) 1582 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως εδώδιμα (\texttt{e}) 64 μανιτάρια.
+\item
+  Διαπιστώθηκαν ορθώς ως δηλητηριώδη (\texttt{p}) 2020 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως δηλητηριώδη (\texttt{p}) 76 μανιτάρια.
+\end{itemize}
+
+\subsection{Με caret (μέθοδος Cross
+Validation)}\label{ux3bcux3b5-caret-ux3bcux3adux3b8ux3bfux3b4ux3bfux3c2-cross-validation}
+
+Το πακέτο \texttt{caret} δίνει τη δυνατότητα να εκτελέσουμε εύκολα
+Διασταυρούμενη Επικύρωση (Cross-Validation). Στο άρθρο
+\href{https://medium.com/@jaz1/holdout-vs-cross-validation-in-machine-learning-7637112d3f8f}{Hold-out
+vs.~Cross-validation in Machine Learning} διαπιστώνουμε πως, οποτεδήποτε
+είναι υπολογιστικά δυνατό (η Hold-out είναι ελαφρύτερη διαδικασία) θα
+πρέπει να την προτιμάμε. Στα πλαίσια αυτά ο γράφων βρήκε χρήσιμη την
+παρακάτω απάντηση στο
+\href{https://stats.stackexchange.com/a/307849/295207}{Stack Exchange}
+(μετάφραση κειμένου με Gemini):
+
+\begin{quote}
+Ήθελα απλώς να προσθέσω μερικές απλές κατευθυντήριες γραμμές που ανέφερε
+ο Andrew Ng στο μάθημά μας CS 229 στο Stanford σχετικά με τη
+διασταυρούμενη επικύρωση. Αυτές είναι οι πρακτικές που ακολουθεί ο ίδιος
+στη δουλειά του.
+
+Έστω \(m\) ο αριθμός των δειγμάτων στο σύνολο δεδομένων σας:
+
+\begin{itemize}
+\item
+  Αν \(m \leq 20\), χρησιμοποιήστε τη διασταυρούμενη επικύρωση με
+  παράλειψη ενός (Leave-one-out cross validation).
+\item
+  Αν \(20 < m \leq 100\), χρησιμοποιήστε την \(k\)-πτυχη διασταυρούμενη
+  επικύρωση (\(k\)-fold cross validation) με ένα σχετικά μεγάλο
+  \(k \leq m\), λαμβάνοντας υπόψη το υπολογιστικό κόστος.
+\item
+  Αν \(100 < m \leq 1.000.000\), χρησιμοποιήστε την κανονική \(k\)-πτυχη
+  διασταυρούμενη επικύρωση (\(k=5\)). Εναλλακτικά, εάν δεν υπάρχει
+  επαρκή υπολογιστική ισχύς και \(m > 10.000\), χρησιμοποιήστε τη μέθοδο
+  κράτησης δεδομένων (hold-out cross validation).
+\item
+  Αν \(m \geq 1.000.000\), χρησιμοποιήστε τη μέθοδο κράτησης δεδομένων
+  (hold-out cross validation), αλλά αν υπάρχει διαθέσιμη υπολογιστική
+  ισχύς, μπορείτε να χρησιμοποιήσετε \(k\)-πτυχη διασταυρούμενη
+  επικύρωση (\(k=5\)), εάν θέλετε να εξαντλήσετε κάθε περιθώριο απόδοσης
+  από το μοντέλο σας.
+\end{itemize}
+\end{quote}
+
+Αρχικά ορίζουμε το πλαίσιο στο οποίο θα εκπαιδευτεί το μοντέλο μας. Η
+εκφώνηση της εργασίας απαιτούσε η Cross-Validation να γίνει με
+διαμοιρασμό των δεδομένων σε 5 μέρη και 5 ελέγχους (4 μέρη εκπαίδευση, 1
+μέρος έλεγχος), όπερ και θα πράξουμε.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ctrl }\OtherTok{\textless{}{-}} \FunctionTok{trainControl}\NormalTok{(}
+  \AttributeTok{method =} \StringTok{"cv"}\NormalTok{, }\CommentTok{\# Cross{-}Validation.}
+  \AttributeTok{number =} \DecValTok{5}     \CommentTok{\# Τα 5 ίσα μέρη και οι 5 έλεγχοι. }
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Ακολούθως φτιάχνουμε μια λίστα με τα πλήθη των γειτόνων (\(k\)) που θα
+λειτουργήσει η k-NN.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{k }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{15}\NormalTok{,}\DecValTok{2}\NormalTok{) }\CommentTok{\# Χρησιμοποιούμε περιττούς (μονζυγούς) αριθμούς για να μην έχουμε ποτέ «ισοπαλία» στην ψηφοφορία των γειτόνων.}
+\NormalTok{kValues }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(k) }\CommentTok{\# Η train() απαιτεί να είναι σε μορφή πίνακα με όνομα στήλης το k}
+\end{Highlighting}
+\end{Shaded}
+
+Ας ξεκινήσουμε τώρα τη διαδικασία.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(student\_id) }
+
+\NormalTok{model\_knn }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+  \CommentTok{\# Αντί των (1) και (2), μπορούμε εναλλακτικά να γράψουμε το κάτωθι:}
+  \CommentTok{\# class \textasciitilde{} ., }
+  \CommentTok{\# data = final\_df,}
+  \AttributeTok{x =}\NormalTok{ x\_scaled,      }\CommentTok{\# (1)}
+  \AttributeTok{y =}\NormalTok{ y,             }\CommentTok{\# (2)}
+  
+  \AttributeTok{method =} \StringTok{"knn"}\NormalTok{,    }\CommentTok{\# Για να εφαρμόσουμε k{-}NN. Για περισσότερα βλ.:}
+  \CommentTok{\# https://topepo.github.io/caret/train{-}models{-}by{-}tag.html}
+  
+  \AttributeTok{trControl =}\NormalTok{ ctrl,  }\CommentTok{\# Εφαρμόζουμε το πλαίσιο εκπαίδευσης που ορίσαμε προηγουμένως}
+  
+  \AttributeTok{tuneGrid =}\NormalTok{ kValues }\CommentTok{\# Τα πλήθη των γειτόνων που ορίσαμε να εξεταστούν}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Κι ας δούμε τα αποτελέσματα:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model\_knn}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## k-Nearest Neighbors 
+## 
+## 14972 samples
+##    49 predictor
+##     2 classes: 'e', 'p' 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 11977, 11978, 11977, 11978, 11978 
+## Resampling results across tuning parameters:
+## 
+##   k   Accuracy   Kappa    
+##    1  0.9808980  0.9612631
+##    3  0.9749532  0.9492062
+##    5  0.9678065  0.9347047
+##    7  0.9608605  0.9206373
+##    9  0.9533798  0.9054825
+##   11  0.9452313  0.8889981
+##   13  0.9374834  0.8732957
+##   15  0.9286672  0.8553674
+## 
+## Accuracy was used to select the optimal model using the largest value.
+## The final value used for the model was k = 1.
+\end{verbatim}
+
+Βλέπουμε η ακρίβεια ακολουθεί μια φθίνουσα πορεία σε σχέση με το \(k\).
+Η καλύτερη επιλογή, συνεπώς, είναι να επιλέξουμε όσο το (υπολογιστικά)
+δυνατόν μικρότερο \(k\).
+
+Ας διαπιστώσουμε τα παραπάνω και μ' ένα γράφημα.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Δημιουργούμε ένα γράφημα. }
+\CommentTok{\# Στον οριζόντιο άξονα είναι το k και στον κάθετο η Ακρίβεια (Accuracy). }
+\CommentTok{\# Το ψηλότερο σημείο του γραφήματος μας δείχνει τον "νικητή" (το καλύτερο k).}
+\FunctionTok{plot}\NormalTok{(model\_knn)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-76-1.pdf}}
+
+\section{Απλό νευρωνικό
+δίκτυο}\label{ux3b1ux3c0ux3bbux3cc-ux3bdux3b5ux3c5ux3c1ux3c9ux3bdux3b9ux3baux3cc-ux3b4ux3afux3baux3c4ux3c5ux3bf}
+
+\subsection{Με nnet}\label{ux3bcux3b5-nnet}
+
+Αρχικά καθορίζουμε το σύνολο εκπαίδευσης και το σύνολο ελέγχου.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Όπως ανέκαθεν...}
+\FunctionTok{set.seed}\NormalTok{(student\_id)}
+
+
+\NormalTok{train\_size }\OtherTok{\textless{}{-}} \FunctionTok{floor}\NormalTok{(}\FloatTok{0.75} \SpecialCharTok{*} \FunctionTok{nrow}\NormalTok{(sampled\_mushrooms)) }\CommentTok{\# πλήθος δείγματος εκπαίδευσης}
+\NormalTok{train\_indices }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\FunctionTok{seq\_len}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(sampled\_mushrooms)), }\AttributeTok{size =}\NormalTok{ train\_size) }\CommentTok{\# δείκτες δείγματος εκπαίδευσης}
+
+\NormalTok{train\_data }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms[train\_indices, ] }\CommentTok{\# δείγμα εκπαίδευσης}
+\NormalTok{test\_data }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms[}\SpecialCharTok{{-}}\NormalTok{train\_indices, ] }\CommentTok{\# δείγμα ελέγχου}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Όλα τα
+χαρακτηριστικά}\label{ux3ccux3bbux3b1-ux3c4ux3b1-ux3c7ux3b1ux3c1ux3b1ux3baux3c4ux3b7ux3c1ux3b9ux3c3ux3c4ux3b9ux3baux3ac}
+
+Ακολούθως στήνουμε το νευρωνικό δίκτυο με τις προδιαγραφές που
+επιθυμούμε. Σε αυτή την περίπτωση θα λάβουμε υπ' όψιν όλα τα
+\texttt{Features\_N}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{modelNetNfull }\OtherTok{\textless{}{-}} \FunctionTok{nnet}\NormalTok{(class }\SpecialCharTok{\textasciitilde{}}\NormalTok{ .,  }\CommentTok{\# όπως και στα rpart() και teain(), έτσι κι εδώ το class \textasciitilde{} . δηλώνει ότι λαμβάνονται υπ\textquotesingle{} όψιν όλα τα χαρακτηριστικά}
+               \AttributeTok{data =}\NormalTok{ train\_data,  }\CommentTok{\# Δεδομένα εκπαίδευσης}
+               \AttributeTok{size =} \DecValTok{1}\NormalTok{,  }\CommentTok{\# Μόνο 1 νευρώνας στο κρυφό στρώμα (απλό μοντέλο)}
+               \AttributeTok{linout =} \ConstantTok{FALSE}\NormalTok{,  }\CommentTok{\# FALSE για ταξινόμηση. TRUE για πρόβλεψη αριθμών (παλινδρόμηση)}
+               \AttributeTok{trace =} \ConstantTok{FALSE}\NormalTok{)  }\CommentTok{\# FALSE για να μην βγάζει πολλά μηνύματα}
+
+\CommentTok{\# Κάνουμε προβλέψεις στο δοκιμαστικό σύνολο}
+\NormalTok{predictionsNetNfull }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(modelNetNfull, }\AttributeTok{newdata =}\NormalTok{ test\_data, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Ας εξετάσουμε τώρα πόσο καλές προβλέψεις κάνει το μοντέλο μας.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(predictionNet\_fullTable }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}
+\NormalTok{  Πρόβλεψη }\OtherTok{=}\NormalTok{ predictionsNetNfull,}
+\NormalTok{  Πραγματική\_Τιμή }\OtherTok{=}\NormalTok{ test\_data}\SpecialCharTok{$}\NormalTok{class}
+\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         Πραγματική_Τιμή
+## Πρόβλεψη    e    p
+##        e 1137  687
+##        p  463 1456
+\end{verbatim}
+
+Ο παραπάνω πίνακας λέει τα κάτωθι:
+
+\begin{itemize}
+\item
+  Διαπιστώθηκαν ορθώς ως εδώδιμα (\texttt{e}) 1137 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως εδώδιμα (\texttt{e}) 687 μανιτάρια.
+\item
+  Διαπιστώθηκαν ορθώς ως δηλητηριώδη (\texttt{p}) 1456 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως δηλητηριώδη (\texttt{p}) 463 μανιτάρια.
+\end{itemize}
+
+Αυτό σημαίνει ότι είχαμε ακρίβεια:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{accuracy\_full }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(}\FunctionTok{diag}\NormalTok{(predictionNet\_fullTable)) }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(predictionNet\_fullTable)}
+\NormalTok{accuracy\_full}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.6927598
+\end{verbatim}
+
+\subsubsection{Μόνο τα Feature\_2, Feature\_1 και
+Feature\_6}\label{ux3bcux3ccux3bdux3bf-ux3c4ux3b1-feature_2-feature_1-ux3baux3b1ux3b9-feature_6}
+
+Ας εξετάσουμε τώρα τις προβλέψεις που μπορούν να γίνουν εξετάζοντας μόνο
+τα \texttt{Feature\_2}, \texttt{Feature\_1} και \texttt{Feature\_6}.
+Φτιάχνουμε και πάλι το μοντέλο μας.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Εκπαίδευση του δεύτερου νευρωνικού δικτύου για τα χαρακτηριστικά 2, 1 και 6.}
+\NormalTok{modelNetN}\FloatTok{.216} \OtherTok{\textless{}{-}} \FunctionTok{nnet}\NormalTok{(class }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Feature\_2 }\SpecialCharTok{+}\NormalTok{ Feature\_1 }\SpecialCharTok{+}\NormalTok{ Feature\_6,  }\CommentTok{\# Μόνο 3 features}
+               \AttributeTok{data =}\NormalTok{ train\_data,  }\CommentTok{\# Δεδομένα εκπαίδευσης}
+               \AttributeTok{size =} \DecValTok{1}\NormalTok{,  }\CommentTok{\# Πάλι 1 νευρώνας}
+               \AttributeTok{linout =} \ConstantTok{FALSE}\NormalTok{,  }\CommentTok{\# FALSE για ταξινόμηση}
+               \AttributeTok{trace =} \ConstantTok{FALSE}\NormalTok{)  }\CommentTok{\# FALSE για ήσυχη εκτέλεση}
+\end{Highlighting}
+\end{Shaded}
+
+Ας φτιάξουμε τις προβλέψεις μας.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Κάνουμε προβλέψεις στο δοκιμαστικό σύνολο}
+\NormalTok{predictionsNetN}\FloatTok{.216} \OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(modelNetN}\FloatTok{.216}\NormalTok{, }\AttributeTok{newdata =}\NormalTok{ test\_data, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Και ας δούμε πρακτικά τι καταφέρνει.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Δημιουργούμε πίνακα σύγχυσης}
+\NormalTok{(predictionsNetN.}\FloatTok{216.}\NormalTok{table }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(Πρόβλεψη }\OtherTok{=}\NormalTok{ predictionsNetN}\FloatTok{.216}\NormalTok{,}
+\NormalTok{                  Πραγματική\_τιμή }\OtherTok{=}\NormalTok{ test\_data}\SpecialCharTok{$}\NormalTok{class }
+\NormalTok{                  ))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         Πραγματική_τιμή
+## Πρόβλεψη    e    p
+##        e 1083  932
+##        p  517 1211
+\end{verbatim}
+
+Ο παραπάνω πίνακας λέει τα κάτωθι:
+
+\begin{itemize}
+\item
+  Διαπιστώθηκαν ορθώς ως εδώδιμα (\texttt{e}) 1083 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως εδώδιμα (\texttt{e}) 932 μανιτάρια.
+\item
+  Διαπιστώθηκαν ορθώς ως δηλητηριώδη (\texttt{p}) 1211 μανιτάρια.
+\item
+  Διαπιστώθηκαν εσφαλμένα ως δηλητηριώδη (\texttt{p}) 517 μανιτάρια.
+\end{itemize}
+
+Αυτό σημαίνει ότι είχαμε ακρίβεια:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{accuracy\_216 }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(}\FunctionTok{diag}\NormalTok{(predictionsNetN.}\FloatTok{216.}\NormalTok{table)) }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(predictionsNetN.}\FloatTok{216.}\NormalTok{table)}
+\NormalTok{accuracy\_216}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.6128774
+\end{verbatim}
+
+Θυμίζουμε ότι η ακρίβεια όταν εξετάσαμε όλα τα δεδομένα ήταν 0.6927598,
+ήτοι εμφανώς μεγαλύτερη της 0.6128774 που βρήκαμε τώρα.
+
+\subsection{Με caret}\label{ux3bcux3b5-caret}
+
+Ο γράφων, έχοντας χρησιμοποιήσει σε κάθε μία από τις παραπάνω ενότητες
+το πακέτο \texttt{caret} σκέφτηκε πως αποτελεί ένα χρήσιμο πακέτο για τη
+Μηχανική Μάθηση. Επομένως έδωσε και μία απάντηση με τη βοήθεια αυτου΄:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(student\_id)}
+
+\CommentTok{\# Ο έξυπνος Διαχωρισμός που διατηρεί τις αναλογίες στα δείγματα που λαμβάνονται}
+\NormalTok{trainIndex }\OtherTok{\textless{}{-}} \FunctionTok{createDataPartition}\NormalTok{(sampled\_mushrooms}\SpecialCharTok{$}\NormalTok{class, }\AttributeTok{p =} \FloatTok{0.75}\NormalTok{, }\AttributeTok{list =} \ConstantTok{FALSE}\NormalTok{)}
+\NormalTok{train\_set }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms[trainIndex, ]}
+\NormalTok{test\_set  }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms[}\SpecialCharTok{{-}}\NormalTok{trainIndex, ]}
+
+\NormalTok{ctrl }\OtherTok{\textless{}{-}} \FunctionTok{trainControl}\NormalTok{(}\AttributeTok{method =} \StringTok{"cv"}\NormalTok{, }\AttributeTok{number =} \DecValTok{10}\NormalTok{) }\CommentTok{\# Ο τρόπος εκπαίδευσης Cross{-}Validation (10{-}διαμερίσεις)}
+
+\CommentTok{\# Το caret καλεί την nnet αυτόματα}
+\NormalTok{model\_caret.NetN }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(class }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }
+                     \AttributeTok{data =}\NormalTok{ train\_set, }
+                     \AttributeTok{method =} \StringTok{"nnet"}\NormalTok{, }\CommentTok{\# εδώ θέλει nnet, πέραν του caret}
+                     \AttributeTok{maxit =} \DecValTok{1000}\NormalTok{, }\CommentTok{\# προσπάθειες βελτίωσης}
+                     \AttributeTok{trControl =}\NormalTok{ ctrl,}
+                     \AttributeTok{tuneGrid =} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{decay =} \FloatTok{0.1}\NormalTok{), }
+                     \CommentTok{\# Ορίζουμε το size=1 όπως ζητά η εργασία}
+                     \CommentTok{\# decay: Όσο μικρότερο είναι το νούμερο, τόσο πιο πολύ σκαλίζει τις λεπτομέρειες, μο ό,τι αυτό συνεπάγεται για απλοϊκή{-}πρόχειρη{-}χοντροκομμένη μελέτη (μεγάλο decay) ή για Overfitting (μικρό decay)}
+                     \CommentTok{\# Αν αφαιρεθεί το tuneGrid, η R αποφασίζει μόνη της περί του καλύτερου}
+                     \AttributeTok{trace =} \ConstantTok{FALSE}\NormalTok{,}
+                     \AttributeTok{linout =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Ας εξτάσουμε και τις προβλέψεις που επιτυγχάνει.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{predictionsNetN.caret }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(model\_caret.NetN, test\_set)}
+\NormalTok{resultsNetN.caret }\OtherTok{\textless{}{-}} \FunctionTok{confusionMatrix}\NormalTok{(predictionsNetN.caret, test\_set}\SpecialCharTok{$}\NormalTok{class)}
+\NormalTok{resultsNetN.caret}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    e    p
+##          e 1498 1139
+##          p  160  945
+##                                           
+##                Accuracy : 0.6529          
+##                  95% CI : (0.6374, 0.6681)
+##     No Information Rate : 0.5569          
+##     P-Value [Acc > NIR] : < 2.2e-16       
+##                                           
+##                   Kappa : 0.3366          
+##                                           
+##  Mcnemar's Test P-Value : < 2.2e-16       
+##                                           
+##             Sensitivity : 0.9035          
+##             Specificity : 0.4535          
+##          Pos Pred Value : 0.5681          
+##          Neg Pred Value : 0.8552          
+##              Prevalence : 0.4431          
+##          Detection Rate : 0.4003          
+##    Detection Prevalence : 0.7047          
+##       Balanced Accuracy : 0.6785          
+##                                           
+##        'Positive' Class : e               
+## 
+\end{verbatim}
+
+\section{Ομαδοποίηση
+k-μέσων}\label{ux3bfux3bcux3b1ux3b4ux3bfux3c0ux3bfux3afux3b7ux3c3ux3b7-k-ux3bcux3adux3c3ux3c9ux3bd}
+
+Η εργασία αφήνει στη ευχέρεια του γράφοντος το αν θα επιλεγεί Elbow
+Method ή ο Silhouette Score. Προς τούτο έγινε μια υποτυπώδης έρευνα περί
+του τι είναι καλύτερο και βρέθηκε το εξής από
+\href{https://www.geeksforgeeks.org/machine-learning/elbow-method-vs-silhouette-score-which-is-better/}{εδώ}
+(μετάφραση ChatGPT):
+
+\begin{quote}
+\textbf{Πότε να χρησιμοποιήσετε ποια μέθοδο}
+
+Χρησιμοποιήστε την \emph{Elbow Method} όταν:
+
+\begin{itemize}
+\item
+  Θέλετε έναν γρήγορο ευρετικό κανόνα για την εκτίμηση του 𝑘.
+\item
+  Εργάζεστε με συστάδες χαμηλής διάστασης που διαχωρίζονται καθαρά.
+\item
+  Το σύνολο δεδομένων είναι μεγάλο και απαιτείται ταχύτερος υπολογισμός.
+\end{itemize}
+
+Χρησιμοποιήστε την \emph{Silhouette Score} όταν:
+
+\begin{itemize}
+\item
+  Οι συστάδες δεν είναι σαφώς διαχωρίσιμες και υπάρχουν οριακές
+  περιπτώσεις.
+\item
+  Θέλετε ένα πιο αντικειμενικό, ποσοτικό κριτήριο.
+\item
+  Δέχεστε επιπλέον υπολογιστικό κόστος προκειμένου να επιτύχετε
+  μεγαλύτερη ακρίβεια.
+\end{itemize}
+
+Σε πολλές πρακτικές περιπτώσεις, συνιστάται η ταυτόχρονη χρήση και των
+δύο μεθόδων:
+
+\begin{itemize}
+\item
+  Χρησιμοποιήστε τη Elbow Method για να περιορίσετε ένα μικρό εύρος
+  πιθανών τιμών του 𝑘.
+\item
+  Εφαρμόστε την Silhouette Score μέσα σε αυτό το εύρος για να
+  προσδιορίσετε την βέλτιστη τιμή.
+\end{itemize}
+
+Αυτή η υβριδική προσέγγιση διασφαλίζει τόσο την υπολογιστική
+αποδοτικότητα όσο και την ποιότητα της ομαδοποίησης.
+\end{quote}
+
+Άλλες πάλι
+\href{https://adria708.medium.com/elbow-method-vs-silhouette-co-efficient-in-determining-the-number-of-clusters-33baff2fbeee}{πηγές}
+δηλώνουν ότι ο Silhouette Score υπερέχει γενικώς. Δεδομένου όμως του
+προβληματισμού που έθεσε η πρώτη πηγή πληροφόρησης, αποφασίστηκε να
+παρατεθούν κι οι δύο.
+
+Βέβαια, είτε ακολουθήσουμε τη μία μέθοδο, είτε την άλλη, θα πρέπει να
+πορευτούμε με αριθμητικά δεδομένα. Πέραν του ότι αυτό ζητά η εργασία,
+είναι και αναγκαίο, διότι οι κατηγορικές μεταβλητές είναι σημεία ενός
+χώρου που δεν μπορεί να είναι συνεχής. Έτσι λοιπόν:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Μόνο τα Feature\_7", "Feature\_6", "Feature\_1" ήταν αριθμητικά}
+\NormalTok{sampled\_mushrooms\_numeric }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms[, }\FunctionTok{c}\NormalTok{(}\StringTok{"Feature\_7"}\NormalTok{, }\StringTok{"Feature\_6"}\NormalTok{, }\StringTok{"Feature\_1"}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+Ακολούθως κανονικοποιούμε τα δεδομένα μας, ώστε να μην δίνεται
+περισσότερη βαρύτητα στα \texttt{Features} με μεγαλύτερες τιμές.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sampled\_mushrooms\_scaled }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{scale}\NormalTok{(sampled\_mushrooms\_numeric))}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Elbow Method}\label{elbow-method}
+
+Η μέθοδος \(k\)-μέσων συνίσταται στο να εντοπίσουμε \(k\) συστάδες, όπου
+αν πάρουμε τις αποστάσεις των σημείων της κάθε μίας από τα κέντρα τους,
+συνολικά αυτές να έχουν τη μικρότερη δυνατή τιμή. Με άλλα λόγια, θέλουμε
+αυτά τα \(k\) μέσα να είναι όσο το δυνατόν πιο αντιπροσωπευτικά της κάθε
+συστάδας. Η εν λόγω απόσταση ονομάζεται WSS.
+
+Μεγαλώνοντας το \(k\) η WSS μειώνεται, συνεπώς θα κρατήσουμε το \(k\),
+όπου από κει και πέρα η WSS αρχίσει και σταθεροποιείται.
+
+Αρχικά, βέβαια, αρχικοποιούμε τη λίστα με τις τιμές της WSS που θα
+προκύψουν. Επειδή θα εξετάσουμε τα παραπάνω για την περίπτωση μίας
+συστάδας, δύο συστάδων, \ldots, δέκα συστάδων, δημιουργούμε αρχικά ένα
+διάνυσμα με \(10\) μηδενικά.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{wss }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(}\DecValTok{10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Προχωράμε σε αυτούς τους \(10\) υπολογισμούς των WSS.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ (k }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{) \{}
+\NormalTok{  kmeans\_model }\OtherTok{\textless{}{-}} \FunctionTok{kmeans}\NormalTok{(sampled\_mushrooms\_scaled, }
+                       \AttributeTok{centers =}\NormalTok{ k, }\CommentTok{\# πόσες συστάδες/κέντρα}
+                       \AttributeTok{nstart =} \DecValTok{20}\NormalTok{, }\CommentTok{\# πόσες αρχικοποιήσεις/επανεκκινήσεις της διαδικασίας}
+                       \AttributeTok{iter.max =} \DecValTok{100} \CommentTok{\# πόσες επαναλήψεις βελτίωσης θα γίνουν μέσα στην διαδικασία, μέχρι να βρεθούν (υποψιαστούμε) τα κέντρα}
+\NormalTok{                       )}
+\NormalTok{  wss[k] }\OtherTok{\textless{}{-}}\NormalTok{ kmeans\_model}\SpecialCharTok{$}\NormalTok{tot.withinss }\CommentTok{\# Επικαιροποίηση της κ συνιστώσας του wss.}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Quick-TRANSfer stage steps exceeded maximum (= 748600)
+## Warning: Quick-TRANSfer stage steps exceeded maximum (= 748600)
+## Warning: Quick-TRANSfer stage steps exceeded maximum (= 748600)
+\end{verbatim}
+
+Οι τιμές που βγάλαμε για τα διάφορα \(k\) είναι οι παρακάτω.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{k =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{, }\AttributeTok{WSS =}\NormalTok{ wss)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     k       WSS
+## 1   1 44913.000
+## 2   2 26461.620
+## 3   3 20482.934
+## 4   4 16735.409
+## 5   5 13829.113
+## 6   6 11455.686
+## 7   7  9724.406
+## 8   8  8526.080
+## 9   9  7742.080
+## 10 10  7131.578
+\end{verbatim}
+
+Βλέπουμε αυτό που λέγαμε αρχικά, ότι δηλαδή μεγαλώνοντας το \(k\)
+επιτυγχάνεται η μείωση της WSS. Η Elbow method συνίσταται στο να δούμε
+γραφικά σε ποιο \(k\) η WSS αποκτάει μια «μόνιμη» χαμηλή τιμή.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{, wss,}
+     \AttributeTok{type =} \StringTok{"b"}\NormalTok{, }
+     \AttributeTok{xlab =} \StringTok{"k"}\NormalTok{,}
+     \AttributeTok{ylab =} \StringTok{"WSS"}\NormalTok{,}
+     \AttributeTok{main =} \StringTok{"Elbow Method"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-92-1.pdf}}
+
+«Με το μάτι» κρίνοντας φαίνεται ότι μετά από τις 2 συστάδες (\(k>2\)) η
+WSS παύει να πέφτει τόσο απότομα. Διαλέγουμε, λοιπόν, \(k=2\) και
+εφαρμόζουμε τον αλγόριθμο ομαδοποίησης πάνω στα δεομένα μας.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{optimal\_k }\OtherTok{\textless{}{-}} \DecValTok{2}
+
+\FunctionTok{set.seed}\NormalTok{(student\_id)}
+\NormalTok{final\_clusters }\OtherTok{\textless{}{-}} \FunctionTok{kmeans}\NormalTok{(sampled\_mushrooms\_scaled, }\AttributeTok{centers =}\NormalTok{ optimal\_k, }\AttributeTok{nstart =} \DecValTok{25}\NormalTok{, }\AttributeTok{iter.max =} \DecValTok{100}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Ακολούθως μπορούμε να δούμε πόσα στοιχεία ανήκουν σε κάθε μία από τις
+τρεις συστάδες.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{final\_clusters}\SpecialCharTok{$}\NormalTok{size}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1]  4745 10227
+\end{verbatim}
+
+Τέλος, επικαιροποιούμε τον πίνακα \texttt{sampled\_mushrooms}, ώστε να
+συμπεριλαμβάνει την ομαδοποίηση που επιτύχαμε.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sampled\_mushrooms}\SpecialCharTok{$}\NormalTok{cluster\_id }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(final\_clusters}\SpecialCharTok{$}\NormalTok{cluster)}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}\FunctionTok{head}\NormalTok{(sampled\_mushrooms)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable\_styling}\NormalTok{(}\StringTok{"striped"}\NormalTok{, }\AttributeTok{full\_width =}\NormalTok{ T) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{scroll\_box}\NormalTok{(}\AttributeTok{width =} \StringTok{"100\%"}\NormalTok{, }\AttributeTok{height =} \StringTok{"max{-}content"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtabu} to \linewidth {>{\raggedright}X>{\raggedright}X>{\raggedleft}X>{\raggedright}X>{\raggedleft}X>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedleft}X>{\raggedright}X>{\raggedright}X>{\raggedright}X}
+\toprule
+ & class & Feature\_7 & Feature\_11 & Feature\_6 & Feature\_2 & Feature\_10 & Feature\_8 & Feature\_1 & Feature\_5 & Feature\_4 & cluster\_id\\
+\midrule
+40828 & p & 25.02 & u & 14.69 & x & d & y & 12.49 & o & FALSE & 1\\
+26825 & p & 26.70 & a & 6.68 & f & d & w & 18.91 & w & TRUE & 1\\
+9321 & e & 3.14 & a & 4.92 & b & g & y & 3.04 & w & FALSE & 2\\
+15313 & p & 12.79 & a & 4.35 & x & d & w & 5.11 & w & TRUE & 2\\
+3074 & e & 20.14 & u & 27.41 & f & d & n & 18.98 & w & FALSE & 1\\
+\addlinespace
+38361 & p & 5.18 & a & 5.05 & x & d & e & 3.54 & e & FALSE & 2\\
+\bottomrule
+\end{longtabu}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Δημιουργία του 3D γραφήματος}
+\FunctionTok{plot\_ly}\NormalTok{(}
+  \AttributeTok{data =}\NormalTok{ sampled\_mushrooms,       }\CommentTok{\# Ορίζουμε το data frame που περιέχει τα δεδομένα μας}
+  \AttributeTok{x =} \SpecialCharTok{\textasciitilde{}}\NormalTok{Feature\_7,                }\CommentTok{\# Ορισμός του άξονα Χ}
+  \AttributeTok{y =} \SpecialCharTok{\textasciitilde{}}\NormalTok{Feature\_6,                }\CommentTok{\# Ορισμός του άξονα Υ}
+  \AttributeTok{z =} \SpecialCharTok{\textasciitilde{}}\NormalTok{Feature\_1,                }\CommentTok{\# Ορισμός του άξονα Z}
+  
+  \AttributeTok{color =} \SpecialCharTok{\textasciitilde{}}\NormalTok{cluster\_id,           }\CommentTok{\# Διαχωρισμός χρωμάτων με βάση την συστάδα που ανήκει το εκάστοτε σημείο}
+  \AttributeTok{colors =} \StringTok{"Set1"}\NormalTok{,             }\CommentTok{\# Επιλογή συγκεκριμένης χρωματικής παλέτας (βλ. https://plotly.com/python/discrete{-}color/)}
+  
+  \AttributeTok{type =} \StringTok{"scatter3d"}\NormalTok{,            }\CommentTok{\# Καθορισμός του τύπου γραφήματος ως 3D Διάγραμμα Διασποράς}
+  \AttributeTok{mode =} \StringTok{"markers"}\NormalTok{,               }\CommentTok{\# Εμφάνιση μόνο σημείων (τελείες) χωρίς να ενώνονται με γραμμές}
+  
+  \AttributeTok{marker =} \FunctionTok{list}\NormalTok{(                 }\CommentTok{\# Ρυθμίσεις για την εμφάνιση των σημείων:}
+    \AttributeTok{size =} \DecValTok{3}\NormalTok{,                    }\CommentTok{\# Καθορισμός μεγέθους της κάθε τελείας}
+    \AttributeTok{opacity =} \FloatTok{0.8}                \CommentTok{\# Καθορισμός διαφάνειας }
+\NormalTok{  )}
+\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{layout}\NormalTok{(                        }\CommentTok{\# Ρυθμίσεις για τη συνολική εμφάνιση και τους τίτλους}
+    \AttributeTok{title =} \StringTok{"3D Οπτικοποίηση των συστάδων"}\NormalTok{, }\CommentTok{\# Ο τίτλος του γραφήματος}
+    
+    \AttributeTok{scene =} \FunctionTok{list}\NormalTok{(                }\CommentTok{\# Ρυθμίσεις για το 3D περιβάλλον (σκηνή)}
+      \AttributeTok{xaxis =} \FunctionTok{list}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Feature 7\textquotesingle{}}\NormalTok{), }\CommentTok{\# Ονομασία του άξονα Χ}
+      \AttributeTok{yaxis =} \FunctionTok{list}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Feature 6\textquotesingle{}}\NormalTok{), }\CommentTok{\# Ονομασία του άξονα Υ}
+      \AttributeTok{zaxis =} \FunctionTok{list}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Feature 1\textquotesingle{}}\NormalTok{)  }\CommentTok{\# Ονομασία του άξονα Ζ}
+\NormalTok{    )}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-96-1.pdf}}
+
+Ο γράφων οφείλει να ομολογήσει πως το παραπάνω γράφημα ήταν μια
+απογοήτευση. Αντί να χρωματιστούν οι συστάδες που φαίνεται να υπάρχουν,
+ο αλγόριθμος απλά πήρε ένα μαχαίρι κι έκοψε σε δυο φέτες το
+σημειοσύνολο. Σε σχετική ερώτηση προς το Gemini πήρε την απάντηση ότι
+αυτό είναι απόλυτα φυσιολογικό. Ομοίως απήντησαν κι άλλα LLM, όπως το
+ChatGPT και το DeepSeek, τα οποία έθεσαν και το ζήτημα του ότι
+απεικονίζω τα μη-κανονικοποιημένα δεδομένα.
+
+Όμως και η απεικόνιση των κανονικοποιημένων δεδομένων οδηγεί στα ίδια
+παράλογα (με το μάτι) αποτελέσματα, συνεπώς, βάζουμε μια άνω τελεία στην
+εν λόγω μελέτη και προχωράμε να δούμε την απόδοση και των υπολοίπων.
+
+Κλείνοντας, αξίζει ίσως να αναφερθεί ότι τα βήματα υπολογισμού των WSS
+βάσει των διαφόρων \(k\) μπορούν να απλοποιηθούν μέσω της συνάρτησης
+\texttt{fviz\_nbclust()} του πακέτου \texttt{factoextra},
+χρησιμοποιώντας συχρόνως το πακέτο \texttt{cluster} (βλ. οδηγίες
+\href{https://www.statology.org/elbow-method-in-r/}{εδώ}). Επειδή, όμως
+η \texttt{fviz\_nbclust()} φαίνεται να είναι αρκετά βαριά, θα αρκεστούμε
+στην εξέταση ενός δείγματος του \texttt{sampled\_mushrooms\_scaled}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(student\_id) }
+\NormalTok{s.m.s\_sample }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms\_scaled[}\FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{nrow}\NormalTok{(sampled\_mushrooms\_scaled), }\DecValTok{1000}\NormalTok{), ]}
+\FunctionTok{fviz\_nbclust}\NormalTok{(s.m.s\_sample, kmeans, }\AttributeTok{method =} \StringTok{"wss"}\NormalTok{, }\AttributeTok{nstart =} \DecValTok{10}\NormalTok{, }\AttributeTok{iter.max =} \DecValTok{100}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-97-1.pdf}}
+
+\subsection{Silhouette Score}\label{silhouette-score}
+
+Στην παρούσα μέθοδο οι συστάδες προσδιορίζονται πάλι με τον αλγόριθμο
+k-means, απλά το ιδανικό πλήθος συστάδων προσδιορίζεται με άλλον τρόπο.
+Συγκεκριμένα, αντί ο στόχος να είναι η εξομάλυνση της WSS, στόχος είναι
+να μεγιστοποιηθεί η μέση απόσταση των κλάσεων μεταξύ τους.
+
+Η εν λόγω απόστση είναι αυτό που αποκαλούμε \emph{Silhouette Score}.
+Συγκεκριμένα, παίρνει τιμές από -1 έως 1, όπου (βλ.
+\href{https://medium.com/@hazallgultekin/what-is-silhouette-score-f428fb39bf9a}{εδώ}):
+
+\begin{quote}
+\begin{itemize}
+\item
+  Οι θετικές τιμές υποδηλώνουν ότι τα σημεία δεδομένων ανήκουν στις
+  σωστές συστάδες, γεγονός που δείχνει καλά αποτελέσματα ομαδοποίησης.
+\item
+  Μια τιμή ίση με μηδέν υποδηλώνει επικαλυπτόμενες συστάδες ή σημεία
+  δεδομένων που βρίσκονται σε ίση απόσταση από περισσότερες από μία
+  συστάδες.
+\item
+  Οι αρνητικές τιμές υποδηλώνουν ότι τα σημεία δεδομένων έχουν ανατεθεί
+  σε λανθασμένες συστάδες, γεγονός που δείχνει κακά αποτελέσματα
+  ομαδοποίησης.
+\end{itemize}
+\end{quote}
+
+Επειδή ο υπολογισμός του Silhouette Score απαιτεί τον υπολογισμό της
+απόστασης κάθε σημείου από κάθε άλλο, είναι υπολογιστικά δαπανηρός, θα
+αρκεστούμε στον υπολογισμό του από ένα τυχαίο δείγμα του. Έτσι, αφού η
+χρήση δείγματος καθίσταται μονόδρομος, μπορούμε να χρησιμοποιήσουμε τη
+συνάρτηση \texttt{fviz\_nbclust}, με τον τρόπο που συστήνεται
+\href{https://medium.com/codesmart/r-series-k-means-clustering-silhouette-794774b46586}{εδώ}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{fviz\_nbclust}\NormalTok{(s.m.s\_sample, kmeans, }\AttributeTok{method =} \StringTok{"silhouette"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-98-1.pdf}}
+
+Και αυτή η μέθοδος, όπως η elbow, δίνει δύο συστάδες. Δεδομένου ότι η
+διαδικασία διαφοροποιείται μόνο ως προς το πόσες είναι οι ομάδες μας,
+δεν έχουμε τίποτα καινούριο να συναντήσουμε εδώ σε σχέση με αυτά που
+γράψαμε και απεικονίσαμε στην υποενότητα για τη μέθοδο Elbow. Συνεπώς
+μπορούμε να παραλείψουμε τις επαναλήψεις και να προχωρήσουμε στην
+επόμενη ενότητα.
+
+\section{Hierarchical Clustering}\label{hierarchical-clustering}
+
+Αρχικά κάνουμε την τυχαία δειγματοληψία που ζητάει η εργασία.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(student\_id)  }
+\NormalTok{sampled\_data }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_mushrooms[}
+  \FunctionTok{sample}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(sampled\_mushrooms), }\DecValTok{1000}\NormalTok{),}
+\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+Εν συνεχία επιλέγουμε δύο αριθμητικά χαρακτηριστικά του δείγματός μας.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{numeric\_features }\OtherTok{\textless{}{-}}\NormalTok{ sampled\_data[, }\FunctionTok{c}\NormalTok{(}\StringTok{"Feature\_7"}\NormalTok{, }\StringTok{"Feature\_6"}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+Τέλος, κανονικοποιούμε το dataframe που σχηματίστηκε:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{scaled\_features }\OtherTok{\textless{}{-}} \FunctionTok{scale}\NormalTok{(numeric\_features)}
+\end{Highlighting}
+\end{Shaded}
+
+Έτσι, είμαστε έτοιμοι να φτιάξουμε τη μήτρα απόστασης:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{distance\_matrix }\OtherTok{\textless{}{-}} \FunctionTok{dist}\NormalTok{(}
+\NormalTok{  scaled\_features,}
+  \AttributeTok{method =} \StringTok{"manhattan"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Έτσι είναι έτοιμη να αρχίσει η διαδικασία του Hierarchical clustering.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{HierarchicalClustering }\OtherTok{\textless{}{-}} \FunctionTok{hclust}\NormalTok{(}
+\NormalTok{  distance\_matrix,}
+  \AttributeTok{method =} \StringTok{"complete"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Ας δούμε το δεντρόγραμμα που προκύπτει.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(}
+\NormalTok{  HierarchicalClustering,}
+  \AttributeTok{labels =} \ConstantTok{FALSE}\NormalTok{,}
+  \AttributeTok{main =} \StringTok{"Δεντρόγραμμα {-} Hierarchical Clustering"}\NormalTok{,}
+  \AttributeTok{xlab =} \StringTok{"είδος μανιταριού"}\NormalTok{,}
+  \AttributeTok{ylab =} \StringTok{"Manhattan distance"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-104-1.pdf}}
+
+«Με το μάτι» βλέπουμε ότι υπάρχουν δύο βασικές ομάδες. Μία μικρή ομάδα
+από λίγα στοιχεία στρημωγμένα στα αριστερά και μια τεράστια ομάδα με
+πλήθος υπο-ομάδων δεξιά αυτής. Θα χωρίσουμε το \texttt{sampled\_data}
+στις δύο αυτές ομάδες.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{clusters }\OtherTok{\textless{}{-}} \FunctionTok{cutree}\NormalTok{(HierarchicalClustering, }\AttributeTok{k =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Ακολούθως εφοδιάζουμε το \texttt{sampled\_data} με την πληροφορία περί
+του αν το εκάστοτε μανητάρι ανήκει στη μία ή την άλλη ομάδα.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sampled\_data}\SpecialCharTok{$}\NormalTok{cluster\_result }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(clusters)}
+\end{Highlighting}
+\end{Shaded}
+
+Και τώρα ας δούμε τι έχουμε καταφέρει βλέποντας την διαμέριση των
+σημείων που επιτυγχάνεται στον χώρο
+\texttt{Feature\_7}\(\times\)\texttt{Feature\_6}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(sampled\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Feature\_7, }\AttributeTok{y =}\NormalTok{ Feature\_6, }\AttributeTok{color =}\NormalTok{ cluster\_result)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Οπτικοποίηση ομάδων"}\NormalTok{,}
+       \AttributeTok{x =} \StringTok{"Feature 7"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Feature 6"}\NormalTok{,}
+       \AttributeTok{color =} \StringTok{"Ομάδα"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-107-1.pdf}}
+
+\section{DBSCAN}\label{dbscan}
+
+\subsection{Με δεδομένα
+εργασίας}\label{ux3bcux3b5-ux3b4ux3b5ux3b4ux3bfux3bcux3adux3bdux3b1-ux3b5ux3c1ux3b3ux3b1ux3c3ux3afux3b1ux3c2}
+
+Καταρχάς, θα αποφύγουμε την κανονικοποίηση ακολουθώντας τις συμβουλές
+της απάντησης
+\href{https://stackoverflow.com/a/63978748/11032590}{αυτής} (μετάφραση
+Gemini):
+
+\begin{quote}
+Η κανονικοποίηση ή η τυποποίηση των δεδομένων σας μπορεί να καταστρέψει
+σημαντικές ιδιότητες του συνόλου δεδομένων σας.
+
+Ορισμένα παραδείγματα:
+
+\begin{itemize}
+\item
+  \textbf{Τα δεδομένα σας είναι γεωγραφικές συντεταγμένες:} Το
+  γεωγραφικό πλάτος και το γεωγραφικό μήκος δεν πρέπει ποτέ να
+  κανονικοποιούνται ή να τυποποιούνται.
+\item
+  \textbf{Τα δεδομένα σας είναι ιστογράμματα:} Η μόνη ουσιαστική
+  κανονικοποίηση είναι να κάνετε το άθροισμα του ιστογράμματος ίσο με 1.
+  Ποτέ μην μετασχηματίζετε μεμονωμένες μεταβλητές!
+\item
+  \textbf{Τα δεδομένα σας έχουν ένα ουσιαστικό μηδέν:} Για παράδειγμα,
+  αν πρόκειται για μια χρηματική αξία. Ο μετασχηματισμός με
+  \(sgn(x) \cdot \sqrt{|x|}\) μπορεί να είναι χρήσιμος σε ορισμένους
+  τομείς πάντως.
+\item
+  \textbf{Τα δεδομένα σας είναι αραιά (sparse):} Ποτέ μην κάνετε
+  τυποποίηση. (Η κανονικοποίηση μπορεί να είναι «εντάξει» αν δεν έχετε
+  αρνητικές τιμές).
+\end{itemize}
+
+Η επιλογή της κλιμάκωσης (scaling) δεν πρέπει να γίνεται «επειδή γίνεται
+πάντα», αλλά βάσει των πραγματικών δεδομένων που έχετε! Επιλέξτε την
+επειδή είναι το σωστό, όχι επειδή είναι η «προεπιλογή» ή επειδή το
+είδατε σε κάποιο σεμινάριο.
+
+Πιθανότατα, αν καταφεύγετε στην κανονικοποίηση ή την τυποποίηση χωρίς
+σκέψη, σημαίνει ότι δεν έχετε κατανοήσει τα δεδομένα σας, ούτε το πώς να
+μετρήσετε την απόσταση ή την ομοιότητα. Πολλοί χρησιμοποιούν την
+κανονικοποίηση ως έσχατη λύση για να πάρουν «κάποιο» αποτέλεσμα, αλλά
+ποτέ δεν μπορείτε να είστε σίγουροι αν το αποτέλεσμα αυτό έχει όντως
+νόημα.
+\end{quote}
+
+Δεδομένου ότι εδώ δεν έχουμε εικόνα περί του τι είναι τα χαρακτηριστικά
+των μανηταριών που μελετάμε, θα αποφύγουμε την κανονικοποίηση/κλιμάκωση.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Εκτέλεση DBSCAN με τις παραμέτρους της εργασίας}
+\NormalTok{db1 }\OtherTok{\textless{}{-}} \FunctionTok{dbscan}\NormalTok{(numeric\_features,}\CommentTok{\# τα δεδομένα}
+              \AttributeTok{eps =} \FloatTok{0.5}\NormalTok{, }\CommentTok{\# η ακτίνα (ε) της περιοχής αντός της οποίας τα σημεία ορίζονται ως γειτονικά του κέντρου της}
+              \AttributeTok{minPts =} \DecValTok{2} \CommentTok{\# πλήθος σημείων όπου αν υπάρχουν εντός της Β(ε) έχουμε πυκνή περιοχή.}
+\NormalTok{              )}
+\end{Highlighting}
+\end{Shaded}
+
+Ας δούμε τις ομάδες που σχηματίζει η DBSCAN.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(db1}\SpecialCharTok{$}\NormalTok{cluster)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  1  2  3  4  5  6  0  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29
+## [31] 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59
+## [61] 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78
+\end{verbatim}
+
+Βλέπουμε ότι σχηματίστηκαν 79 ομάδες. Δεδομένου ότι το 0 αντιπροσωπεύει
+τον θόρυβο, θα μπορούσαμε να πούμε ότι ουσιαστικά είναι 78 ομάδες. Θα
+λέγαμε ότι είναι αρκετές, αλλά εν πάση περιπτώσει, ας επικαιροποιήσουμε
+το dataframe μας με την ομαδοποίηση που πετύχαμε.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{numeric\_features1 }\OtherTok{\textless{}{-}}\NormalTok{ numeric\_features}
+\NormalTok{numeric\_features1}\SpecialCharTok{$}\NormalTok{ClusterDbscan }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(db1}\SpecialCharTok{$}\NormalTok{cluster)}
+\FunctionTok{head}\NormalTok{(numeric\_features1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Feature_7 Feature_6 ClusterDbscan
+## 43564     12.86     12.04             1
+## 28112      8.99      5.78             2
+## 45632      3.61      5.68             2
+## 56782      0.00      0.00             3
+## 45485      3.63      6.46             2
+## 7029       7.18      2.72             4
+\end{verbatim}
+
+Κι ας δούμε σχηματικά τα πεπραγμένα μας.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}
+\NormalTok{  numeric\_features1,}
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Feature\_7, }\AttributeTok{y =}\NormalTok{ Feature\_6, }\AttributeTok{color =}\NormalTok{ ClusterDbscan)}
+\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \DecValTok{2}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.8}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"DBSCAN (eps = 0.5, minPts = 2)"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Feature\_7"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Feature\_6"}\NormalTok{,}
+    \AttributeTok{color =} \StringTok{"Ομάδα"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-111-1.pdf}}
+
+Ο γράφων οφείλει να ομολογήσει ότι δεν έμεινε ιδιέτερα ικανοποιημένος
+από τα αποτελέσματα αυτά, συνεπώς έψαξε πληροφορίες για τις παραμέτρους
+\texttt{eps} και \texttt{minPts}. Τα αποτελέσματα ακολουθούν στην
+επόμενη ενότητα.
+
+\subsection{Με προτεινόμενα eps και
+minPts}\label{ux3bcux3b5-ux3c0ux3c1ux3bfux3c4ux3b5ux3b9ux3bdux3ccux3bcux3b5ux3bdux3b1-eps-ux3baux3b1ux3b9-minpts}
+
+Σύμφωνα με
+\href{https://www.datacamp.com/tutorial/dbscan-clustering-algorithm}{αυτή}
+και \href{https://medium.com/@amit25173/dbscan-in-r-3c93c97b674b}{αυτή}
+την πηγή, το \texttt{minPts} είναι εν γένει χρήσιμο να τίθεται ίσο με το
+\emph{διπλάσιο της διάστασης του πίνακά μας}. Εν προκειμένω, αφού έχουμε
+δύο \texttt{Features} θα πρέπει \texttt{minPts=4}. Η ίδια πηγή αναφέρει
+ότι για να προσδιοριστεί το \texttt{eps} θα πρέπει να εφαρμοσουμε k-NN,
+να σχεδιάσουμε το k-NN distance plot και να βρούμε την k-απόσταση που
+παρατηρείται «αγκώνας» στο γράφημα. Αυτή τελικά θα τη θέσουμε ως
+\texttt{eps}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{kNNdistplot}\NormalTok{(numeric\_features, }\AttributeTok{minPts=}\DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-112-1.pdf}}
+
+Βλέπουμε ότι ο «αγκώνας» είναι κάπου ανάμεσα στο 800 και το 1000, οπότε
+ζουμάρουμε.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Υπολογισμός των αποστάσεων}
+\NormalTok{dist\_values }\OtherTok{\textless{}{-}} \FunctionTok{kNNdist}\NormalTok{(numeric\_features, }\AttributeTok{k =} \DecValTok{4}\NormalTok{)}
+
+\CommentTok{\# Ταξινόμηση των αποστάσεων σε αύξουσα σειρά}
+\NormalTok{dist\_values\_sorted }\OtherTok{\textless{}{-}} \FunctionTok{sort}\NormalTok{(dist\_values)}
+
+
+\CommentTok{\# Δημιουργία γραφήματος με Zoom}
+\FunctionTok{plot}\NormalTok{(dist\_values\_sorted, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{,}
+     \AttributeTok{main =} \StringTok{"K{-}distance Graph"}\NormalTok{,}
+     \AttributeTok{xlab =} \StringTok{"Points (sorted by distance)"}\NormalTok{, }
+     \AttributeTok{ylab =} \StringTok{"ε"}\NormalTok{,}
+     \AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{880}\NormalTok{, }\DecValTok{920}\NormalTok{), }\CommentTok{\# Zoom στο τέλος της καμπύλης}
+     \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\FloatTok{1.5}\NormalTok{)) }\CommentTok{\# Zoom στον άξονα y}
+
+\CommentTok{\# Προσθήκη πλέγματος}
+\FunctionTok{grid}\NormalTok{(}\AttributeTok{nx =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{ny =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{col =} \StringTok{"gray"}\NormalTok{, }\AttributeTok{lty =} \StringTok{"dotted"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-113-1.pdf}}
+
+Από το σχήμα διαπιστώνουμε ότι μάλλον \texttt{eps=1.3}, οπότε προχωράμε
+με αυτή την τιμή και με \texttt{minPts\ =\ 4}, όπως προαναφέραμε.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Εκτέλεση DBSCAN με τις παραμέτρους που βρήκαμε}
+\NormalTok{db2 }\OtherTok{\textless{}{-}} \FunctionTok{dbscan}\NormalTok{(numeric\_features,}\CommentTok{\# τα δεδομένα}
+              \AttributeTok{eps =} \FloatTok{1.3}\NormalTok{, }\CommentTok{\# η ακτίνα (ε) της περιοχής αντός της οποίας τα σημεία ορίζονται ως γειτονικά του κέντρου της}
+              \AttributeTok{minPts =} \DecValTok{4} \CommentTok{\# πλήθος σημείων όπου αν υπάρχουν εντός της Β(ε) έχουμε πυκνή περιοχή.}
+\NormalTok{              )}
+\end{Highlighting}
+\end{Shaded}
+
+Ας δούμε και τις ομαδοποιήσεις που προκύπτουν.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(db2}\SpecialCharTok{$}\NormalTok{cluster)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1 2 4 3 0 5 6
+\end{verbatim}
+
+Προκύπτουν 79 ομάδες, ήτοι 78 χωρίς τα απομωνομένα σημεία. Σαφώς
+καλύτερα από πριν.
+
+Να επικαιροποιήσουμε και το dataframe μας.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{numeric\_features2 }\OtherTok{\textless{}{-}}\NormalTok{ numeric\_features}
+\NormalTok{numeric\_features2}\SpecialCharTok{$}\NormalTok{ClusterDbscan }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(db2}\SpecialCharTok{$}\NormalTok{cluster)}
+\FunctionTok{head}\NormalTok{(numeric\_features2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Feature_7 Feature_6 ClusterDbscan
+## 43564     12.86     12.04             1
+## 28112      8.99      5.78             1
+## 45632      3.61      5.68             1
+## 56782      0.00      0.00             2
+## 45485      3.63      6.46             1
+## 7029       7.18      2.72             1
+\end{verbatim}
+
+Και ας εξετάσουμε και σχηματικά τη νέα αυτή προσέγγιση.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}
+\NormalTok{  numeric\_features2,}
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Feature\_7, }\AttributeTok{y =}\NormalTok{ Feature\_6, }\AttributeTok{color =}\NormalTok{ ClusterDbscan)}
+\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \DecValTok{2}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.8}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"DBSCAN (eps = 1.3, minPts = 4)"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Feature\_7"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Feature\_6"}\NormalTok{,}
+    \AttributeTok{color =} \StringTok{"Ομάδα"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ergasiaKostasKoudas_files/figure-latex/unnamed-chunk-117-1.pdf}}
+
+\section{Αναφορές}\label{ux3b1ux3bdux3b1ux3c6ux3bfux3c1ux3adux3c2}
+
+\subsection{Ιστοσελίδες}\label{ux3b9ux3c3ux3c4ux3bfux3c3ux3b5ux3bbux3afux3b4ux3b5ux3c2}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \href{https://ggobi.github.io/ggally/articles/ggpairs.html}{ggpairs():
+  Pairwise plot matrix}
+\item
+  \href{https://www.geeksforgeeks.org/r-language/identify-and-remove-duplicate-data-in-r/}{Identify
+  and Remove Duplicate Data in R}
+\item
+  \href{https://www.youtube.com/watch?v=LLBGiAAZqAM}{Decision Trees -
+  VisuallyExplained}
+\item
+  \href{https://www.youtube.com/watch?v=JcI5E2Ng6r4}{Decision Tree:
+  Important things to know}
+\item
+  \href{https://www.geeksforgeeks.org/r-language/decision-tree-in-r-programming/}{Decision
+  Tree in R Programming}
+\item
+  \href{https://medium.com/@jaz1/holdout-vs-cross-validation-in-machine-learning-7637112d3f8f}{Hold-out
+  vs.~Cross-validation in Machine Learning}
+\item
+  \href{https://adria708.medium.com/elbow-method-vs-silhouette-co-efficient-in-determining-the-number-of-clusters-33baff2fbeee}{Elbow
+  Method vs Silhouette Co-efficient in Determining the Number of
+  Clusters}
+\item
+  \href{https://www.geeksforgeeks.org/machine-learning/elbow-method-vs-silhouette-score-which-is-better/}{Elbow
+  Method vs.~Silhouette Score: which is better?}
+\item
+  \href{https://stanford.edu/~cpiech/cs221/handouts/kmeans.html}{K
+  Means}
+\item
+  \href{https://www.geeksforgeeks.org/machine-learning/k-means-clustering-introduction/}{K
+  means Clustering -- Introduction}
+\item
+  \href{https://www.statology.org/elbow-method-in-r/}{How to Use the
+  Elbow Method in R to Find Optimal Clusters}
+\item
+  \href{https://www.geeksforgeeks.org/machine-learning/silhouette-algorithm-to-determine-the-optimal-value-of-k/}{Silhouette
+  Algorithm to determine the optimal value of k}
+\item
+  \href{https://medium.com/@hazallgultekin/what-is-silhouette-score-f428fb39bf9a}{What
+  is Silhouette Score?}
+\item
+  \href{https://medium.com/codesmart/r-series-k-means-clustering-silhouette-794774b46586}{R
+  Series --- K means Clustering (Silhouette)}
+\item
+  \href{https://medium.com/@amit25173/dbscan-in-r-3c93c97b674b}{DBSCAN
+  in R}
+\item
+  \href{https://www.datacamp.com/tutorial/dbscan-clustering-algorithm}{A
+  Guide to the DBSCAN Clustering Algorithm}
+\item
+  \href{https://www.css.cornell.edu/faculty/dgr2/_static/files/R_html/CompareRandomForestPackages.html}{Random
+  forests two ways}
+\item
+  \href{https://www.geeksforgeeks.org/r-language/ranger-function-in-r/}{Ranger
+  Function In R}
+\item
+  \href{https://medium.com/@miameyer15/random-forest-and-bootstrap-bbfa1f9927c5}{Random
+  forest and bootstrap}
+\end{enumerate}
+
+\subsection{Συγγράμματα}\label{ux3c3ux3c5ux3b3ux3b3ux3c1ux3acux3bcux3bcux3b1ux3c4ux3b1}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Hands-On Machine Learning with R. \emph{Brad Boehmke \& Brandon
+  Greenwell}. CRC Press, 2020.
+\item
+  Introduction to Machine Learning with R. \emph{Burger Scott}. O'Reilly
+  Media, 2018.
+\item
+  Προγραμματισμός σε R για την επιστήμη των δεδομένων. \emph{Hadley
+  Wickham \& Garret Grolemund}. Κλειδάριθμος, 2022.
+\item
+  Στατιστική, ανάλυση δεδομένων με τη χρήση της R. \emph{Robert S. Wiee,
+  John S. Witte, Γιώργος Ανδρουλάκης \& Κωνσταντίνος Κουνετάς}. Κριτική,
+  2019.
+\item
+  Practical Machine Learning with R. \emph{Carsten Lange}. CRC Press,
+  2024
+\item
+  Μηχανική Μάθηση. \emph{Κωνσταντίνος Διαμαντάρας \& Δημήτρης Μπότσης}.
+  Κλειδάριθμος, 2019.
+\end{enumerate}
+
+\end{document}

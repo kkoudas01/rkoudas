@@ -1,0 +1,415 @@
+---
+title: "Μετρώντας την ανισότητα."
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+
+
+```{r}
+#| echo = F
+rm(list = ls())
+```
+
+
+
+# Παρουσίαση δεδομένων 
+
+Στην παρούσα ενότητα θα προσπαθήσουμε να αξιολογήσουμε το επίπεδο ανισότητας που υπάρχει σε διάφορες χώρες. Ένας τρόπος είναι να κάνουμε το ακόλουθο νοητικό πείραμα. 
+
+> Το μέσο ετήσιο εισόδημα π.χ. [στην Ελλάδα το 2022 ήταν 13973€](https://www.eea.gr/arthra-eea/koinonia-dyo-tachytiton-oi-misoi-ellines-dilonoyn-eisodimata-kato-ton-10-000-eyro/). Αυτό στο περίπου σημαίνει ότι αν διαλέγαμε τότε έναν Έλληνα στην τύχη, αναμέναμε να τύχουμε κάποιον με εισόδημα $13\ 973$€. 
+>
+> Ας φανταστούμε τώρα ότι διαλέγαμε δύο Έλληνες.  Τί διαφορά θα αναμέναμε να είχαν τα εισοδήματά τους;
+>
+> - Αν όλοι οι Έλληνες είχαν ίδιο εισόδημα ($13\ 973$€ έκαστος), θα αναμέναμε μια διαφορά ίση με το $0$.
+> - Αν από την άλλη είχαμε μια ακραία ανισότητα όπου όλος ο πλούτος ήταν στα χέρια ενός Έλληνα, τότε η διαφορά που θα συναντούσαμε θα ήταν είτε $0$ (αν τυχαίναμε δύο φτωχούς) είτε $10\ 413\ 982 \cdot 13\ 973=145\ 514\ 570\ 486$€ (αν τυχαίναμε τον πλούσιο με έναν φτωχό). Κατά μέσο όρο, αυτό που περιμένουμε να συντήσουμε αποδεικνύεται ότι ισούται με το διπλάσιο του μέσου εισοδήματος (εν προκειμένω $2 \cdot 13\ 973=27\ 946$€). Σε αυτή την περίπτωση της ακραίας ανισότητας η αναμενόμενη διαφορά θα ήταν η μέγιστη δυνατή.
+> - Για τις ενδιάμεσες καταστάσεις ανισότητας θα αναμέναμε να τύχουμε και ενδιάμεσες διαφορές. Κάτι μεταξύ των $0$€ και των $27\ 946$€.
+>
+> Τί όμως συνέβαινε πραγματικά; Ποια ήταν η αναμενόμενη διαφορά εισοδήματος που θα συναντούσαμε σε δύο τυχαίους Έλληνες; Ή καλύτερα, τι ποσοστό της μέγιστης διαφοράς (εν προκειμένω των $27\ 946$€) θα αναμέναμε να ήταν αυτή η διαφορά; Στην Ελλάδα του 2022 αυτό το ποσοστό ήταν $0.316$, ήτοι $31.6\%$. Με άλλα λόγια, πρόχειρα μιλώντας, στην Ελλάδα του 2022 η τρέχουσα κατάσταση ανισότητας ήταν το $31.6\%$ της μέγιστης δυνατής. Σαν να λέμε, δηλαδή, ότι είχαμε $31.6\%$ επίπεδο ανισότητας.
+>
+> Το ποσοστό αυτό είναι ο λεγόμενος συντελεστής Gini της Ελλάδας για το έτος 2022.
+
+
+Εν γένει, λοιπόν, ο συντελεστής Gini μιας χώρας είναι το ποσοστό της αναμενόμενης διαφοράς εισοδήματος προς τη μέγιστη δυνατή. Και με πιο πρόχειρα λόγια, είναι το ποσοστό της τρέχουσας κατάστασης ανισότητας σε σχέση με τη μέγιστη δυνατή ανισότητα. Συνεπώς μετράει πόσο μεγάλη ανισότητα υπάρχει στον πληθυσμό.
+
+- Όταν ο συντελεστής Gini παίρνει τιμή 0 (0%), σημαίνει ότι έχουμε μια κατάσταση πλήρους ισότητας.
+
+- Αν παίρνει την τιμή 1 (100%), σημαίνει ότι έχουμε μια κατάσταση ακραίας ανισότητας.
+
+- Αν παίρνει τιμή μεταξύ 0 και 0.3 (0%-30%), τότε υποδεικνύει σχετική ισότητα, ήτοι ο πλούτος κατανέμεται αρκετά ισότιμα.
+
+- Αν είναι μεταξύ 0.3 και 0.4 (30%-40%) υποδηλώνει ότι υπάρχει επαρκής ισότητα. Αυτό σημαίνει ότι το εισόδημα κατανέμεται με ικανοποιητικό τρόπο, αλλά υπάρχει περιθώριο για μεγαλύτερη ισότητα.
+
+- Ένας συντελεστής μεγαλύτερος από 0.4 (40%-100%) δείχνει ότι υπάρχει μεγάλο χάσμα εισοδήματος. Ανισότητα πάνω από αυτό το επίπεδο συχνά συνδέεται με κοινωνική και πολιτική αστάθεια ή ένταση.
+
+- Ακόμα χειρότερα, ένας συντελεστής μεταξύ 0.5 και 1 (50%-100%) σημαίνει ότι υπάρχει σοβαρή ανισότητα μέσα σε μια οικονομία.
+
+Αυτόν θα εξετάσουμε εδώ.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+if(!require(gridExtra)){
+  install.packages("gridExtra")
+  library(gridExtra)
+}
+if(!require(ggplot2)){
+  install.packages("ggplot2")
+  library(ggplot2)
+}
+if(!require(ggridges)){
+  install.packages("ggridges")
+  library(ggridges)
+}
+if(!require(rstatix)){
+    install.packages("rstatix")
+    library(rstatix)
+}
+if(!require(viridis)){
+    install.packages("viridis")
+    library(viridis)
+}
+if(!require(dplyr)){
+    install.packages("dplyr")
+    library(dplyr)
+}
+if(!require(reshape)){
+    install.packages("reshape")
+    library(reshape)
+}
+if(!require(reshape2)){
+    install.packages("reshape2")
+    library(reshape2)
+}
+if(!require(plotly)){
+    install.packages("plotly")
+    library(plotly)
+}
+```
+
+Από τη σελίδα του [OECD](https://data-explorer.oecd.org/vis?tm=gini&pg=0&fc=Topic&snb=86&df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_WISE_IDD%40DF_IDD&df[ag]=OECD.WISE.INE&df[vs]=1.0&dq=.A.INC_DISP_GINI.....D_CUR.&pd=%2C&to[TIME_PERIOD]=false&vw=tb) αντλήσαμε τους συντελεστές Gini για διάφορες χώρες και σε διάφορα έτη. Αν προσέξει ο αναγνώστης, θα δει ότι υπάρχουν καταχωρίσεις (`Age`) για την ανισότητα σε μεγάλες ηλικίες (`Over 65 years`), για μικρότερες (`From 18 to 65 years`), αλλά και για την ανισότητα στο σύνολο του πληθυσμού (`Total`).
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+gini <- read.csv("gini.csv", na.string = "")
+exeption <- -which(names(gini) %in% c("STRUCTURE", "STRUCTURE_ID", "STRUCTURE_NAME","ACTION", "FREQ", "Frequency.of.observation", "MEASURE", "Measure", "STATISTICAL_OPERATION", "Statistical.operation", "UNIT_MEASURE", "Unit.of.measure", "DEFINITION", "Definition", "POVERTY_LINE", "Poverty.line", "Time.period","Observation.value", "OBS_STATUS", "Observation.status", "UNIT_MULT", "Unit.multiplier", "CURRENCY", "Currency", "DECIMALS", "Decimals", "PRICE_BASE", "Price.base", "BASE_PER", "Base.period", "CONF_STATUS", "Confidentiality.status"))
+gini <- gini[,exeption]
+gini <- dcast(gini, REF_AREA+Age+AGE+TIME_PERIOD ~ Methodology, value.var = "OBS_VALUE")
+knitr::kable(head(gini)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+Επειδή ο συντελεστής Gini υπολογίστηκε σε κάποιες περιόδους βάσει παλαιότερων κριτηρίων και σε κάποιες άλλες βάσει των σύγχρονων κριτηρίων (βλ. `Income definition until 2011` και `Income definition since 2012`), θα κρατήσουμε όπου είναι δυνατό τα τρέχοντα κριτήρια υπολογισμού του (`Income definition since 2012`) και, όπου αυτά δεν είναι διαθέσιμα, θα αρκεστούμε στα παλιά (`Income definition until 2011`).
+
+
+```{r}
+#| echo = FALSE
+gini$Gini_coefficient <- ifelse(
+  is.na(gini$`Income definition since 2012`),
+  gini$`Income definition until 2011`,
+  gini$`Income definition since 2012`
+)
+knitr::kable(head(gini)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+
+# Τρέχουσα κατάσταση 
+
+Ας αρχίσουμε τη μελέτη εξετάζοντας τι συμβαίνει σήμερα. Η εγγύτερη στη σημερινή ημερομηνία ήταν το 2022, επομένως θα αρκεστούμε σε αυτό.
+
+```{r}
+#| echo = FALSE
+gini22 <- gini[gini$TIME_PERIOD==2022,]
+gini22plot <- ggplot(gini22, aes(x=Age, y=Gini_coefficient, fill=REF_AREA))
+ggplotly(gini22plot+geom_bar(stat="identity", position=position_dodge(), colour="black"))
+```
+
+Η χώρα με την υψηλότερη ανισότητα παρατηρούμε πως είναι η Κόστα Ρίκα (`CRI`). Σε κάθε ηλικιακή ομάδα υπάρχει μεγάλο χάσμα εισοδήματος, καθόσον ο συντελεστής Gini είναι πάνω από το 0.4. Εστιάζοντας στην ομάδα των ηλικιωμένων πάνω από 65 ετών το εισοδηματικό χάσμα απογειώνεται με τον συντελεστή Gini να είναι πάνω από 0.5.
+
+Από την άλλη, η χώρα με τη χαμηλότερη ανισότητα είναι η Σλοβακία (`SVK`). Σε κάθε ηλικιακή ομάδα ο συντελεστής Gini είναι κάτω από 0.3, όπερ υποδηλώνει κατάσταση σχετικής ισότητας.
+
+Η Ελλάδα (`GRC`) θα λέγαμε ότι είναι κάπου στη μέση.
+
+Στο σημείο αυτό αξίζει να παρατηρήσουμε ότι σε κάποιες χώρες ο συντελεστής Gini του συνόλου του πληθυσμού είναι μεγαλύερος τόσο του συντελεστή Gini της ηλικιακής ομάδας 18-65, όσο κι αυτής των πάνω των 65 ετών. Συνήθως βλέπουμε να είναι κάπου ενδιάμεσα από αυτές τις δύο τιμές (κάτω κι από τις δύο αποκλείεται να είναι, βλ. [Zagier κάτω φράγματα](https://www.johndcook.com/blog/2022/10/20/gini-coefficient-inequalities/)), αλλά σε χώρες όπως π.χ. η Βραζιλία (`ΒΡΑ`) τις υπερβαίνει. Ένας τρόπος να συμβεί αυτό είναι οι δύο αυτές ηλικιακές ομάδες να έχουν μεταξύ τους μεγάλο οικονομικό χάσμα και η μία να είναι σημαντικά πολυπληθέστερη της άλλης. Σαν ένα απλουστευτικό παράδειγμα σκεφτείτε μία χώρα να αποτελούταν από 10 δισεκατομυριούχους ηλικιωμένους με ίδιο εισόδημα και 1000000 άστεγους νέους. Ο συντελεστής Gini που αφορά τους ηλικιωμένους θα ήταν 0, αφού μεταξύ τους έχουν το ίδιο εισόδημα (0% ανισότητα). Το ίδιο συμβαίνει και με τους νέους. Όμως η χώρα αυτή θα μαστίζεται από έντονη ανισότητα. 
+
+::: {.panel-tabset}
+
+## Αυστρία έως Γαλλία
+
+
+```{r}
+#| echo = FALSE
+gini22a <- gini[gini$TIME_PERIOD==2022 & gini$REF_AREA<="FRA",]
+gini22aplot <- ggplot(gini22a, aes(x=REF_AREA, y=Gini_coefficient, fill=Age))
+ggplotly(gini22aplot+geom_bar(stat="identity", position=position_dodge(), colour="black"))
+```
+
+## Μεγάλη Βρετανία έως Ολλανδία
+
+
+```{r}
+#| echo = FALSE
+gini22b <- gini[gini$TIME_PERIOD==2022 & gini$REF_AREA>="GBR" & gini$REF_AREA<="NLD",]
+gini22bplot <- ggplot(gini22b, aes(x=REF_AREA, y=Gini_coefficient, fill=Age))
+ggplotly(gini22bplot+geom_bar(stat="identity", position=position_dodge(), colour="black"))
+```
+
+
+## Νορβιγία έως ΗΠΑ
+
+```{r}
+#| echo = FALSE
+gini22c <- gini[gini$TIME_PERIOD==2022 & gini$REF_AREA>="NOR",]
+gini22cplot <- ggplot(gini22c, aes(x=REF_AREA, y=Gini_coefficient, fill=Age))
+ggplotly(gini22cplot+geom_bar(stat="identity", position=position_dodge(), colour="black"))
+```
+
+:::
+
+# Συσχέτιση ανισοτήτων σε μικρές και μεγάλες ηλικίες
+
+Στην προηγούμενη ενότητα σχολιάσαμε τι συμβαίνει όταν κάποια (ηλικιακή) ομάδα έχει συντελεστή Gini μεγαλύτερο από αυτόν του συνόλου. Εδώ θα εξετάσουμε αν συνδέονται οι συντελεστές Gini των δύο ηλικιακών ομάδων που εξετάζουμε, αυτών που είναι 18-65 και αυτών που είναι άνω των 65.
+
+Στο παρακάτω διάγραμμα διασποράς παρατηρούμε να συνδέονται στενά. Σχεδόν ταυτίζεται ο συντελεστής Gini της μίας ηλικιακής ομάδας και της άλλης, καθόσον τα σημεία κείτονται σχεδόν επί της ευθείας $y=x$,
+
+```{r}
+#| echo = FALSE
+giniGr <- gini[gini$REF_AREA=="GRC",]
+```
+
+
+
+```{r}
+#| echo = FALSE
+giniWide <- dcast(gini, REF_AREA+TIME_PERIOD~ Age, value.var = "Gini_coefficient")
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+giniAge <- ggplot(giniWide, aes(x=`From 18 to 65 years`, y=`Over 65 years`))
+ggplotly(giniAge+geom_point(aes(colour = REF_AREA))+
+  geom_smooth())
+```
+
+Ο συντελεστής γραμμικής συσχέτισης Pearson φαίνεται να επιβεβαιώνει, όπως βλέπουμε κάτωθι, τα παραπάνω, διότι η τιμή του  υποδηλώνει πολύ ισχυρή γραμμική συσχέτιση.
+
+```{r}
+#| echo = FALSE
+cor(giniWide$`From 18 to 65 years`, giniWide$`Over 65 years`, use="complete.obs")
+```
+
+
+
+
+
+
+
+# Πορεία στο χρόνο 
+
+Στην ενότητα αυτή θα εξετάσουμε την πορεία του συντελεστή Gini στον χρόνο. Τι συμβαίνει με την ανισότητα; Εντείνεται ή οι κοινωνίες τίνουν να γίνουν πιο εξισωτικές;
+
+::: {.panel-tabset}
+
+
+## Όλες οι χώρες μαζί
+
+Στην πρώτη υποενότητα παρουσιάζονται όλες οι χώρες μαζί. Η αλήθεια είναι πως παγκοσμίως δεν φαίνεται να συμβαίνει κάτι. Τα πράγματα βαίνουν όπως ανέκαθεν. Για να δούμε λίγο καλύτερα τι συμβαίνει πάμε στην διπλανή υποενότητα να δούμε την κάθε χώρα ξεχωριστά, τ οποίο θα πράξουμε στη διπλανή καρτέλα.
+
+
+```{r}
+#| echo = FALSE
+giniTotal <- gini[gini$AGE=="_T" ,]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+giniTotalPlot <- ggplot(giniTotal, aes(x=TIME_PERIOD, y=Gini_coefficient, colour = REF_AREA))
+#giniTotalPlot + geom_line()+scale_color_viridis_d()
+
+ggplotly(giniTotalPlot + geom_line())
+```
+
+## Κάθε χώρα ξεχωριστά
+
+Στα κάτωθι γραφήματα παρατηρούμε κάποιες χώρες να έχουν μια πτωτική πορεία στο επίπεδο ανισότητας, όπως η Ελλάδα (`GRC` - θα είχε ενδιαφέρον να δούμε τι ίσχυε πριν τη Μεταπολίτευση), ενώ σε άλλες όπως η Σουιδία (`SWE`) υπάρχει αυξητική τάση.
+
+
+```{r}
+#| echo = FALSE
+plots <- list()  # Χρήση λίστας αντί για vector
+counties <- sort(unique(giniTotal$REF_AREA))
+
+
+for (i in 1:length(counties)) {
+  giniAEPgr <- giniTotal[giniTotal$REF_AREA == counties[i], ]
+  giniAEPgrPlot <- ggplot(giniAEPgr, aes(x = TIME_PERIOD, y = Gini_coefficient)) + geom_line()+
+    ggtitle(paste("Country:", counties[i])) +
+    theme_minimal()
+  
+  plots[[i]] <- giniAEPgrPlot  # Αποθήκευση στο i-οστό στοιχείο της λίστας
+}
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+for (i in 1:22){
+  grid.arrange(plots[[2*i-1]], plots[[2*i]], ncol = 2)
+}
+grid.arrange(plots[[45]], ncol = 2)
+```
+
+:::
+
+# Συσχέτιση με κατά κεφαλήν ΑΕΠ 
+
+::: {.panel-tabset}
+
+
+## Όλες οι χώρες μαζί
+
+Μια ιδέα που έχουμε ακόμα είναι να εξετάσουμε αν υπάρχει σχέση μεταξύ της ανισότητας που υπάρχει σε μια κοινωνία και του μέσου βιοποριστικού της επιπέδου. Και πάλι δεν φαίνεται κάποια γενική συσχέτιση που να αφορά όλες τις χώρες, επομένως θα πάμε να δούμε τι ισχύει για την κάθε χώρα ξεχωριστά στη διπλανή καρτέλα.
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+AEP2023 <- read.csv("AEP2023.csv", na.string = "")
+giniAEP <- merge(giniTotal, AEP2023, by = c("TIME_PERIOD", "REF_AREA"))
+giniAEP$GDP.per.capita <- giniAEP$OBS_VALUE
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+giniAEPPlot <- ggplot(giniAEP, aes(x=GDP.per.capita, y=Gini_coefficient))
+giniAEPPlot + geom_point(aes(colour = REF_AREA))+  geom_smooth()
+```
+
+## Κάθε χώρα ξεχωριστά
+
+Σε πολλές χώρες, όπως η Αυσρία (`AUT`), δεν φαίνεται να υπάρχει κάποια συσχέτιση του μέσου ατομικού εισοδήματος και της ανισότητας της χώρας. Σε κάποιες άλλες όπως το Βέλγιο (`BEL`) όσο μεγαλώνει το ένα τόσο μικραίνει το άλλο. Η καλύτερη ποιότητα ζωής είναι συνιφασμένη με λιγότερη ανισότητα. Αντίθετα, σε χώρες όπως η Γερμανία (`DEU`) συμβαίνει ακριβώς το ανάποδο, ενώ σε χώρες όπως ο Καναδάς (`CAN`) υπάρχει μια εμφανής διακύμανση.
+
+```{r}
+#| echo = FALSE
+plots <- list()  # Χρήση λίστας αντί για vector
+counties <- sort(unique(giniAEP$REF_AREA))
+
+for (i in 1:length(counties)) {
+  giniAEPgr <- giniAEP[giniAEP$REF_AREA == counties[i], ]
+  giniAEPgrPlot <- ggplot(giniAEPgr, aes(x = GDP.per.capita, y = Gini_coefficient)) +
+    geom_point() +
+    geom_smooth() +
+    ggtitle(paste("Country:", counties[i])) +
+    theme_minimal()
+  
+  plots[[i]] <- giniAEPgrPlot  # Αποθήκευση στο i-οστό στοιχείο της λίστας
+}
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+for (i in 1:22){
+  grid.arrange(plots[[2*i-1]], plots[[2*i]], ncol = 2)
+}
+grid.arrange(plots[[45]], ncol = 2)
+```
+
+
+
+:::
+
+
+
+
+
+
+
+
+
+# Συσχέτιση με ΑΕΠ  
+
+Τέλος θα εξετάσουμε αν υπάρχει συσχέτιση μεταξύ του ΑΕΠ μιας χώρας και του συντελεστή Gini. Μήπως όσο ισχυρότερη είναι μια χώρα, τόσο περισσότερο παύει η κερδοσκοπία των πλουσίων να απαιτεί την εξαθλίωση των υπολοίπων; Ή, ανάποδα, όσο φτωχότερη είναι μια χώρα τόσο περισσότερο το ο πλουτισμός της άρχουσας τάξης της περνάει μέσα από το ξεζούμισμα των μαζών; Από την άλλη, η οικονομική άνοδος μιας χώρας μπορεί να συνεπάγεται αύξιση του βιωτικού επιπέδου, τόσο του «απλού κόσμου», όσο και των πλουσίων της, όμως με διαφορετικούς ρυθμούς το ένα και το άλλο, όπερ να συνεπάγεται αύξηση της ανισότητας εντός της χώρας αυτής. Τι από τα παραπάνω συμβαίνει; Αυτό θα δούμε αν μπορούμε να υποψιαστούμε εδώ.
+
+::: {.panel-tabset}
+
+
+## Όλες οι χώρες μαζί
+
+Όπως και στην περίπτωση της προηγούμενης ενότητας, έτσι κι εδώ, δεν φαίνεται να υπάρχει κάποια εμφανής συσχέτιση που να καλύπτει όλες τις χώρες. Ας πάμε να τις δούμε την κάθε μία ξεχωριστά στη διπλανή καρτέλα.
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+pop2022 <- read.csv("pop2022.csv", na.string = "")
+giniAEPpop <- merge(giniAEP, pop2022, by = c("TIME_PERIOD", "REF_AREA"))
+giniAEPpop$GDP <- giniAEPpop$OBS_VALUE.x*giniAEPpop$OBS_VALUE.y
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+giniAEPpopPlot <- ggplot(giniAEPpop, aes(x=GDP, y=Gini_coefficient))
+giniAEPpopPlot + geom_point(aes(colour = REF_AREA))+  geom_smooth()
+```
+
+## Κάθε χώρα ξεχωριστά
+
+Εξετάζοντας κάθε χώρα ξεχωριστά δεν βλέπουμε κάτι καινούριο από αυτό που εξετάσαμε στην περίπτωση του κατά κεφαλήν ΑΕΠ. Μάλιστα αυτό είναι και το εντυπωσιακό! Να υποδηλώνει αυτό, άραγε, μια στενή συσχέτιση μεταξύ ΑΕΠ και κατακεφαλήν ΑΕΠ σε μια χώρα; Όσο ισχυρότερη γίνεται αυτή, τόσο αυτό αντανακλάται και πάνω στους κατοίκους της; Μοιάζει προφανές, αλλά αυτό θα το εξετάσουμε κάποια άλλη στιγμή.
+
+```{r}
+#| echo = FALSE
+plots <- list()  # Χρήση λίστας αντί για vector
+counties <- sort(unique(giniAEPpop$REF_AREA))
+
+for (i in 1:length(counties)) {
+  giniAEPgr <- giniAEPpop[giniAEPpop$REF_AREA == counties[i], ]
+  giniAEPgrPlot <- ggplot(giniAEPgr, aes(x = GDP, y = Gini_coefficient)) +
+    geom_point() +
+    geom_smooth() +
+    ggtitle(paste("Country:", counties[i])) +
+    theme_minimal()
+  
+  plots[[i]] <- giniAEPgrPlot  # Αποθήκευση στο i-οστό στοιχείο της λίστας
+}
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+for (i in 1:22){
+  grid.arrange(plots[[2*i-1]], plots[[2*i]], ncol = 2)
+}
+grid.arrange(plots[[45]], ncol = 2)
+```
+
+:::

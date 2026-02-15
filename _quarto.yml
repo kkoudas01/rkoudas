@@ -1,0 +1,246 @@
+project:
+  type: website
+  output-dir: docs
+  # Πρόσθεσε τις παρακάτω γραμμές:
+  render: 
+    - "*.qmd"           # Κάνε render μόνο τα qmd του αρχικού φακέλου
+    - "!backup_quarto/" # Αγνόησε αυτόν τον φάκελο (το ! σημαίνει εξαίρεση)
+    - "!backup_rmd/"    # Αγνόησε κι αυτόν
+    - "!old_files/"     # Και οποιονδήποτε άλλο φάκελο με παλιά αρχεία
+  
+execute:
+  freeze: auto
+
+website:
+  title: "r-koudas"
+  
+  # 1. Η μπάρα πλοήγησης στην κορυφή (Top Navigation)
+  navbar:
+    title: "{{< fa brands r-project >}}Κούδας"
+    left:
+      - href: ergaleia.qmd
+        text: "Εργαλεία"
+        icon: tools
+      - href: ereynes.qmd
+        text: "Έρευνες"
+        icon: flask
+      - href: entos_ektos.qmd
+        text: "Εντός εκτός κι επί τα αυτά"
+        icon: cup-hot
+
+  # 2. Οι πλευρικές μπάρες (Sidebars)
+  sidebar:
+    # --- Sidebar για τα Εργαλεία ---
+    - title: "Εργαλεία"
+      id: "tools-nav"
+      # Εμφανίζεται μόνο όταν είμαστε σε σελίδες που ανήκουν στη λίστα contents
+      contents:
+        - text: "ΕΡΓΑΛΕΙΑ"
+          href: ergaleia.qmd
+        - text: "Πίνακες δεδομένων"
+          href: pinakes.qmd
+        - section: "Περιγραφική στατιστική"
+          contents:
+            - section: "Συχνότητες"
+              contents:
+                - text: "Συχνότητες"
+                  href: syxnotites.qmd
+                - text: "Μέτρηση ποικιλομορφίας"
+                  href: pikilomorfia.qmd
+                - text: "Κυκλικό διάγραμμα"
+                  href: piechart.qmd
+                - text: "Ραβδόγραμμα"
+                  href: barplot.qmd
+                - text: "Ιστόγραμμα"
+                  href: histogram.qmd
+            - text: "Μέτρα θέσης"
+              href: metrathesis.qmd
+            - text: "Μέτρα διασποράς"
+              href: metradiasporas.qmd
+            - text: "Μέτρα ασυμμετρίας"
+              href: asymmetria.qmd
+            - section: "Συσχέτιση"
+              contents: 
+                - text: "Μέτρα συσχέτισης"
+                  href: metrasysxetisis.qmd
+                - section: "Προσδιορισμός συσχέτισης"
+                  contents:
+                    - text: "Διαγράμματα"
+                      href: diagramSysxet.qmd
+                    - text: "Ευθείες παλινδρόμησης"
+                      href: eytheiesPalindr.qmd
+                    - text: "Καμπύλες παλινδρόμησης"
+                      href: kampylesPalindr.qmd
+            - text: "Απεικονιση γεωχωρικών δεδομένων"
+              href: geosp.qmd
+        - section: "Πιθανότητες"
+          contents:
+            - text: "Η έννοια της πιθανότητας"
+              href: ennoiaPith.qmd
+            - text: "Βασικά εργαλεία"
+              href: ergaliaPith.qmd
+        - section: "Εκτιμητική"
+          contents:
+            - text: "Για μέση τιμή"
+              href: ektimMean.qmd
+            - text: "Για το ποσοστό"
+              href: ektimPososto.qmd
+            - text: "Μέθοδος Bootstrap"
+              href: bootstrapMethod.qmd
+        - section: "Έλεγχος υποθέσεων"
+          contents:
+            - text: "t-έλεγχος για το ποσοστό"
+              href: tTest.qmd
+            - text: "t-έλεγχος για τη μέση τιμή"
+              href: tTestMean.qmd
+            - text: "z-έλεγχος για διαφορά ποσοστών"
+              href: zTest.qmd
+            - text: "χ2 έλεγχος για την ανεξαρτησία"
+              href: x2Test.qmd
+            - text: "Επίδραση ενός παράγοντα (ANOVA)"
+              href: anova.qmd
+        - section: "Προσδιορισμός κατανομής"
+          contents:
+            - text: "Προσδιορισμός κατανομής"
+              href: findDist.qmd
+            - text: "Έλεγχος κανονικότητας"
+              href: NormTest.qmd
+            - text: "Γραφικός προσδιορισμός"
+              href: GraphFindDist.qmd
+        - section: "Μαρκοβιανές αλυσίδες"
+          contents:
+            - text: "Περιγραφή μεταβάσεων"
+              href: metabMarkov.qmd
+            - text: "Μεταβάσεις σε περισσότερα βήματα"
+              href: metabMarkovPol.qmd
+            - text: "Οπτικοποίηση ροών (Sankey)"
+              href: SankeyDiagrams.qmd
+        - section: "Χρονικές σειρές"
+          contents:
+            - text: "Βασικά εργαλεία"
+              href: timeBasic.qmd
+            - text: "Μοτίβα"
+              href: motiba.qmd
+            - text: "Μελέτη εποχικότητας"
+              href: periodikotita.qmd
+            - text: "Πρόβλεψη (ARIMA)"
+              href: arima.qmd
+        - section: "Πολυμεταβλητή ανάλυση"
+          contents:
+            - section: "Περιγραφική στατιστική"
+              contents:
+                - text: "Αστρόγραμμα"
+                  href: astrogramma.qmd
+            - section: "Ανάλυση συστοιχιών"
+              contents:
+                - text: "Μήτρα απόστασης – δεντρόγραμμα"
+                  href: distTree.qmd
+            - section: "Απεικόνιση σε λιγότερες διαστάσεις"
+              contents:
+                - text: "Διατακτική πολυδιάστατη κλίμακα (MDS)"
+                  href: mds.qmd
+                - text: "Ανάλυση Αντιστοιχίας"
+                  href: cora.qmd
+                - text: "Ανάλυση κυρίων συνιστωσών (PCA)"
+                  href: pca.qmd
+
+    # --- Sidebar για τις Έρευνες ---
+    - title: "Έρευνες"
+      id: "research-nav"
+      contents:
+        - text: "ΕΡΕΥΝΕΣ"
+          href: ereynes.qmd # Η εισαγωγική σελίδα
+        - text: "Αποχή στις εκλογές"
+          href: apoxi.qmd
+        - text: "Εξέταση αποτελεσμάτων PISA"
+          href: pisa.qmd
+        - text: "Έξοδος από τη φτώχεια"
+          href: workHexitPov.qmd
+        - text: "Μετρώντας την ανισότητα (Gini)"
+          href: gini.qmd
+        - text: "Πολιτικό προφίλ & Βουλευτές"
+          href: bouleytesCor.qmd
+        - text: "Πόθεν Έσχες βουλευτών"
+          href: pothenesxes.qmd
+        - text: "Τι φέρνει την ευτυχία;"
+          href: happy.qmd
+        - text: "Αξιολόγηση Δημόσιων Υπηρεσιών"
+          href: axiologisiDimon.qmd
+        - text: "Απεργιακές κινητοποιήσεις"
+          href: strikes.qmd
+        - text: "Εξέταση τιμών ακινήτων"
+          href: spiti.qmd
+        - text: "Αξιολόγηση αυτοκινήτων"
+          href: aytokinhta.qmd
+        - text: "Κύματα Kondratiev"
+          href: kondratiev.qmd
+        - text: "Σιλούρια υπόθεση"
+          href: SilurianHypothesis.qmd
+
+    # --- Sidebar για το "Εντός εκτός..." ---
+    - title: "Εντός εκτός & επί τα αυτά"
+      id: "misc-nav"
+      contents:
+        - text: "ΕΝΤΟΣ ΕΚΤΟΣ & ΕΠΙ ΤΑ ΑΥΤΑ"
+          href: entos_ektos.qmd # Η εισαγωγική σελίδα
+        - section: "Κατανομές"
+          contents:
+            - section: "Διακριτές κατανομές"
+              contents:
+                - text: "Ομοιόμορφη διακριτή"
+                  href: uniformDiscr.qmd
+                - text: "Διωνυμική"
+                  href: binom.qmd
+                - text: "Υπεργεωμετρική"
+                  href: hyperGeom.qmd
+                - text: "Γεωμετρική"
+                  href: geom.qmd
+                - text: "Αρνητική διωνυμική"
+                  href: nBinom.qmd
+                - text: "Poisson"
+                  href: poisson.qmd
+            - section: "Συνεχείς κατανομές"
+              contents:
+                - text: "Ομοιόμορφη συνεχής"
+                  href: uniformCont.qmd
+                - text: "Εκθετική"
+                  href: expDist.qmd
+                - text: "Γάμμα"
+                  href: gammaDist.qmd
+                - text: "Κανονική"
+                  href: normalDist.qmd
+        - section: "Μηχανική Μάθηση"
+          contents:
+            - text: "Εργασία στη μηχανική μάθηση"
+              href: ergasiaKostasKoudas.qmd
+            - section: "Επιβλεπόμενη Μάθηση"
+              contents:
+                - text: "Δέντρα & Random Forests"
+                  href: randomForests.qmd
+                - text: "k-NN"
+                  href: knn.qmd
+                - text: "Νευρωνικά Δίκτυα"
+                  href: neuralNets.qmd
+            - section: "Μη Επιβλεπόμενη Μάθηση"
+              contents:
+                - text: "k-Means"
+                  href: kmeans.qmd
+                - text: "DBSCAN"
+                  href: dbscan.qmd
+        - section: "Mathematica"
+          contents:
+            - text: "Μετατροπή λίστας/πίνακα"
+              href: dataMathematica.qmd
+        - section: "Διδακτική"
+          contents:
+            - text: "Γραμμικοί μετασχηματισμοί"
+              href: linearSX.qmd
+
+format:
+  html:
+    theme:
+    - superhero
+    - custom.scss
+    #css: styles.css
+    toc: true # Προσθέτει πίνακα περιεχομένων στα δεξιά της σελίδας αυτόματα
+    highlight-style: monokai

@@ -1,0 +1,302 @@
+---
+title: "Ευθείες παλινδρόμησης"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+# Γραμμική παλινδρόμηση
+
+Στην παρούσα υποενότητα θα χρησιμοποιήσουμε δεδομένα του OECD για τον αριθμό των γιατρών και των νοσοκόμων ανά χίλιους κατοίκους (βλ. [εδώ](https://data.oecd.org/healthres/doctors.htm) κι [εδώ](https://data.oecd.org/healthres/nurses.htm)). Αυτά αποθηκεύτηκαν στα αρχεία doctorsPer1000.csv και nurcesPer1000.csv. Εδώ παραθέτουμε τα 100 πρώτα στοιχεία κάθε πίνακα, για λόγους ταχύτητας εκτέλεσης του κώδικα. Φυσικά, πρώτα διαγράψαμε τις μεταβλητές της προηγούμενης ενότητας:
+
+```{r}
+rm(list = ls())
+```
+
+-   **doctorsPer1000.csv**
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+doctorsPer1000 <- read.csv("doctorsPer1000.csv", na.string = "")
+knitr::kable(head(doctorsPer1000, n=100)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+-   **nurcesPer1000.csv**
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+nurcesPer1000 <- read.csv("nurcesPer1000.csv", na.string = "")
+knitr::kable(head(nurcesPer1000, n=100)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+Αυτά ενοποιήθηκαν, κατά τα γνωστά (βλ. υποενότητα «Συγχώνευση πινάκων δίπλα-δίπλα» της [Προσθήκη στοιχείων σε πίνακα](pinakes.html#3_Προσθήκη_στοιχείων_σε_πίνακα)), γράφοντας:
+
+```{r}
+DocNurc <- merge(doctorsPer1000,nurcesPer1000,by=c("LOCATION","TIME"))
+```
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(head(DocNurc, n=100)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+Είναι αναμενόμενο οι αριθμοί των γιατρών ανά χίλιους κατοίκους και οι αριθμοί των νοσοκόμων θα συσχετίζονται με κάποιον τρόπο. Ποιος είναι άραγε αυτός ο τρόπος; Θα ήταν χρήσιμο να έχουμε έναν μαθηματικό τύπο, όπου δίνοντάς του μια τιμή για τον αριθμό των νοσοκόμων (π.χ. 2 νοσοκόμες ανά χίλιους κατοίκους), να μας υπολογίζει τον αριθμό των γιατρών (εν προκειμένω είναι 1.64 γιατροί ανά χίλιους κατοίκους).
+
+Για να κάνουμε ευκολότερη την μελέτη των δύο ομάδων αριθμών, τους δίνουμε ονόματα μέσω της κλασσικής διαδικασίας:
+
+```{r}
+giatroi <- DocNurc$Value.x
+nosok <- DocNurc$Value.y
+```
+
+Το να επιδιώξουμε εδώ την απόλυτη ακρίβεια, περισσότερο θα συσκότιζε την εικόνα που θέλουμε ν’ αποκτήσουμε, παρά θα την ξεκαθάριζε. Η απόλυτη ακρίβεια θα ήταν ένας μαθηματικός τύπος, ιδιαίτερα περίπλοκος και ακατάλληλος για εκτιμήσεις σχέσεων, αλλά και υπολογισμούς προβλέψεων. O πιο απλός τύπος θα ήταν μια γραμμική σχέση:
+
+$$[giatroi]=\alpha+\beta\cdot[nosok]$$
+
+η οποία θα εκφράζει στο περίπου τον αριθμό των γιατρών βάσει του αριθμού των νοσοκόμων. Κερδίσαμε κάτι σε απλότητα τύπου, χάσαμε όμως κάτι σε ακρίβεια. Δεν πειράζει, καλή καρδιά.
+
+Πόσο δυνατόν όμως είναι αυτό; Το πλήθος των γιατρών είναι γραμμικώς συσχετισμένο με το πλήθος των νοσοκόμων; Σύμφωνα με όσα έχουμε πει (βλ. ενότητα [Συντελεστής γραμμικής συσχέτισης Pearson](metrasysxetisis.html#1_Συντελεστής_γραμμικής_συσχέτισης_Pearson)), γράφουμε:
+
+```{r}
+cor(giatroi,nosok)
+```
+
+Βρίσκουμε συντελεστή γραμμικής συσχέτισης Pearson 0.5528042, άρα έχουμε ισχυρή γραμμική συσχέτιση. Επομένως δικαιολογούμαστε να περιμένουμε ότι θα υπάρχει μαθηματικός τύπος σαν τον προηγούμενο που να συνδέει το πλήθος των γιατρών με το πλήθος των νοσοκόμων. Γράφουμε λοιπόν:
+
+```{r}
+lm(giatroi ~ nosok)
+```
+
+Αυτό σημαίνει ότι:
+
+$$[giatroi]=1.9248+0.1308\cdot[nosok]$$
+
+Έτσι, μπορούμε να εικάσουμε πως πχ για 2.23 νοσοκόμους ανά χίλιους κατοίκους, θα έχουμε πιθανότατα κατά μέσο όρο:
+
+$$1.9248+0.1308\cdot2.23=2.216484$$
+
+γιατρούς ανά χίλους κατοίκους.
+
+|                                                                                     <mark>Ευθεία γραμμικής παλινδρόμησης</mark>                                                                                      |
+|:----------------------------------------------------------------------:|
+| <mark>Η ευθεία γραμμικής παλινδρόμησης σχεδιάστηκε να προσεγγίζει τις μέσες τιμές ενός μεγέθους (πχ του αριθμού των γιατρών) δεδομένης της εκάστοτε τιμής ενός άλλου μεγέθους (πχ του αριθμού των νοσοκόμων).</mark> |
+
+Μια σχέση της μορφής $[giatroi]=1.9248+0.1308\cdot[nosok]$ δεν αποκαλείται τυχαία «ευθεία γραμμικής παλινδόμησης», διότι, αν τη σχεδιάσουμε σ’ ένα σύστημα συντεταγμένων (π.χ. εκεί που σχεδιάσαμε το διάγραμμα διασποράς), θα σχηματίσουν τα σημεία μιας ευθείας γραμμής. Για να σχεδιαστεί η εν λόγω ευθεία στην θα χρησιμοποιήσουμε την συνάρτηση `abline()`. Βέβαια, πριν την σχεδιάσουμε, πρέπει να ‘χουμε ήδη φτιαγμένο ένα σύστημα συντεταγμένων, οπότε γράφουμε (βλ. ενότητα [Διάγραμμα διασποράς](diagramSysxet.html#1_Διάγραμμα_διασποράς)):
+
+```{r}
+plot(giatroi ~ nosok)
+```
+
+Πάνω σ’ αυτό το διάγραμμα διασποράς θα σχεδιαστεί η ευθεία της απλής γραμμικής παλινδρόμησης συμπληρώνοντας από κάτω `abline(lm(giatroi ~ nosok), col = "red")`, δηλαδή:
+
+```{r}
+plot(giatroi ~ nosok)
+abline(lm(giatroi ~ nosok), col = "red")
+```
+
+Εναλλακτικά τα παραπάνω μπορούν να γίνουν μέσω της συνάρτησης `geom_smooth()` του πακέτου `ggplot2` γράφοντας:
+
+```{r}
+#| message = F
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+DocNurcEyth <- ggplot(DocNurc, aes(x = nosok, y = giatroi))
+DocNurcEyth + geom_smooth(method='lm')
+```
+
+Αν θέλουμε να είναι μαζί με το διάγραμμα διασποράς, γράφουμε:
+
+```{r}
+DocNurcEyth + geom_point() + geom_smooth(method='lm')
+```
+
+Για να δούμε περισσότερες αισθητικές παρεμβάσεις θα χρησιμοποιήσουμε κάποια επιπλέον δεδομένα. Αντλήσαμε από το [datahub](https://datahub.io/JohnSnowLabs/country-and-continent-codes-list#resource-country-and-continent-codes-list-csv) στοιχεία για τις χώρες και τις ηπείρους που ανήκουν. Τα δεδομένα αποθηκεύτηκαν σ’ ένα αρχείο ονόματι XoresHpiroi2.txt.
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+XoresHpiroi2 <- read.delim("XoresHpiroi2.txt", header = TRUE, sep = ",")
+knitr::kable(XoresHpiroi2) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+Αυτά συνενώθηκαν με τον πίνακα DocNurc γράφοντας πρώτα:
+
+```{r}
+names(XoresHpiroi2)[names(XoresHpiroi2) == "Three_Letter_Country_Code"] <- "LOCATION"
+```
+
+για να μετονομάσουμε την στήλη `Three_Letter_Country_Code` σε `LOCATION`
+
+Ακολούθως:
+
+```{r}
+DocNurcCont <- merge(DocNurc,XoresHpiroi2,by = "LOCATION")
+```
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(head(DocNurcCont,n=100)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+Κατόπιν από αυτόν τον πίνακα κρατήσαμε τις χώρες της Βορείου Αμερικής, γράφοντας:
+
+```{r}
+DocNurcAm <- DocNurcCont[DocNurcCont$Continent_Name == "South America" | DocNurcCont$Continent_Name == "North America", ]
+```
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(DocNurcAm) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+Έτσι γράφουμε:
+
+```{r}
+DocNurcEythAm <- ggplot(DocNurcAm, aes(x = Value.y, y = Value.x, color=LOCATION))
+DocNurcEythAm + geom_point() + geom_smooth(method='lm')
+```
+
+Έτσι έχουμε τις ευθείες γραμμικής παλινδρόμησης για κάθε χώρα της Βορείου Αμερικής. Παρατηρούμε την έντονη γραμμική σύνδεση γιατρών-νοσοκόμων σε κάθε χώρα. Ίσως η κοινή ύπαρξη ευθειών ευθείες να αντικατοπτρίζει μια κοινή προσέγγιση στο σύστημα υγείας, η οποία να εξειδικεύεται διαφορετικά σε κάθε περίπτωση, εξ ου και οι διαφορετικές ευθείες.
+
+## Τυπικό σφάλμα εκτίμησης
+
+Προφανώς, η σχέση $[giatroi]=1.9248+0.1308\cdot[nosok]$ κάνει μια εκτίμηση του αριθμού των γιατρών, δεδομένου του αριθμού των νοσοκόμων. Δεν δίνει ακριβή τιμή για το πλήθος των γιατρών. Συνεπώς θα θέλαμε να ξέρουμε πόσο έξω πέφτει η πρόβλεψή μας από την πραγματικότητα. Αυτή τη δουλειά την κάνει το τυπικό σφάλμα εκτίμησης, και για να υπολογιστεί αυτό στην R γράφουμε:
+
+```{r}
+GramGiatNos <- lm(giatroi ~ nosok)
+summary(GramGiatNos)
+```
+
+οπότε παίρνουμε την απάντηση `Residual standard error: 0.815`. Αυτό σημαίνει ότι (βλ. και ενότητα [Απομονωμένα σημεία](metradiasporas.html#21_Απομονωμένα_σημεία)) ότι σχεδόν όλες οι μετρήσεις (περίπου το 88.8%) θα είναι σε απόσταση $\pm 3\cdot 0.815$ από αυτήν που προβλέπει η ευθεία γραμμικής παλινδρόμησης.
+
+# Ποσοστημοριακή παλινδρόμηση
+
+Δυστυχώς, η ευθεία γραμμικής παλινδρόμησης είναι αρκετά ευαίσθητη στα απομονωμένα σημεία. Η ύπαρξη αρκετών τέτοιων μειώνει πολύ την περιγραφική της δύναμη. Γι’ αυτό το λόγο έχουμε και μια άλλη ευθεία. Την **ευθεία ποσοστημοριακής παλινδρόμησης**.
+
+|                                                                                    <mark>Ευθεία ποσοστημοριακής παλινδρόμησης</mark>                                                                                     |
+|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| <mark>Η ευθεία ποσοστημοριακής παλινδρόμησης σχεδιάστηκε να προσεγγίζει τις διαμέσους ενός μεγέθους (πχ του αριθμού των γιατρών) δεδομένης της εκάστοτε τιμής ενός άλλου μεγέθους (πχ του αριθμού των νοσοκόμων).</mark> |
+
+Για να πετύχουμε αυτό το στόχο στην R, θα χρησιμοποιήσουμε το πακέτο `quantreg` γράφοντας:
+
+```{r}
+#| message = F
+if(!require(quantreg)){
+    install.packages("quantreg")
+    library(quantreg)
+}
+```
+
+και ακολούθως:
+
+```{r}
+rq(giatroi ~ nosok)
+```
+
+δηλαδή ότι:
+
+$$[giatroi]=1.6962080+0.1466408\cdot[nosok]$$
+
+Το ίδιο μπορούμε να κάνουμε και με άλλα μέτρα θέσης, συγγενικά προς την διάμεσο, τα ποσοστημόρια (βλ. ενότητα [Τεταρτημόρια – Ποσοστημόρια](metrathesis.html#3_Τεταρτημόρια_–_Ποσοστημόρια)). Θέλοντας μία ευθεία που να προσεγγίζει π.χ. το 0.15-ποσοστημόριο μπορούμε να συμπληρώσουμε την παράμετρο `tau=`, δηλαδή γράφουμε:
+
+```{r}
+rq(giatroi ~ nosok, tau = 0.15)
+```
+
+δηλαδή αν πχ έχουμε 2.23 νοσοκόμους ανά χίλιους κατοίκους, τότε υπολογίζοντας
+
+$$1.0584211+ 0.1342642\cdot2.23=1.35783$$
+
+βρίσκουμε ότι κάτω από 1.35783 γιατροί ανά χίλιους κατοίκους είναι στο χαμηλότερο 15% αυτών που αντιστοιχούν στους 2.23 νοσοκόμους.
+
+Οι σχέσεις:
+
+$$[giatroi]=1.6962080+0.1466408\cdot[nosok]$$
+
+$$[giatroi]=1.0584211+ 0.1342642\cdot[nosok]$$
+
+που βρήκαμε γράφουμε, ονομάζονται ποσοστημοριακές γραμμικές παρεμβολές για τ=0.5 (`tau=0.5`) και τ=0.15 (`tau=0.15`) αντίστοιχα. Για να σχεδιάσουμε τις ευθείες ποσοστημοριακής παλινδρόμησης όπως και πριν γράφουμε:
+
+```{r}
+plot(giatroi ~ nosok) 
+abline(rq(giatroi ~ nosok), col="red")
+abline(rq(giatroi ~ nosok, tau = 0.15), col="blue")
+```
+
+Συνολικά ο κώδικας που γράψαμε είναι ο:
+
+```{r}
+#| eval = F
+rm(list = ls())
+DocNurc <- merge(doctorsPer1000,nurcesPer1000,by=c("LOCATION","TIME"))
+giatroi <- DocNurc$Value.x
+nosok <- DocNurc$Value.y
+cor(giatroi,nosok)
+lm(giatroi ~ nosok)
+plot(giatroi ~ nosok)
+abline(lm(giatroi ~ nosok), col = "red")
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+DocNurcEyth <- ggplot(DocNurc, aes(x = nosok, y = giatroi))
+DocNurcEyth + geom_smooth(method='lm')
+DocNurcEyth + geom_point() + geom_smooth(method='lm')
+names(XoresHpiroi2)[names(XoresHpiroi2) == "Three_Letter_Country_Code"] <- "LOCATION"
+DocNurcCont <- merge(DocNurc,XoresHpiroi2,by = "LOCATION")
+DocNurcAm <- DocNurcCont[DocNurcCont$Continent_Name == "South America" | DocNurcCont$Continent_Name == "North America", ]
+DocNurcEythAm <- ggplot(DocNurcAm, aes(x = Value.y, y = Value.x, color=LOCATION))
+DocNurcEythAm + geom_point() + geom_smooth(method='lm')
+GramGiatNos <- lm(giatroi ~ nosok)
+summary(GramGiatNos)
+if(!require(quantreg)){
+    install.packages("quantreg")
+    library(quantreg)
+}
+rq(giatroi ~ nosok)
+rq(giatroi ~ nosok, tau = 0.15)
+plot(giatroi ~ nosok) 
+abline(rq(giatroi ~ nosok), col="red")
+abline(rq(giatroi ~ nosok, tau = 0.15), col="blue")
+```
+
+
+
+

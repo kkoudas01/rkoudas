@@ -1,0 +1,131 @@
+---
+title: "Οπλισμένοι με Mathematica"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+```{r}
+#| echo = F
+rm(list = ls())
+```
+
+# Μετατροπή δεδομένων για ανάγνωση από το Mathematica
+
+
+
+Το Mathematica είναι ένα πολύ χρήσιμο πρόγραμμα εκτέλεσης μαθηματικών υπολογισμών. Θα μπορούσε να πει κανείς πως είναι ένα μαθηματικό μαγικό ραβδί: δεν έχεις παρά να φανταστείς ένα μαθηματικό πρόβλημα κι αυτό στο λύνει.
+
+Έχει όμως ένα βασικό μειονέκτημα, ότι το πληρώνεις. Για την ακρίβεια το πληρώνεις καλά! Πρέπει να βάλεις βαθιά το χέρι μέσα στην τσέπη. Υπάρχουν πειρατικές λύσεις όπως το [Get Into PC](https://igetintopc.com/), αλλά για κάποιον που τις φοβάται η επόμενη λύση είναι η δωρεάν διαδικτυακή έκδοση του [Wolfram Cloud](https://www.wolframcloud.com/).
+
+Η δωρεάν έκδοση έχει διάφορους σημαντικούς περιορισμούς.
+
+- Ένας είναι η υπολογιστική δυνατότητα που σου επιτρέπει. Υπολογισμοί που, για να εκτελεστούν, απαιτούν πάνω από κάποιο συγκεκριμένο διάστημα, κόβονται. Εν ολίγοις είσαι αναγκασμένος να κάνεις μόνο περιορισμένης περιπλοκότητας υπολογισμούς.
+
+- Ένας άλλος περιορισμός είναι ότι δεν σου επιτρέπει να διαβάσεις αρχεία. Έτσι, αν έχεις ένα αρχείο δεδομένων π.χ. του Excel, απλά δεν μπορείς να το αξιοποιήσεις. Ή θα πρέπει να βάλεις με το χέρι μία-μία τις τιμές του πίνακα, όπερ καθόλου βολικό.
+
+Η παρούσα ενότητα έρχεται να λύσει το τελευταίο πρόβλημα. Μέσω της R θα διαβάζουμε μια λίστα ή έναν πίνακα δεδομένων και θα τα μετατρέπουμε σε μορφή λίστας-πίνακα αναγνωρίσιμη από το Mathematica, η οποία θα είναι αποθηκευμένη σ’ ένα αρχείο `txt`. Από κει και πέρα, μπορούμε να κάνουμε αντιγραφή και επικόλληση στο κελί του Wolfram Cloud που επιθυμούμε.
+
+Παρουσιάζουμε αρχικά τη συνάρτηση που μετατρέπει έναν πίνακα δεδομένων σε αναγνώσιμη μορφή από το Mathematica. Αυτή είναι η `DftoMATHEMATICA()`, η οποία δέχεται σαν όρισμα τον πίνακα δεδομένων που επιθυμούμε να μετατρέψουμε.
+
+
+```{r}
+DFtoMATHEMATICA <- function(dedomena) {
+  dedomenaDF <- as.data.frame(dedomena)
+  n <- length(dedomenaDF[,1])
+  dataMathematica <- c()
+  for (j in 1:n) {
+    dataMathematica <- append(dataMathematica,paste("{",paste(dedomenaDF[j,],collapse=","),"}"))
+  }
+  dataMathematica <- paste(dataMathematica,collapse=",")
+  dataMathematica <- paste("{",dataMathematica,"}")
+  arxeio_exodou <- "DFmathematica.txt"
+  
+  # Ανοίξτε το αρχείο για εγγραφή
+  arxeio <- file(arxeio_exodou, "w")
+  
+  # Εγγραφή του πίνακα σε αρχείο σε μορφή Mathematica
+  writeLines(dataMathematica, arxeio)
+  
+  # Κλείστε το αρχείο
+  close(arxeio)
+}
+```
+
+Ας δούμε τι αποτέλεσμα παράγει, αν της εισάγουμε τον κάτωθι πίνακα δεδομένων.
+
+```{r}
+c1 <- c(1,2,3,4)
+c2 <- c(5,1,7,8)
+dataTest <- data.frame(c1,c2)
+dataTest
+```
+
+```{r}
+#| eval = F
+DFtoMATHEMATICA(dataTest)
+```
+
+Το προγραμματάκι αυτό δημιουργεί ένα αρχείο ονόματι DFmathematica.txt, στο οποίο είναι γραμμένο:
+
+```
+{ { 1,5 },{ 2,1 },{ 3,7 },{ 4,8 } }
+```
+
+Πάμε τώρα να δούμε τη συνάρτηση που επεξεργάζεται μια λίστα τιμών. Αυτή είναι η `VtoMATHEMATICA()`, η οποία δέχεται ως όρισμα την λίστα που επιθυμούμε να μετασχηματίσουμε.
+
+
+
+```{r}
+VtoMATHEMATICA <- function(dedomena) {
+  dedomenaV <- as.vector(dedomena)
+  n <- length(dedomenaV)
+  dataMathematica <- c()
+  for (j in 1:n) {
+    dataMathematica <- append(dataMathematica,paste(dedomenaV[j],collapse=","))
+  }
+  dataMathematica <- paste(dataMathematica,collapse=",")
+  dataMathematica <- paste("{",dataMathematica,"}")
+  arxeio_exodou <- "Vmathematica.txt"
+  
+  # Ανοίξτε το αρχείο για εγγραφή
+  arxeio <- file(arxeio_exodou, "w")
+  
+  # Εγγραφή του πίνακα σε αρχείο σε μορφή Mathematica
+  writeLines(dataMathematica, arxeio)
+  
+  # Κλείστε το αρχείο
+  close(arxeio)
+}
+```
+
+Ας κάνουμε ένα πείραμα με την κάτωθι λίστα.
+
+```{r}
+v1 <- c(10,12,24,52)
+v1
+```
+
+```{r}
+#| eval = F
+VtoMATHEMATICA(v1)
+```
+
+Με αυτή τη διαδικασία παρήχθη το αρχείο Vmathematica.txt, στο οποίο είναι γραμμένο:
+
+
+```
+{ 10,12,24,52 }
+```

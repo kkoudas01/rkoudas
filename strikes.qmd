@@ -1,0 +1,102 @@
+---
+title: "Απεργιακές κινητοποιήσεις"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+
+
+```{r}
+#| echo = F
+rm(list = ls())
+```
+
+
+<div class="alert-danger">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>
+
+# Περιγραφή δεδομένων
+
+Από [εδώ](https://www.bls.gov/web/wkstp/annual-listing.htm) κατεβάσαμε τον ετήσιο αριθμό διαδηλώσεων και από [εδώ](https://www.bls.gov/web/wkstp/monthly-listing.htm) τον μηνιαίο.
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+if(!require(readxl)){
+    install.packages("readxl")
+    library(readxl)
+}
+strikesYear <- readxl::read_excel("strikesYear.xlsx")
+knitr::kable(head(strikesYear)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+strikesMonth <- readxl::read_excel("strikesMonth.xlsx")
+knitr::kable(head(strikesMonth)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+
+
+# Συσχέτιση με ΑΕΠ    
+
+::: {.panel-tabset}
+
+## Σύγκριση τιμών
+
+## Σύγκριση μεταβολών
+
+:::
+
+# Συσχέτιση με κατά κεφαλήν ΑΕΠ   
+
+::: {.panel-tabset}
+
+## Σύγκριση τιμών
+
+## Σύγκριση μεταβολών
+
+:::
+
+# Συσχέτιση με διάμεσο εισόδημα   
+
+::: {.panel-tabset}
+
+## Σύγκριση τιμών
+
+## Σύγκριση μεταβολών
+
+:::
+
+# Συσχέτιση με συντελεστή Gini  
+
+::: {.panel-tabset}
+
+## Σύγκριση τιμών
+
+## Σύγκριση μεταβολών
+
+
+:::
+
+
+

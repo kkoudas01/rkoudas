@@ -1,0 +1,421 @@
+---
+title: "Λογιστική απεικόνιση ως γεννήτρια τυχαίων αριθμών."
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+```{r}
+#| echo = F
+rm(list = ls())
+```
+
+# Ορισμός
+
+Ως λογιστική απεικόνιση εννοούμε την ακολουθία $x_{n+1}=\lambda x_n(1-x_n)$. Λόγω του χαοτικού της χαρακτήρα για $\lambda=4$ έχει προταθεί η χρήση της ως γεννήτρια τυχαίων αριθμών. Στην παρούσα ενότητα θα εξετάσουμε τα πιθανοκρατικά χαρακτηριστικά της κατανομής των ψευδοτυχαίων αριθμών $\{x_1, x_2, x_3, x_4,\dots\}$.
+
+```{r}
+#| echo = FALSE
+f <- function(lambda, a_0, n) {
+  a <- numeric(n)
+  a[1] <- a_0
+  
+  for (i in 2:n) {
+    a[i] <- lambda * a[i-1] * (1 - a[i-1])
+  }
+  
+  return(a)
+}
+
+```
+
+Αρχικά ας δούμε κάποιους εξ αυτών.
+
+```{r}
+#| echo = FALSE
+# Παράμετροι
+lambda <- 4
+n <- 1000
+a_0_values <- round(seq(0.05, 0.95, by = 0.05),2)
+
+# Δημιουργία ενός κενού dataframe
+df <- data.frame(matrix(ncol = length(a_0_values), nrow = n))
+
+# Εφαρμογή της συνάρτησης f για κάθε τιμή του a_0 και αποθήκευση στο dataframe
+for (i in 1:length(a_0_values)) {
+  df[, i] <- f(lambda, a_0_values[i], n)
+}
+
+# Ονομασία των στηλών με βάση τις τιμές του a_0
+colnames(df) <- paste0("x_0=", a_0_values)
+
+```
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(df) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+```{r}
+#| echo = FALSE,
+#| eval = FALSE
+if(!require(xtable)){
+  install.packages("xtable")
+  library(xtable)
+}
+# Παράμετροι
+lambda <- 4
+n <- 1000
+a_0_values <- round(seq(0.1, 0.9, by = 0.1),2)
+
+# Δημιουργία ενός κενού dataframe
+dflatex <- data.frame(matrix(ncol = length(a_0_values), nrow = n))
+
+# Εφαρμογή της συνάρτησης f για κάθε τιμή του a_0 και αποθήκευση στο dataframe
+for (i in 1:length(a_0_values)) {
+  dflatex[, i] <- f(lambda, a_0_values[i], n)
+}
+
+# Ονομασία των στηλών με βάση τις τιμές του a_0
+colnames(dflatex) <- paste0("x_1=", a_0_values)
+xtable(head(dflatex))
+
+```
+
+# Από εδώ και κάτω το κείμενο είναι μόνο στο Latex
+
+# Πώς κατανέμονται οι τιμές της λογιστικής απεικόνισης;
+
+```{r}
+#| echo = FALSE
+par( mfrow= c(3,2) )
+hist(f(4,0.01,1000), xlab="x_n", main="x_0=0.01")
+hist(f(4,0.16,1000), xlab="x_n", main="x_0=0.16")
+hist(f(4,0.26,1000), xlab="x_n", main="x_0=0.26")
+hist(f(4,0.49,1000), xlab="x_n", main="x_0=0.49")
+hist(f(4,0.74,1000), xlab="x_n", main="x_0=0.74")
+hist(f(4,0.99,1000), xlab="x_n", main="x_0=0.99")
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+# Φόρτωση των απαραίτητων βιβλιοθηκών
+if(!require(ggplot2)){
+  install.packages("ggplot2")
+  library(ggplot2)
+}
+if(!require(tidyr)){
+  install.packages("tidyr")
+  library(tidyr)
+}
+
+# Αφαίρεση της 5ης και 15ης στήλης
+df2 <- df[, -c(5, 10, 15)]
+
+# Μετατροπή του df2 σε long format
+df_long <- pivot_longer(df2, cols = everything(), names_to = "αρχική_τιμή", values_to = "value")
+
+# Δημιουργία του density plot
+ggplot(df_long, aes(x = value, fill = αρχική_τιμή, color = αρχική_τιμή)) +
+  geom_density(alpha = 0) +
+  theme_minimal() +
+  labs(title = "Καμπύλες πυκνότητας για τις διάφορες αρχικές τιμές", x = "x_n", y = "Density")
+
+```
+
+```{r}
+#| echo = FALSE
+set.seed(1)
+runif(1)
+runif(1)
+```
+
+```{r}
+#| echo = FALSE
+set.seed(1)
+ks.test(f(4, runif(1), 1000), f(4, runif(1), 1000))
+```
+
+```{r}
+#| echo = FALSE
+f(4, 0.2655087, 10)
+```
+
+```{r}
+#| echo = FALSE
+f(4, 0.3721239, 10)
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+# library
+if(!require(latticeExtra)){
+  install.packages("latticeExtra")
+  library(latticeExtra)
+}
+
+# Πλήθος στοιχείων από κάθε λίστα xn
+nn <- 1000
+# Πλήθος διαφορετικών αρχικών τιμών
+m <- 20
+ax <- 1/(m*pi)
+bx <- 1-1/(m*exp(1))
+hx <- (bx-ax)/m
+ay <- 1/(m*exp(1))
+by <- 1-1/(m*pi)
+hy <- (by-ay)/m
+x = seq(ax, bx, hx)
+y = seq(ay, by, hy)
+data <- expand.grid(x = x, y = y)
+
+#data <- data.frame(x = seq(ax, bx, hx), y = seq(ay, by, hy)) 
+for (i in 1:(length(data$x))) {
+  data$z[i] <- ks.test(f(4,data$x[i],nn),f(4,data$y[i],nn))$p.value
+}
+
+if(!require(viridisLite)){
+  install.packages("viridisLite")
+  library(viridisLite)
+}
+
+coul <- viridis(500)
+# showing data points on the same color scale 
+levelplot(z ~ x * y, data, panel = panel.levelplot.points, cex =  1.2, col.regions = coul) + 
+    layer_(panel.2dsmoother(..., n = 300))
+```
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+if(!require(plotly)){
+  install.packages("plotly")
+  library(plotly)
+}
+
+# Πλήθος στοιχείων από κάθε λίστα xn
+nn <- 1000
+# Πλήθος διαφορετικών αρχικών τιμών
+m <- 50
+ax <- 1/(m*pi)
+bx <- 1-1/(m*exp(1))
+hx <- (bx-ax)/m
+ay <- 1/(m*exp(1))
+by <- 1-1/(m*pi)
+hy <- (by-ay)/m
+x = seq(ax, bx, hx)
+y = seq(ay, by, hy)
+data <- expand.grid(x = x, y = y)
+
+# Υπολογισμός χρωμάτων για κάθε σημείο
+colors <- sapply(1:nrow(data), function(i) {
+  x_val <- data$x[i]
+  y_val <- data$y[i]
+  
+  # Εκτέλεση του ελέγχου Kolmogorov-Smirnov
+  p_value <- ks.test(f(4, x_val, nn), f(4, y_val, nn))$p.value
+  
+  # Ανάλογος χρωματισμός
+  if (p_value >= 0.1) {
+    return("green")
+  } else {
+    return("red")
+  }
+})
+
+# Δημιουργία του scatterplot με το plotly
+plot_ly(data, x = ~x, y = ~y, type = 'scatter', mode = 'markers',
+        marker = list(color = colors)) %>%
+  layout(title = "Scatterplot με βάση τον έλεγχο Kolmogorov-Smirnov",
+         xaxis = list(title = "x"),
+         yaxis = list(title = "y"))
+
+```
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| warning = FALSE
+# Αρχική προετοιμασία δεδομένων
+nn <- 1000
+m <- 51
+ax <- 1/(m*exp(1))
+bx <- 1-1/(m*pi)
+hx <- (bx-ax)/m
+ay <- 1/(m*pi)
+by <- 1-1/(m*exp(1))
+hy <- (by-ay)/m
+x <- seq(ax, bx, hx)
+y <- seq(ay, by, hy)
+data <- expand.grid(x = x, y = y)
+
+# Διαγραφή γραμμών που πληρούν την προϋπόθεση
+rows_to_delete <- sapply(1:nrow(data), function(i) {
+  ks.test(f(4, data$x[i], nn), f(4, data$y[i], nn))$p.value < 0.1
+})
+data_cleaned <- data[!rows_to_delete, ]
+
+ggplot(data_cleaned, aes(x = x, y = y)) +
+  stat_density_2d(geom = "raster", aes(fill = after_stat(density)), contour = FALSE) +
+  labs(title = "2D Histogram", x = "X-axis", y = "Y-axis") +
+  theme_minimal()
+
+```
+
+# Περί ποιας κατανομής πρόκειται;
+
+```{r}
+#| echo = FALSE
+set.seed(1)
+runif(1)
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+if(!require(fitdistrplus)){
+    install.packages("fitdistrplus")
+    library(fitdistrplus)
+}
+descdist(f(4,0.2655087,100), discrete = FALSE, boot = 200)
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+if(!require(car)){
+    install.packages("car")
+    library(car)
+}
+qqPlot(f(4,0.2655087,10000), distribution = "unif")
+```
+
+
+
+```{r}
+#| echo = FALSE
+ks.test(f(4, 0.2655087, 1000), "punif")
+```
+
+```{r}
+#| echo = FALSE
+graf_symmetrias <-  function(x)  {
+  n = length(x)
+  n2 = n %/% 2
+  sx = sort(x)
+  mx = median(x)
+  plot(mx - sx[1:n2], rev(sx)[1:n2] - mx,
+       xlab = "Distance Below Median",
+       ylab = "Distance Above Median")
+  abline(a = 0, b = 1, lty = "dotted")
+}
+graf_symmetrias(f(4, 0.2655087, 1000))
+```
+
+
+```{r}
+
+# Creating the Sequence
+gfg = seq(0,1, by=0.01)
+ 
+# Case 3
+plot(gfg, dbeta(gfg, 0.424975,0.480757), xlab = "X",
+     ylab = "Beta Density", type = "l",
+     col = "Red")
+```
+
+
+```{r}
+generate_arcsine <- function(n) {
+  rbeta(n, shape1 = 0.5, shape2 = 0.5)
+}
+
+# Παράδειγμα χρήσης με n = 1000
+set.seed(123) # Για αναπαραγωγιμότητα
+samples <- generate_arcsine(1000)
+
+# Εμφάνιση ενός histogram των δειγμάτων
+hist(samples, probability = TRUE, breaks = 50, 
+     main = "Δείγματα από την κατανομή Arcsine",
+     xlab = "Τιμές", ylab = "Πυκνότητα")
+curve(1 / (pi * sqrt(x * (1 - x))), from = 0, to = 1, col = "red", lwd = 2, add = TRUE)
+```
+
+# Έλεγχος 0-1 για το χάος
+
+```{r}
+#| eval = FALSE
+if(!require(Chaos01)){
+  install.packages("Chaos01")
+  library(Chaos01)
+}
+```
+
+```{r}
+#| eval = FALSE
+elegxos01 <- function(values){
+  res2 <- testChaos01(values, out = TRUE)
+  K <- median(getVal(res2, vars = "Kc"))
+  K
+}
+```
+
+```{r}
+#| eval = FALSE
+vec.x <- gen.logistic(mu = 3.55, iter = 2000)
+elegxos01(vec.x)
+```
+
+```{r}
+#| eval = FALSE
+generate_logistic_lists <- function(start_mu = 3.55, end_mu = 4, step = 0.001, iter = 2000) {
+  # Δημιουργία της ακολουθίας των τιμών του mu
+  mu_values <- seq(start_mu, end_mu, by = step)
+  
+  # Δημιουργία της λίστας που θα περιέχει τις λίστες από τη gen.logistic
+  logistic_lists <- lapply(mu_values, function(mu) {
+    gen.logistic(mu = mu, iter = iter)
+  })
+  
+  return(logistic_lists)
+}
+
+# Παράδειγμα κλήσης της συνάρτησης
+result_lists <- generate_logistic_lists(start_mu = 3.5, end_mu = 4, step = 0.001, iter = 2000)
+```
+
+```{r}
+#| eval = FALSE
+# Εφαρμογή της MyFunc() σε κάθε λίστα της result_lists
+new_list <- as.numeric(lapply(result_lists, elegxos01))
+```
+
+```{r}
+#| eval = FALSE
+vList <- seq(3.5, 4, by = 0.001)
+plot(vList,new_list,type = "l", xlab = "λ", 
+        ylab = "K")
+```
+

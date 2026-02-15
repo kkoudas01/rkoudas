@@ -1,0 +1,320 @@
+---
+title: "Τι φέρνει την ευτυχία;"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+# Πακέτα
+rm(list = ls())
+if(!require(pheatmap)){
+  install.packages("pheatmap")
+  library(pheatmap)
+}
+if(!require(dplyr)){
+  install.packages("dplyr")
+  library(dplyr)
+}
+if(!require(reshape)){
+  install.packages("reshape")
+  library(reshape)
+}
+if(!require(reshape2)){
+  install.packages("reshape2")
+  library(reshape2)
+}
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+if(!require(plotly)){
+    install.packages("plotly")
+    library(plotly)
+}
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+# Συναρτήσεις
+dentrogrammaArxiko <- function(stiles){
+  stiles <- stiles %>% select_if(~ !any(is.na(.)))
+  stiles_m <- as.matrix(stiles)
+  stiles_m.t <- t(stiles_m)
+  dist.stiles_m <- dist(stiles_m.t, diag = TRUE, upper = TRUE)
+  dist.stiles_m <- as.matrix(dist.stiles_m)
+  pheatmap(dist.stiles_m)
+}
+dentrogramma <- function(stiles){
+  stiles <- stiles %>% select_if(~ !any(is.na(.)))
+  stiles_m <- as.matrix(stiles)
+  stiles_m.t <- t(stiles_m)
+  dist.stiles_m <- dist(stiles_m.t, diag = TRUE, upper = TRUE)
+  dist.stiles_m <- as.matrix(dist.stiles_m)
+  
+  pheatmap(
+    dist.stiles_m,
+    fontsize_row = 8,          # Μείωση μεγέθους γραμμών
+    fontsize_col = 8,          # Μείωση μεγέθους στηλών
+    angle_col = 90,            # Περιστροφή labels των στηλών
+    display_numbers = FALSE,   # Απόκρυψη αριθμών για μεγάλους πίνακες
+    cluster_rows = TRUE,       # Ομαδοποίηση γραμμών
+    cluster_cols = TRUE,       # Ομαδοποίηση στηλών
+  )
+}
+
+```
+
+
+# Παρουσίαση προβληματος
+
+Λίγες μέρες πριν ο γράφων ασχοληθεί με την παρούσα ενότητα ο κος Άκης Σκέρτσος [είχε δηλώσει](https://www.facebook.com/askertsos/posts/%CE%AD%CF%87%CE%BF%CF%85%CE%BC%CE%B5-%CF%84%CE%B7%CE%BD-%CE%B5%CF%85%CE%BB%CE%BF%CE%B3%CE%AF%CE%B1-%CE%BD%CE%B1-%CE%B6%CE%BF%CF%8D%CE%BC%CE%B5-%CF%83%CE%B5-%CE%BC%CE%B9%CE%B1-%CF%87%CF%8E%CF%81%CE%B1-%CF%80%CE%BF%CF%85-%CE%BC%CE%B1%CF%82-%CF%87%CE%B1%CF%81%CE%AF%CE%B6%CE%B5%CE%B9-%CE%B1%CF%80%CE%BB%CF%8C%CF%87%CE%B5%CF%81%CE%B1-%CE%BA%CE%B1%CE%B8%CE%B7%CE%BC%CE%B5%CF%81%CE%B9%CE%BD%CE%AC-%CF%84%CE%AD%CF%84%CE%BF/10161927243469226/) «Έχουμε την ευλογία να ζούμε σε μια χώρα που μας χαρίζει απλόχερα καθημερινά τέτοιες μαγικές εικόνες [ενός ηλιοβασιλέματος]». Υπάρχει μια συνηθισμένη παρανόηση σε διάφορους κύκλους ότι ο ήλιος δύει μόνο στην Ελλάδα, υποννοώντας ότι οι άλλες χώρες έχουν συνεχώς νύχτα, σαν την Μόρντορ, ή συνεχώς ημέρα. Δεν θα ασχοληθούμε εδώ με αυτή την γεωγραφικο-αστρονομική αστοχία, αλλά με ένα άλλο ζήτημα που προκύπτει. Τι φέρνει ευτυχία στον άνθρωπο;
+
+Ευτυχία φέρνει το να δύει ο ήλιος στη χώρα σου, όπως υπονοεί ο κος Άκης Σκέρτσος; Ή μήπως ευτυχία να είναι να έχεις τη δυνατότητα να απολαύσεις ένα ηλιοβασίλεμα, αντί να υδρώνεις στον εργσιακό σου χώρο ή αντί να τρως τα νύχια σου από το άγχος τού πώς θα πληρώσεις την επιβίωσή σου;
+
+Προς τούτο θα μελετήσουμε το μέγεθος της ευτυχίας που νιώθουν οι πολίτες διαφόρων χωρών και θα το συγκρίνουμε με διάφορες παραμέτρους οικονομικές και εργασιακές. Σε πρώτη φάση κατεβάσαμε από το [Our World in Data](https://ourworldindata.org/happiness-and-life-satisfaction) δεδομένα από διάφορες χώρες και διάφορα έτη που αφορούν τις απαντήσεις στην ερώτηση «Θεωρώντας ότι το 0 αντιστοιχεί στην χειρώτερη δυνατή ζωή και το 10 στην καλύτερη, σε πιο σημείο του διαστήματος 0-10 βρίσκεστε;». Λόγω καθυστέρησης στην εκτέλεση του κώδικα, παρουσιάζουμε μόνο το αρχικο κομμάτι του πίνακα:
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+happinessCantrilLadder <- read.csv("happinessCantrilLadder.csv", na.string = "")
+knitr::kable(head(happinessCantrilLadder)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "max-content", height = "200px")
+```
+
+
+Πριν προχωρήσουμε στις συγκρίσεις που προαναφέραμε, ας εξετάσουμε τις σχέσεις χώρας με χώρα για το τελευταίο έτος που καταγράφεται στα δεδομένα μας (2024).
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+happinessCantrilLadder2024 <- happinessCantrilLadder[happinessCantrilLadder$Year==2024 & !is.na(happinessCantrilLadder$Code),-1]
+happinessCantrilLadder2024wide <- dcast(happinessCantrilLadder2024, Year ~ Code, value.var="Cantril.ladder.score")
+happinessCantrilLadder2024wide <- happinessCantrilLadder2024wide[,-1]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE,
+#| fig.width = 20,
+#| fig.height = 16,
+#| out.width = "100%"
+dentrogramma(happinessCantrilLadder2024wide)
+```
+
+Ζουμάροντας λίγο τη σελίδα για να διαβάσουμε τις «ψείρες» των ετικετών, βλέπουμε πως η Ελλάδα (`GRC`), όσον αφορά το επίπεδο ευχαρίστησης από τη ζωή (5.776) το 2024, βρίσκεται στην ίδια ομάδα με το Μαυροβούνιο (`MNE`), τη Βολιβία  (`BOL`), την Κροατία  (`HRV`), την Τζαμάικα (`JAM`), τη Δομινικανή Δημοκρατία (`DOM`), την Κιργιζία  (`KGZ`), τη Λιβύη (`LBY`), τη Μολδαβία (`MDA`), τη Μογγολία  (`MNG`) και τον Μαυρίκιο (`MUS`). Κοντολογίς, η Ελλάδα ανήκει στη Δύση.
+
+
+
+
+
+
+
+
+# Τα λεφτά φέρνουν την ευτυχία
+
+
+
+## Κατά κεφαλήν ΑΕΠ
+
+
+Το αγαπημένο απόφθεγμα ενός αμοραλιστή είναι ότι τα λεφτά φέρνουν την ευτυχία. Είναι έτσι; Σε ποιον βαθμό συμβαίνει αυτό; Αντλήσαμε δεδομένα από το [Our World in Data](https://ourworldindata.org/grapher/gdp-per-capita-maddison-project-database) που αφορούν το κατά κεφαλήν ΑΕΠ διαφόρων χωρών. Τα παρουσιάζουμε λακωνικά παρακάτω.
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+gdpPerCapita <- read.csv("gdpPerCapita.csv", na.string = "")
+knitr::kable(head(gdpPerCapita)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "max-content", height = "200px")
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+happyANDgdpPerCapita <-merge(x=happinessCantrilLadder,y=gdpPerCapita,by=c("Code","Year"))
+happyANDgdpPerCapita <- happyANDgdpPerCapita[!is.na(happyANDgdpPerCapita$Code),]
+```
+
+Πόσο πολύ συμβάλει η οικονομική ευρωστία του μέσου ανθρώπου στο πόσο ευχαριστημένος νιώθει από τη ζωή του; Το παρακάτω διάγραμμα διασποράς μάς φανερώνει ότι υπάρχει έντονη σχέση μεταξύ τους. Μεγαλώνοντας το ετήσιο εισόδημα, μεγαλώνει και η ευχαρίστηση από τη ζωή. Υπολογίζοντας το πόσο έντονο είναι αυτο το φαινόμενο της παράλληλης αυξητικής συμπεριφοράς, βρίσκουμε συντελεστή μονοτονικής συσχέτισης Spearman `r cor(happyANDgdpPerCapita$Cantril.ladder.score,happyANDgdpPerCapita$GDP.per.capita, method = "spearman")`, όπερ υποδηλώνει ότι είναι πολύ ισχυρό.
+
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+happyANDgdpPerCapitaPlot <- ggplot(happyANDgdpPerCapita, aes(x = GDP.per.capita, y = Cantril.ladder.score))
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplotly(happyANDgdpPerCapitaPlot + geom_point(alpha = 1/5, aes(colour = Code), show.legend = FALSE) +
+  labs(
+    x = "Κατά κεφαλήν ΑΕΠ",  # Αλλάζει την ετικέτα του άξονα Χ
+    y = "Επίπεδο ευχαρίστησης"   # Αλλάζει την ετικέτα του άξονα Υ
+  )+ geom_smooth()) 
+```
+
+
+
+
+Ας δούμε τι συμβαίνει και από χώρα σε χώρα, ενώνοντας με τεθλασμένες γραμμές τα σημεία που αφορούν την κάθε μία.
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+
+ggplotly(happyANDgdpPerCapitaPlot + geom_line(alpha = 3/5, aes(colour = Code), show.legend = FALSE) +
+  labs(
+    x = "Κατά κεφαλήν ΑΕΠ",  # Αλλάζει την ετικέτα του άξονα Χ
+    y = "Επίπεδο ευχαρίστησης"   # Αλλάζει την ετικέτα του άξονα Υ
+  ))
+```
+
+
+
+
+Παρατηρούμε ότι από ένα επίπεδο και πάνω, ο βαθμός ικανοποίησης δεν αλλάζει σημαντικά. Μπορεί αυτό να σημαίνει ότι τα λεφτά δεν φέρνουν την ευτυχία, αλλά η έλλειψή τους φέρνει σίγουρα δυστυχία. Θα μπορούσαμε να πούμε πως μέχρι τα $35 \ 000$ δολάρια ο κυρίαρχος παράγοντας ευχαρίστησης ή δυστυχίας είναι τα χρήματα. Μετά, όταν ξεπερνάμε τα $35 \ 000$ δολάρια, αρχίζουν να μπαίνουν στο παιχνίδι πιο ενεργά κι άλλοι παράγοντες.
+
+Κλείνοντας αυτή την υποενότητα θα πρέπει να επισημάνουμε ότι οι συσχετίσεις που βρήκαμε δεν δηλώνουν απαραιτήτως αιτιότητα, αλλά συνύπαρξη. Δηλαδή, δεν βρήκαμε ότι το χρήμα φέρνει την ευτυχία, αλλά ότι όταν υπάρχει αύξηση του χρήματος, τότε υπάρχει και αύξηση της ευχαρίστησης της ζωής. Μπορεί και τα δύο να συνεξαρτώνται από έναν άλλο παράγοντα. Φυσικά, ναι μεν δεν δείξαμε ότι έχουν σχέση αιτίου-αιτιατού, αλλά ούτε και την αποκλείσαμε κιόλας. Αυτό θα είναι το αποτέλεσμα μιας άλλης έρευνας ή εμπλουτισμού της παρούσης.
+
+
+
+
+
+## Διάμεσο εισόδημα
+
+
+
+Θα παραμείνουμε στην εξέταση της σχέσης μεταξύ του χρήματος και ικανοποίησης, εξετάζοντας αυτή τη φορά έναν άλλον δείκτη εισοδήματος, το ημερίσιο διάμεσο εισόδημα της κάθε χώρας. Το διάμεσο εισόδημα είναι αυτό πάνω από το οποίο έχει ο μισός πληθυσμός και κάτω από το οποίο ο άλλος μισός. Για λόγους ευκολίας του γράφοντος τα δεδομένα αντλήθηκαν πάλι από τη σελίδα [Our World in Data](https://ourworldindata.org/grapher/daily-median-income) και παρουσιάζονται εν περιλήψει ακολούθως.
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+medianIncome <- read.csv("medianIncome.csv", na.string = "")
+knitr::kable(head(medianIncome)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "max-content", height = "200px")
+```
+
+
+Αρχικά παρουσιάζουμε το διάγρμμα διασποράς που συνδέει το διάμεσο εισόδημα με το επίπεδο ικανοποίησης από τη ζωή στη χώρα σου.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+happyANDmedian <-merge(x=happinessCantrilLadder,y=medianIncome,by=c("Code","Year"))
+happyANDmedian <- happyANDmedian[!is.na(happyANDmedian$Code),]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+happyANDmedianPlot <- ggplot(happyANDmedian, aes(x = Median..2021.prices....Income.or.consumption.consolidated, y = Cantril.ladder.score))
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplotly(happyANDmedianPlot + geom_point(alpha = 1/5, aes(colour = Code), show.legend = FALSE) +
+  labs(
+    x = "Διάμεσο ημερίσιο εισόδημα",  # Αλλάζει την ετικέτα του άξονα Χ
+    y = "Επίπεδο ευχαρίστησης"   # Αλλάζει την ετικέτα του άξονα Υ
+  )+ geom_smooth())
+```
+
+Και με αυτόν τον δείκτη οικονομικής ευρωστίας φαίνεται η αύξηση του εισοδήματος να πηγαίνει παρέα με την αύξηση της ικανοποίησης. Ταύτα έρχεται να επιβεβαιώσει και ο συντελεστής Spearman, ο οποίος όντας `r cor(happyANDmedian$Cantril.ladder.score,happyANDmedian$Median..2021.prices....Income.or.consumption.consolidated, method = "spearman")` υποδηλώνει ότι αυτή η ζεύξη είναι πολύ ισχυρή.
+
+Ας εμφανίζουμε και λίγο καλύτερα τα αποτελέσματα της κάθε χώρας.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+
+ggplotly(happyANDmedianPlot + geom_line(alpha = 3/5, aes(colour = Code), show.legend = FALSE) +
+  labs(
+    x = "Διάμεσο ημερίσιο εισόδημα",  # Αλλάζει την ετικέτα του άξονα Χ
+    y = "Επίπεδο ευχαρίστησης"   # Αλλάζει την ετικέτα του άξονα Υ
+  ))
+```
+
+Και πάλι βλέπουμε, όπως και στην περίπτωση του κατά κεφαλήν ΑΕΠ, ότι η ικανοποίηση από τη ζωή συνδέεται έντονα με τα χρήματα μέχρι κάποιο σημείο, αλλά από κάποιο σημείο και πέρα αυτή η σύνδεση αρχίζει να εξασθενεί.
+
+
+
+# Χαρά και εργασία
+
+Ακούμε συχνά-πυκνά για τον ευεργετικό ρόλο της εργασίας και το [πόσο απίθανο είναι κάποιος να μην την επιθυμεί](https://www.news247.gr/politiki/georgiadis-tha-epitrepetai-i-16ori-ergasia-isos-den-aresei-stous-anthropous-tis-aristeras/). Από το «Η εργασία απελευθερώνει» του Άουσβιτς, μέχρι το ότι ο Κων/νος Μητσοτάκης κρατήθηκε διαυγής επειδή εργαζόταν και δεν τεμπέλιαζε. Συνήθως αυτές τις δηλώσεις τις ακούς από ανθρώπους που θέλουν να εργαστείς γι' αυτούς με έναν συμφέροντα για τους ίδιους τρόπο ή από ανθρώπους που έχουν την αυταπάτη ότι δουλειά είναι το να καταβροχθίζεις δημόσιο χρήμα. Εν πάση περιπτώσει, εμείς εδώ θα εξετάσουμε αν όντως η ποσότητα της εργασίας τονώνει την ψυχολογία μας.
+
+Για να φέρουμε εις πέρας αυτό το εγχείρημα συλλέξαμε δεδομένα από το [Our World in Data](https://ourworldindata.org/grapher/annual-working-hours-per-worker) για τις ετήσιες ώρες εργασίας σε διάφορες χώρες για μια πλειάδα ετών και τα παρουσιάζουμε εν περιλήψει ακολούθως.
+
+
+
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+workingHours2r <- read.csv("workingHours2r.csv", na.string = "")
+knitr::kable(head(workingHours2r)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "max-content", height = "200px")
+```
+
+Σε πρώτη φάση, όπως ανέκαθεν, απεικονίζουμε με ένα διάγραμμα διασποράς που συνδέει τις ετήσιες ώρες εργασίας με το επίπεδο ευχαρίστησης από τη ζωή.
+
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+happyANDwork <-merge(x=happinessCantrilLadder,y=workingHours2r,by=c("Code","Year"))
+happyANDwork <- happyANDwork[!is.na(happyANDwork$Code),]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+happyANDworkPlot <- ggplot(happyANDwork, aes(x = Working.hours.per.worker, y = Cantril.ladder.score))
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplotly(happyANDworkPlot + geom_point(alpha = 1/5, aes(colour = Code), show.legend = FALSE) +
+  labs(
+    x = "Ετήσιες ώρες εργασίας",  # Αλλάζει την ετικέτα του άξονα Χ
+    y = "Επίπεδο ευχαρίστησης"   # Αλλάζει την ετικέτα του άξονα Υ
+  )+ geom_smooth())
+```
+
+Δεν θέλει να έχεις μάτια αετού για να δεις ότι όσο περισσότερες ώρες εργάζεται κανείς, τόσο λιγότερο ευχαριστημένος είναι από τη ζωή του. Η αλήθεια είναι πως είναι πολύ κουραστικό να πρέπει να αποδείξεις τα αυτονόητα, αλλά αφού μπήκαμε στο χορό, θα χορέψουμε κι επομένως θα ανατρέξουμε και στον συντελεστή Spearman. Όντας αυτός αρνητικός και με εγγύτητα στο $-1$ (`r cor(happyANDwork$Cantril.ladder.score,happyANDwork$Working.hours.per.worker, method = "spearman")`) επιβεβαιώνει κι αυτός το «βου+α=βα», δηλαδή ότι περισσότερες ώρες εργασίας πάνε μαζί με λιγότερη ικανοποίηση από τη ζωή.

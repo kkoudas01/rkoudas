@@ -1,0 +1,319 @@
+---
+title: "Μέτρα διασποράς"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+
+
+Στο παρόν κεφάλαιο θ’ ασχοληθούμε πάλι με τις τουρκικές παραβιάσεις του Εθνικού Εναέριου Χώρου και των Εθνικών Χωρικών Υδάτων, οπότε θα χρησιμοποιήσουμε τους πίνακες enaerParab.xlsx και ydataParab.xlsx, αφού πρώτα διαγράψουμε τα προηγούμενα.
+
+```{r}
+rm(list = ls())
+```
+
+-   *ydataParab.xlsx* (για τα θαλάσια συμβάντα):
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+if(!require(readxl)){
+    install.packages("readxl")
+    library(readxl)
+}
+ydataParab <- readxl::read_excel("ydataParab.xlsx")
+knitr::kable(ydataParab) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "max-content", height = "200px")
+```
+
+-   και *enaerParab.xlsx* (για τα εναέρια):
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+if(!require(readxl)){
+    install.packages("readxl")
+    library(readxl)
+}
+enaerParab <- readxl::read_excel("enaerParab.xlsx")
+knitr::kable(enaerParab) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+Είδαμε ότι η μέση τιμή των παραβιάσεων, η διάμεσος κτλ είναι αριθμοί ενδεικτικοί του συνόλου των τιμών των παραβιάσεων. Πόσο όμως το αντιπροσωπεύουν; Γράφοντας:
+
+```{r}
+mean(enaerParab$PARAB_EEX)
+```
+
+βρίσκουμε ότι η μέση τιμή των παραβιάσεων είναι `r mean(enaerParab$PARAB_EEX)` παραβιάσεις το μήνα. Αν πχ το πλήθος των παραβιάσεων είναι από `r 10*floor(mean(enaerParab$PARAB_EEX)/10-1)` έως `r 10*floor(mean(enaerParab$PARAB_EEX)/10+1)` το μήνα, η μέση τιμή που βρήκαμε αντιπροσωπεύει επαρκέστατα καθεμία τιμή. Αν όμως οι τιμές είναι απλωμένες σε ένα πολύ ευρύτερο διάστημα, τότε η τιμή αυτή δεν είναι καθόλου αντιπροσωπευτική.
+
+Εδώ θα εξετάσουμε διάφορους τρόπους με τους οποίους ανακαλύπτουμε πόσο απλωμένες είναι οι τιμές κάποιων παρατηρήσεων.
+
+# Εύρος
+
+Το πιο απλό μέτρο διασποράς είναι το εύρος.
+
+|                                                        <mark>Εύρος</mark>                                                        |
+|:----------------------------------------------------------------------:|
+| <mark>Το **εύρος** ενός συνόλου μετρήσεων (δείγματος ή πληθυσμού) είναι η διαφορά της μικρότερης από την μεγαλύτερη τιμή.</mark> |
+
+Για να βρούμε το εύρος στην R θα χρησιμοποιήσουμε την συνάρτηση `range()`. Γράφοντας:
+
+```{r}
+range(enaerParab$PARAB_EEX)
+```
+
+εξάγονται οι αριθμοί `r range(enaerParab$PARAB_EEX)[1]` και `r range(enaerParab$PARAB_EEX)[2]`. Αυτοί είναι οι ανώτερη και η κατώτερη τιμή της λίστας των παραβιάσεων ΕΕΧ. Προφανώς, το εύρος θα είναι `r range(enaerParab$PARAB_EEX)[2]`-`r range(enaerParab$PARAB_EEX)[1]`=`r range(enaerParab$PARAB_EEX)[2]-range(enaerParab$PARAB_EEX)[1]`.
+
+# Τυπική απόκλιση
+
+Δυστυχώς, το εύρος είναι αρκετά ευαίσθητο στις ακραίες τιμές. Αν, επί παραδείγματι, σ’ ένα μήνα έγιναν 1000 παραβιάσεις και σ’ έναν άλλο μόνο 1, το εύρος θα πάρει αυτομάτως την τιμή 999, χωρίς όμως αυτή να αντιπροσωπεύει κάτι ουσιαστικό, αφού αυτές οι ακραίες τιμές έγιναν μόνο δύο φορές.
+
+|                                          <mark>Τυπική απόκλιση</mark>                                           |
+|:----------------------------------------------------------------------:|
+| <mark>Η **τυπική απόκλιση** ενός συνόλου τιμών είναι ένα μέτρο της απόστασής τους από τη μέση τιμή τους.</mark> |
+
+Η τυπική απόκλειση υπολογίζεται διαφορετικά, όταν μιλάμε για πληθυσμό σε σχέση με όταν μιλάμε για δείγμα. Έτσι, η τυπική δειγματική τυπική απόκλιση υπολογίζεται στην R μέσω της συνάρτησης `sd()`. Οπότε, γράφοντας:
+
+```{r}
+sd(enaerParab$PARAB_EEX)
+```
+
+βρίσκουμε ότι η τυπική απόκλιση των παραβιάσεων ΕΕΧ είναι `r sd(enaerParab$PARAB_EEX)` παραβιάσεις.
+
+Όπως αναφέραμε, η R υπολογίζει διαφορετικά την πληθυσμιακή τυπική απόκλιση. Για την ακρίβεια δεν έχει έτοιμη συνάρτηση για τον υπολογισμό της τυπικής απόκλισης πληθυσμού, οπότε πάλι θα χρειαστεί να την φτιάξουμε εμείς. Αυτό θα γίνει με την εντολή:
+
+```{r}
+sdPop <- function(x) sqrt(mean((x-mean(x))^2))
+```
+
+## Απομονωμένα σημεία
+
+|                                                                       <mark>Απομονωμένα σημεία</mark>                                                                       |
+|:----------------------------------------------------------------------:|
+| <mark>Μια τιμή από ένα σύνολο μετρήσεων (δείγματος ή πληθυσμού), η οποία είναι πολύ μεγάλη ή πολύ μικρή σε σχέση με τις υπόλοιπες ονομάζεται **απομονωμένο σημείο**.</mark> |
+
+Η σημασία της τυπικής απόκλισης θα φανεί μέσα από τα απομονωμένα σημεία, μέσω του κάτωθι θεωρήματος.
+
+<mark>Οτιδήποτε βρίσκεται σε απόσταση από την μέση τιμή μεγαλύτερη από τρεις τυπικές αποκλίσεις είναι πιθανό παράτυπο σημείο. Σχεδόν όλο το δείγμα (τουλάχιστον το 88.8%) βρίσκεται σε μικρότερη απόσταση από τρεις τυπικές αποκλίσεις.</mark>
+
+Όσον αφορά τις παραβιάσεις ΕΕΧ, γράφοντας:
+
+```{r}
+mean(enaerParab$PARAB_EEX)-3*sd(enaerParab$PARAB_EEX)
+mean(enaerParab$PARAB_EEX)+3*sd(enaerParab$PARAB_EEX)
+```
+
+βρίσκουμε τους αριθμούς `r mean(enaerParab$PARAB_EEX)-3*sd(enaerParab$PARAB_EEX)` και `r mean(enaerParab$PARAB_EEX)+3*sd(enaerParab$PARAB_EEX)` που είναι τα άκρα του διαστήματος εκτός του οποίου εντός του οποίου, όπως είπαμε, βρίσκεται τουλάχιστον το 88.8% του δείγματος. Και όντως! Γράφοντας:
+
+```{r}
+enaerParabApon <- enaerParab[enaerParab$PARAB_EEX>634.3057, ]
+enaerParabApon
+```
+
+βρίσκουμε ότι μόνο σε δύο μήνες (Μάιος 2017 και Ιούνιος 2019) ότι υπήρξαν παραβιάσεις εκτός του διαστήματος (`r mean(enaerParab$PARAB_EEX)-3*sd(enaerParab$PARAB_EEX)`, `r mean(enaerParab$PARAB_EEX)+3*sd(enaerParab$PARAB_EEX)`). Προφανώς δεν έχει αξία να ψάξουμε για τιμές πλήθους παραβιάσεων μικρότερες του `r mean(enaerParab$PARAB_EEX)-3*sd(enaerParab$PARAB_EEX)`.
+
+# Ενδοτεταρτημοριακό εύρος
+
+Ενίοτε μπορεί να μη μας απασχολεί το εύρος όλων των μετρήσεων που διαθέτουμε, αλλά κάποιων κεντρικών τιμών τους. Το ενδοτεταρτημοριακό εύρος είναι σε αυτά τα πλαίσια και προσδιορίζει το εύρος του κεντρικού 50% των τιμών. Με άλλα λόγια:
+
+|                                                         <mark>Ενδοτεταρτημοριακό εύρος</mark>                                                         |
+|:---------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| <mark>Το **ενδοτεταρτημοριακό εύρος** ενός συνόλου μετρήσεων (δείγματος ή πληθυσμού) είναι η διαφορά μεταξύ του 1ου και του 3ου ταταρτημορίου.</mark> |
+
+Το ενδοτεταρτημοριακό εύρος στην R υπολογίζεται μέσω της συνάρτησης `IQR()`. Δηλαδή, αν γράψουμε:
+
+```{r}
+IQR(enaerParab$PARAB_EEX)
+```
+
+παίρνουμε σαν απάντηση την τιμή `r IQR(enaerParab$PARAB_EEX)`, όπερ σημαίνει ότι οι τιμές του κεντρικού 50% του δείγματος εκτείνονται σ’ ένα διάστημα πλάτους `r IQR(enaerParab$PARAB_EEX)` μονάδων. Αυτό μπορούμε να το εξακριβώσουμε γράφοντας επίσης:
+
+```{r}
+quantile(enaerParab$PARAB_EEX)
+```
+
+οπότε διαπιστώνουμε ότι το κεντρικό 50% του δείγματος είναι μεταξύ των τιμών `r quantile(enaerParab$PARAB_EEX)[[2]]` και `r quantile(enaerParab$PARAB_EEX)[[4]]`, οι οποίες, προφανώς, απέχουν μεταξύ τους `r IQR(enaerParab$PARAB_EEX)` μονάδες.
+
+# Θηκόγραμμα
+
+Με θηκόγραμμα απεικονίζονται τα τεταρτημόρια και τονίζονται τα απομονωμένα σημεία. Αυτό κείτεται παράλληλα με τον άξονα των τιμών της μεταβλητής μας και αποτελείται από:
+
+-   ένα κουτί που αρχίζει από την ένδειξη του 1ου τεταρτημορίου και τελειώνει στην ένδειξη του 3ου,
+
+-   μία γραμμή στη θέση της διαμέσου, η οποία χωρίζει το κουτί σε δύο κομμάτια,
+
+-   δύο γραμμές ως συνέχεια του κουτιού, οι οποίες εκτείνονται έξω από τα όρια του 1ου και του 3ου τεταρτημορίου και καθεμία τους έχει μήκος ενάμιση ενδοτεταρτημοριακό εύρος, εκτός κι αν έχει ξεπεράσει την ανώτατη ή την κατώτατη τιμή (οπότε σταματάει εκεί),
+
+-   τα σημεία έξω από τις προαναφερθείσες γραμμές είναι πιθανά απομονωμένα σημεία κι έχουν ξεχωριστή σήμανση.
+
+Μια εύκολη και γρήγορη κατασκευή ενός θηκογράμματος γίνεται μέσω της συνάρτησης `boxplot()`. Έτσι, δεν έχουμε παρά να γράψουμε:
+
+```{r}
+boxplot(enaerParab$PARAB_EEX)
+```
+
+Αν το θέλουμε οριζόντιο, τότε γράφουμε:
+
+```{r}
+boxplot(enaerParab$PARAB_EEX, horizontal=TRUE)
+```
+
+Για θηκογράμματα με περισσότερη ποικιλία θα απευθυνθούμε στο πακέτο ggplot2, το οποίο επικαλούμαστε μέσω της εντολής `library(ggplot2)`.
+
+Οπότε γράφουμε:
+
+```{r}
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+ParabEEXbox <- ggplot(enaerParab, aes(x="", y=PARAB_EEX))
+ParabEEXbox + geom_boxplot()
+```
+
+Οπότε έχουμε το θηκόγραμμα που ζητούσαμε. Ο ρόλος της παραμέτρου `x=""` θα φανεί σε λίγο.
+
+Στην περίπτωση που θελήσουμε το θηκόγραμμα οριζόντιο, δεν έχουμε παρά να γράψουμε:
+
+```{r}
+ParabEEXbox + geom_boxplot() + coord_flip()
+```
+
+Δίνοντας κατάλληλες τιμές εντός του geom_boxplot() στα:
+
+-   `outlier.shape =` και
+
+-   `outlier.size =`
+
+αλλάξουμε σχήμα και μέγεθος στα απομονωμένα σημεία. Συγκεκριμένα, γράφοντας:
+
+```{r}
+ParabEEXbox + geom_boxplot(outlier.shape = 0, outlier.size = 4)
+```
+
+κάναμε τα απομονωμένα σημεία τετράγωνου σχήματος και πιο μεγάλα.
+
+Ενίοτε μπορεί να θελήσουμε να παραστήσουμε το θηκόγραμμα σε συνδυασμό μ’ ένα σημειόγραμμα. Τοιαύτη περιπτώσει γράφουμε:
+
+```{r}
+ParabEEXbox + geom_boxplot() + geom_dotplot(binaxis='y', stackdir='center', dotsize=1)
+```
+
+Το σημειόγραμμα θα ήταν πιο ενδιαφέρον, αν τα σημεία του ήταν ατάκτως διατεταγμένα γύρω από τον άξονα συμμετρίας του θηκογράμματος. Αυτό θα επιτευχθεί προσθέτοντας την επιλογή `geom_jitter(shape=16, size=1,position=position_jitter(0.2))`. Αν όμως γράψουμε κατευθείαν:
+
+```{r}
+ParabEEXbox + geom_boxplot() + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
+```
+
+θα προκύψουν διπλάσια απομονωμένα σημεία, αφού θα υπάρχουν αυτά από την επιλογή `geom_boxplot()` και αυτά από τα σημεία που μόλις προσθέσαμε (αυτό μπορεί να γίνει φανερό αλλάζοντας το σχήμα ή το μέγεθος των απομονωμένων σημείων μέσω των επιλογών `shape=` ή `size=`).
+
+Οπότε θα πρέπει να σβήσουμε τα απομονωμένα σημεία του θηκογράμματος, πράγμα που θα γίνει είτε μέσω της αλλαγής `geom_boxplot(outlier.shape = NA)` είτε μέσω της αλλαγής `geom_boxplot(outlier.size = -1)`. Οπότε, για να έχουμε το επιθυμητό θηκόγραμμα, γράφουμε:
+
+```{r}
+ParabEEXbox + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
+```
+
+Όσον αφορά την παράμετρο `shape=` της `geom_jitter()`, αυτή μας δίνει την επιλογή του σχήματος των σημείων, η `size=` του μεγέθους και η `position=` του πόσο απλωμένα θα είναι τα σημεία.
+
+Ας υποθέσουμε τώρα ότι θέλουμε να φτιάξουμε ένα θηκόγραμμα για κάθε έτος ξεχωριστά. Αυτό θα γίνει δίνοντας την οδηγία ο οριζόντιος άξονας (`x=`) να έχει τα έτη (κι όχι να είναι κενός ενδείξεων, γράφοντας `x=""`). Αν όμως γράψουμε:
+
+```{r}
+ParabEEXboxEtos <- ggplot(enaerParab, aes(x=ETOS, y=PARAB_EEX))
+ParabEEXboxEtos + geom_boxplot()
+```
+
+τότε ούτε προκύπτει το επιθυμητό αποτέλεσμα κι έχουμε και μήνυμα σφάλαματος. Αυτό λόγω του ότι οι τιμές της στήλης `ETOS` είναι αριθμητικές. Θα υπερβούμε αυτό το πρόβλημα μετατρέποντάς τες σε χαρακτήρες, γράφοντας `as.character(ETOS)`, δηλαδή:
+
+```{r}
+ParabEEXboxEtos <- ggplot(enaerParab, aes(x=as.character(ETOS), y=PARAB_EEX))
+ParabEEXboxEtos + geom_boxplot()
+```
+
+Φυσικά, αν θελήσουμε να υπάρχουν και σημεία συγχρόνως, γράφουμε:
+
+```{r}
+ParabEEXboxEtos + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
+```
+
+Πάνω στα τελευταία θηκογράμματα θα μπορούσαμε να κάναμε κάποιες αισθητικές παρεμβάσεις μέσω των επιλογών `color=` και `fill=`. Ας υποθέσουμε ότι φτιάχνουμε μια νέα σειρά από θηκογράμματα με βάση τις παραβιάσεις του κάθε μήνα. Αυτό θα γίνει γράφοντας αρχικά:
+
+```{r}
+mines <- c("Ir","Fe","Mr","Ar","Ma","In","Il","Au","Se","Ok","No","De")
+```
+
+και ακολούθως:
+
+```{r}
+ParabEEXboxMinas1 <- ggplot(enaerParab, aes(x=MHNAS, y=PARAB_EEX, color=MHNAS))
+ParabEEXboxMinas1 + geom_boxplot() + xlim(mines)
+```
+
+Όπου, φυσικά, η προσθήκη της `xlim(mines)` έγινε για να μπουν οι μήνες στη σωστή σειρά.
+
+Αν τώρα θέλουμε να διαφοροποιούνται βάσει του χρώματος γεμίσματος, γράφουμε:
+
+```{r}
+ParabEEXboxMinas2 <- ggplot(enaerParab, aes(x=MHNAS, y=PARAB_EEX, fill=MHNAS))
+ParabEEXboxMinas2 + geom_boxplot() + xlim(mines)
+```
+
+Ο κώδικας όλης αυτής της ενότητας είναι ο:
+
+```{r}
+#| eval = F
+rm(list = ls())
+mean(enaerParab$PARAB_EEX)
+range(enaerParab$PARAB_EEX)
+sd(enaerParab$PARAB_EEX)
+sdPop <- function(x) sqrt(mean((x-mean(x))^ 2))
+mean(enaerParab$PARAB_EEX)-3*sd(enaerParab$PARAB_EEX)
+mean(enaerParab$PARAB_EEX)+3*sd(enaerParab$PARAB_EEX)
+enaerParabApon <- enaerParab[enaerParab$PARAB_EEX>634.3057, ]
+enaerParabApon
+IQR(enaerParab$PARAB_EEX)
+quantile(enaerParab$PARAB_EEX)
+boxplot(enaerParab$PARAB_EEX)
+boxplot(enaerParab$PARAB_EEX, horizontal=TRUE)
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+ParabEEXbox <- ggplot(enaerParab, aes(x="", y=PARAB_EEX))
+ParabEEXbox + geom_boxplot()
+ParabEEXbox + geom_boxplot() + coord_flip()
+ParabEEXbox + geom_boxplot(outlier.shape = 0, outlier.size = 4)
+ParabEEXbox + geom_boxplot() + geom_dotplot(binaxis='y', stackdir='center', dotsize=1)
+ParabEEXbox + geom_boxplot() + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
+ParabEEXbox + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
+ParabEEXboxEtos <- ggplot(enaerParab, aes(x=ETOS, y=PARAB_EEX))
+ParabEEXboxEtos + geom_boxplot()
+ParabEEXboxEtos <- ggplot(enaerParab, aes(x=as.character(ETOS), y=PARAB_EEX))
+ParabEEXboxEtos + geom_boxplot()
+ParabEEXboxEtos + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
+mines <- c("Ir","Fe","Mr","Ar","Ma","In","Il","Au","Se","Ok","No","De")
+ParabEEXboxMinas1 <- ggplot(enaerParab, aes(x=MHNAS, y=PARAB_EEX, color=MHNAS))
+ParabEEXboxMinas1 + geom_boxplot() + xlim(mines)
+ParabEEXboxMinas2 <- ggplot(enaerParab, aes(x=MHNAS, y=PARAB_EEX, fill=MHNAS))
+ParabEEXboxMinas2 + geom_boxplot() + xlim(mines)
+```
+
+

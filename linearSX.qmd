@@ -1,0 +1,182 @@
+---
+title: "Επιπτώσεις των γραμμικών μετασχηματισμών στα μέτρα θέσης και διασποράς"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+
+
+```{r}
+#| echo = F
+rm(list = ls())
+```
+
+
+<div class="alert-danger">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>
+
+# Παρουσίαση αρχικών δεδομένων
+
+```{r}
+#| echo = FALSE
+xx <- rnorm(1000, mean =4, sd=1)
+myDatax <- data.frame(xx= xx)
+```
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(head(myDatax, n=100)) %>%
+kable_styling("striped", full_width = F) %>%
+scroll_box(width = "max-content", height = "200px")
+```
+
+
+```{r}
+#| echo = FALSE
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+```
+
+
+```{r}
+#| echo = FALSE
+dataPlot <- ggplot(myDatax, aes(x="", y=xx))
+dataPlot + geom_boxplot() + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
+```
+
+```{r}
+dataPloth <- ggplot(myDatax, aes(x=xx))
+dataPloth +
+  geom_histogram(aes(y = after_stat(density))) +
+  geom_density(linewidth = 1, alpha = 0.6, fill = "green")
+```
+
+# Προσθέσεις - αφαιρέσεις
+
+::: {.panel-tabset}
+
+## Προσθέσεις
+
+```{r}
+#| echo = FALSE
+xSYN3 <- xx+3
+myDataxSYN3 <- data.frame(x= xx, xSYN3=xSYN3)
+```
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(head(myDataxSYN3, n=100)) %>%
+kable_styling("striped", full_width = F) %>%
+scroll_box(width = "max-content", height = "200px")
+```
+
+
+
+## Αφαιρέσεις
+
+```{r}
+#| echo = FALSE
+xPLIN1 <- xx-1
+myDataxPLIN1 <- data.frame(x= xx, xPLIN1=xPLIN1)
+```
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(head(myDataxPLIN1, n=100)) %>%
+kable_styling("striped", full_width = F) %>%
+scroll_box(width = "max-content", height = "200px")
+```
+
+:::
+
+
+# Πολλαπλασιασμοί - διαιρέσεις 
+
+::: {.panel-tabset}
+
+## Πολλαπλασιασμός με θετικό
+
+```{r}
+#| echo = FALSE
+xEPI2 <- 2*xx
+myDataxEPI2 <- data.frame(x= xx, xEPI2=xEPI2)
+```
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(head(myDataxEPI2, n=100)) %>%
+kable_styling("striped", full_width = F) %>%
+scroll_box(width = "max-content", height = "200px")
+```
+
+
+
+## Διαίρεση με θετικό
+
+```{r}
+#| echo = FALSE
+xDIA3 <- xx/3
+myDataxDIA3 <- data.frame(x= xx, xDIA3=xDIA3)
+```
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(head(myDataxDIA3, n=100)) %>%
+kable_styling("striped", full_width = F) %>%
+scroll_box(width = "max-content", height = "200px")
+```
+
+
+## Πολλαπλασιασμός με αρνητικό
+
+
+```{r}
+#| echo = FALSE
+xEPIplin2 <- -2*xx
+myDataxEPIplin2 <- data.frame(x= xx, xEPIplin2=xEPIplin2)
+```
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(head(myDataxEPIplin2, n=100)) %>%
+kable_styling("striped", full_width = F) %>%
+scroll_box(width = "max-content", height = "200px")
+```
+
+
+
+:::
+
+

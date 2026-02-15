@@ -1,0 +1,527 @@
+---
+title: "Γραφικός προσδιορισμός κατανομής"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+```{r}
+#| echo = F
+rm(list = ls())
+```
+
+# Γράφημα Cullen και Frey
+
+Εδώ θα ασχοληθούμε με τις διαμέτρους των δέντρων και τις θέσεις στάθμευσης στην περιοχή Camden του Λονδίνου. Τα σχετικά δεδομένα έχουν αποθηκευτεί στα αρχεία Trees_In_Camden.csv και Parking_Bays.csv.
+
+-   Trees_In_Camden.csv
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+Trees_In_Camden <- read.csv("Trees_In_Camden.csv", na.string = "")
+knitr::kable(head(Trees_In_Camden, n=100)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+-   Parking_Bays.csv
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+Parking_Bays <- read.csv("Parking_Bays.csv", na.string = "")
+knitr::kable(head(Parking_Bays, n=100)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "400px")
+```
+
+Είχαμε δει ότι ήταν ιδιαίτερα δύσκολο να βρούμε ποια κατανομή ακολουθεί το εκάστοτε δείγμα και ότι κατά το μάλλον ή ήττον πορευόμασταν στα τυφλά. Ίσως μόνο η χρήση ιστογραμμάτων να ήταν ένας καλός μπούσουλας, αλλά και πάλι χρειαζόταν ένας καλύτερος έλεγχος. Ας μείνουμε όμως στα ιστογράμματα. Τι ήταν αυτό που μάς καθοδηγούσε; Φυσικά, αυτό ήταν το σχήμα του. Πιο συγκεκριμένα ήταν η ασυμμετρία και η κυρτότητά του.
+
+Έτσι λοιπόν, θα λάβουμε υπ’ όψιν την [ασυμμετρία](asymmetria.html) και την [κυρτότητα](NormTest.html#2_Γραφικός_έλεγχος) στα δύο αυτά δεδομένα και θα τις συγκρίνουμε με τις ασυμμετρίες και τις κυρτότητες κάποιων γνωστών κατανομών.
+
+Αρχικά συλλέγουμε τις διαμέτρους των δέντρων και ξεφορτωνόμαστε τα `NA` γράφοντας:
+
+```{r}
+diametros <- Trees_In_Camden$Diameter.In.Centimetres.At.Breast.Height
+diametrosNA <- diametros[!is.na(diametros)]
+```
+
+Το ίδιο κάνουμε και με τις θέσεις στάθμευσης:
+
+```{r}
+thesis <- Parking_Bays$Parking.Spaces
+thesisNA <- thesis[!is.na(thesis)]
+```
+
+
+Ακολούθως εγκαθιστούμε και θέτουμε σε χρήση το πακέτο `fitdistrplus`, ώστε να φτιάξουμε το γράφημα Cullen και Frey, το οποίο πρακτικά συγκρίνει τις ασυμμετρίες και τις κυρτότητες των δεδομένων μας με κάποιες βασικές κατανομές:
+
+```{r}
+#| message = F
+if(!require(fitdistrplus)){
+    install.packages("fitdistrplus")
+    library(fitdistrplus)
+}
+```
+
+Έτσι γράφουμε:
+
+```{r}
+descdist(diametrosNA, discrete = FALSE, boot = 200)
+```
+
+Όπου:
+
+-   το `discrete = FALSE` μπήκε επειδή η διάμετρος είναι συνεχής μεταβλητή, όχι διακριτή, και
+
+-   το `boot = 200` έδωσε εντολή να γίνουν 200 [επαναλαμβανόμενες δειγματοληψίες](bootstrapMethod.html) και επανυπολογισμοί ασυμμετριών και κυρτοτήτων ώστε να φανεί αν υπάρχει κάποια τάση προς κάποια κατανομή.
+
+Ο μπλε δίσκος δείχνει πού βρίσκεται το δείγμα μας, ενώ τα πορτοκαλί κυκλάκια δείχνουν πού βρίσκονται οι επαναλαμβανόμενες μετρήσεις που δώσαμε εντολή να γίνουν με το boot = 200. Βλέπουμε ότι από άποψη ασυμμετρίας και κυρτότητας δεν συγκαταλέγεται σε κάποια από τις γνωστές μας. Υπάρχει μια υπόνοια συσχέτισης με εκθετική κατανομή διότι το δείγμα φαίνεται να έχει σχεδόν ίδια κυρτότητα με την αντίστοιχη εκθετική, ενώ τα bootstrap δείγματα φαίνονται να έχουν κατά το ήμισυ και μια τάση να εξισώσουν και την ασυμμετρία με την εκθετική. Αλλά ως εκεί, τίποτα παραπάνω. Περισσότερο φαίνεται να είναι λογαριθμοκανονική με έντονη σχέση με κατανομή-γάμμα για κάποιες κατάλληλες παραμέτρους των κατανομών αυτών.
+
+Δεν θα εμβαθύνουμε παραπάνω, αλλά θα πάμε να δούμε τι είδους κατανομή ακολουθεί το δείγμα με τις θέσεις στάθμευσης. Γράφουμε λοιπόν:
+
+```{r}
+descdist(thesisNA, discrete = TRUE, boot = 200)
+```
+
+Φυσικά, αυτή τη φορά βάλαμε `discrete = TRUE`, αφού οι θέσεις στάθμευσης είναι διακριτή κατανομή.
+
+Και πάλι φαίνεται να επαληθεύεται αυτό που ξέραμε και με τους στατιστικούς ελέγχους, ότι δεν είναι κάποια από τις κατανομές που δοκιμάσαμε. Φαίνεται όμως να είναι κάποιο είδος αρνητικής διωνυμικής. Όχι αυτή που δοκιμάσαμε μεις, αλλά ίσως κάποια άλλη με άλλες παραμέτρους.
+
+# Γράφημα Q-Q
+
+## Για σύγκριση με γνωστή κατανομή
+
+Το γράφημα Q-Q χρησιμεύει για να εξετάζουμε αν μια κατανομή ακολουθεί μια συγκεκριμένη κατανομή. Το εξετάσαμε βαθύτερα ως προς την κανονική κατανομή [αλλού](NormTest.html#2_Γραφικός_έλεγχος), εδώ θα αρκεστούμε στην παρουσίαση της συνάρτησης που το δημιουργεί και σε κάποιες άλλες βασικές επισημάνσεις.
+
+Καταρχάς, όμως, πρέπει να εγκαταστήσουμε το πακέτο `car`:
+
+```{r}
+#| message = F
+if(!require(car)){
+    install.packages("car")
+    library(car)
+}
+```
+
+Θα χρησιμοποιήσουμε τη συνάρτηση `qqPlot(⚗️⚗️⚗️, dist = "📖📖📖")`, όπου:
+
+-   στη θέση του `⚗️⚗️⚗️` θα βάλουμε τη λίστα με τα δεδομένα μας και
+
+-   στη θέση του `📖📖📖` θα βάλουμε το όνομα της θεωρητικής κατανομής που εξετάζουμε και ίσως κάποιες παραμέτρους που χρειάζεται να εξειδικεύσουμε.
+
+Έτσι, για να δούμε αν οι διάμετροι των δέντρων ακολουθούν την ομοιόμορφη κατανομή γράφουμε:
+
+```{r}
+qqPlot(diametrosNA, dist = "unif")
+```
+
+Εξάγεται, λοιπόν, το παραπάνω γράφημα. Για να πούμε ότι ακολουθεί την κατανομή που ελέγχουμε, θα πρέπει το γράφημα Q-Q να είναι ευθεία γραμμή, κάτι που απέχει παρασάγγας από το να συμβαίνει εδώ. Άρα και πάλι βλέπουμε ότι δεν ακολουθεί την ομοιόμορφη κατανομή.
+
+Για την εκθετική κατανομή θα γράψουμε:
+
+```{r}
+qqPlot(diametrosNA, dist = "exp")
+```
+
+Και βλέπουμε και πάλι ότι το γράφημα Q-Q δεν είναι ευθεία.
+
+Στο σημείο αυτό θα πρέπει να πούμε ότι δεν μας απασχολεί να είναι ακριβώς ευθεία γραμμή. Μάς αρκεί το γράφημα Q-Q να βρίσκεται εντός της μπλε περιοχής γύρω από την μπλε ευθεία για να δεχτούμε ότι τα δεδομένα μας ακολουθούν την κατανομή που εξετάζουμε.
+
+Πάμε τώρα να εξετάσουμε τις θέσεις πάρκινγκ. Αρχικά θα δούμε αν αυτές ακολουθούν την ομοιόμορφη κατανομή, οπότε γράφουμε:
+
+```{r}
+qqPlot(thesisNA, dist = "unif")
+```
+
+Το γράφημα Q-Q δείχνει ότι ούτε οι θέσεις πάρκινγκ ακολουθούν την ομοιόμορφη κατανομή, αφού αυτό δεν είναι ευθεία γραμμή.
+
+Ακολούθως θα εξετάσουμε αν ακολουθεί την διωνυμική κατανομή γράφοντας:
+
+```{r}
+qqPlot(thesisNA, dist = "binom", size = 10, prob = 1/6)
+```
+
+Αυτή τη φορά ο κώδικας απαιτούσε να εξειδικεύσουμε την περίπτωση της διωνυμικής κατανομής γράφοντας `size = 10` και `prob = 1/6`. Βρήκαμε ότι ούτε με αυτήν την κατανομή ταιριάζουν τα δεδομένα μας. Φυσικά, θα μπορούσαμε να δοκιμάσουμε άλλες τιμές μήπως ταιριάζει καλύτερα με κάποιαν άλλη διωνυμική κατανομή, αλλά το μέγεθος της απόκλισης από την ευθεία γραμμή μάς αποθαρρύνει για κάτι τέτοιο.
+
+Δεν θα κουράσουμε τον αναγνώστη με πολυλογίες. Την γεωμετρική κατανομή, την αρνητική διωνυμική κατανομή και την κατανομή Poisson θα τις παρουσιάσουμε όλες μαζί, αφού μοιράσουμε την εικόνα σε 6 περιοχές.
+
+```{r}
+par(mfrow=c(2,3))
+qqPlot(thesisNA, dist = "unif")
+qqPlot(thesisNA, dist = "binom", size = 10, prob = 1/6)
+qqPlot(thesisNA, dist = "geom", prob = 0.5)
+qqPlot(thesisNA, dist = "nbinom", size = 3, prob = 18/37)
+qqPlot(thesisNA, dist = "pois", lambda = 8)
+```
+
+Επειδή η προαναφερθείσα συνάρτηση `qqPlot()` του πακέτου `car` μπορεί να παρουσιάσει διάφορα προβλήματα λόγω ελλιπούς ενημέρωσης του πακέτου, αποφασίσαμε να φτιάξουμε και μία άλλη, την `qqPlot_epipleon_katanomes(⚗️⚗️⚗️, 📖📖📖)`, όπου, όπως και πριν:
+
+-   στη θέση του `⚗️⚗️⚗️` θα βάλουμε τη λίστα με τα δεδομένα μας και
+
+-   στη θέση του `📖📖📖` θα βάλουμε το όνομα της θεωρητικής κατανομής που εξετάζουμε και ίσως κάποιες παραμέτρους που χρειάζεται να εξειδικεύσουμε.
+
+```{r}
+qqPlot_epipleon_katanomes <- function(data, distribution, params = NULL, quantiles = c(0.25, 0.75), n_points = 100) {
+  sorted_data <- sort(data)
+  n <- length(data)
+  theoretical_quantiles <- qunif((1:n) / (n + 1))  # Default to uniform quantiles
+   
+  if (distribution == "exponential") {
+    if (is.null(params)) {
+      params <- 1 / mean(data)
+    }
+    theoretical_quantiles <- qexp((1:n) / (n + 1), rate = params)
+  } else if (distribution == "normal") {
+    if (is.null(params)) {
+      params <- c(mean(data), sd(data))
+    }
+    theoretical_quantiles <- qnorm((1:n) / (n + 1), mean = params[1], sd = params[2])
+  } else if (distribution == "uniform") {
+    if (is.null(params)) {
+      params <- c(min(data), max(data))
+    }
+    theoretical_quantiles <- qunif((1:n) / (n + 1), min = params[1], max = params[2])
+  } else if (distribution == "binomial") {
+    if (is.null(params)) {
+      params <- c(n = length(data), p = 0.5)
+    }
+    theoretical_quantiles <- qbinom((1:n) / (n + 1), size = params[1], prob = params[2])
+  } else if (distribution == "geometric") {
+    if (is.null(params)) {
+      params <- 0.5
+    }
+    theoretical_quantiles <- qgeom((1:n) / (n + 1), prob = params)
+  } else if (distribution == "hypergeometric") {
+    if (is.null(params)) {
+      params <- c(m = n/2, n = n/2, k = n/4)
+    }
+    theoretical_quantiles <- qhyper((1:n) / (n + 1), m = params[1], n = params[2], k = params[3])
+  } else if (distribution == "negative_binomial") {
+    if (is.null(params)) {
+      params <- c(size = 5, prob = 0.5)
+    }
+    theoretical_quantiles <- qnbinom((1:n) / (n + 1), size = params[1], prob = params[2])
+  } else if (distribution == "poisson") {
+    if (is.null(params)) {
+      params <- 2
+    }
+    theoretical_quantiles <- qpois((1:n) / (n + 1), lambda = params)
+  } else if (distribution == "logarithmic") {
+    if (is.null(params)) {
+      params <- 0.5
+    }
+    theoretical_quantiles <- qlogis((1:n) / (n + 1), location = params)
+  } else if (distribution == "gamma") {
+    if (is.null(params)) {
+      params <- c(shape = 2, rate = 1)
+    }
+    theoretical_quantiles <- qgamma((1:n) / (n + 1), shape = params[1], rate = params[2])
+  } else if (distribution == "beta") {
+    if (is.null(params)) {
+      params <- c(shape1 = 2, shape2 = 5)
+    }
+    theoretical_quantiles <- qbeta((1:n) / (n + 1), shape1 = params[1], shape2 = params[2])
+  } else if (distribution == "chisq") {
+    if (is.null(params)) {
+      params <- 3
+    }
+    theoretical_quantiles <- qchisq((1:n) / (n + 1), df = params)
+  } else if (distribution == "t") {
+    if (is.null(params)) {
+      params <- 5
+    }
+    theoretical_quantiles <- qt((1:n) / (n + 1), df = params)
+  } else if (distribution == "cauchy") {
+    if (is.null(params)) {
+      params <- c(location = 0, scale = 1)
+    }
+    theoretical_quantiles <- qcauchy((1:n) / (n + 1), location = params[1], scale = params[2])
+  } else if (distribution == "weibull") {
+    if (is.null(params)) {
+      params <- c(shape = 2, scale = 1)
+    }
+    theoretical_quantiles <- qweibull((1:n) / (n + 1), shape = params[1], scale = params[2])
+  } else if (distribution == "lnorm") {
+    if (is.null(params)) {
+      params <- c(meanlog = 0, sdlog = 1)
+    }
+    theoretical_quantiles <- qlnorm((1:n) / (n + 1), meanlog = params[1], sdlog = params[2])
+  } else if (distribution == "nbinom") {
+    if (is.null(params)) {
+      params <- c(size = 5, prob = 0.5)
+    }
+    theoretical_quantiles <- qnbinom((1:n) / (n + 1), size = params[1], prob = params[2])
+  } else if (distribution == "poisgamma") {
+    if (is.null(params)) {
+      params <- c(lambda = 2, p = 0.5, a = 1, b = 1)
+    }
+    theoretical_quantiles <- qpoisgamma((1:n) / (n + 1), lambda = params[1], p = params[2], a = params[3], b = params[4])
+  } else if (distribution == "gammaalt") {
+    if (is.null(params)) {
+      params <- c(shape = 2, scale = 1)
+    }
+    theoretical_quantiles <- qgammaalt((1:n) / (n + 1), shape = params[1], scale = params[2])
+  } else {
+    stop("Unsupported distribution")
+  }
+   
+  t1_index <- round(quantiles[1] * n)
+  t3_index <- round(quantiles[2] * n)
+  t1 <- theoretical_quantiles[t1_index]
+  r1 <- sorted_data[t1_index]
+  t3 <- theoretical_quantiles[t3_index]
+  r3 <- sorted_data[t3_index]
+  l <- (r3-r1)/(t3-t1)
+  y0 <- r1-l*t1
+   
+  plot(theoretical_quantiles, sorted_data, pch = 16, col = 'blue',
+       xlab = 'Theoretical Quantiles', ylab = 'Sample Quantiles',
+       main = paste("Q-Q Plot for", distribution, "Distribution"),
+       sub = paste("Sample Size:", n, "Quantiles:", quantiles[1], "and", quantiles[2]))
+   
+  abline(a = y0, b = l, col = 'red', lty = 2, lwd = 2)
+ 
+  legend('topleft', legend = c('Sample Quantiles', 'Theoretical Quantiles'),
+         col = c('blue', 'red'), pch = c(16, 16))
+}
+```
+
+Έχουμε λοιπόν για την υπεργεωμετρική κατανομή:
+
+```{r}
+qqPlot_epipleon_katanomes(thesisNA, distribution = "hypergeometric")
+```
+
+Βλέπουμε ότι ούτε αυτή τη φορά προκύπτει να είναι ευθεία γραμμή το γράφημα Q-Q, άρα ούτε την υπεργεωμετρική κατανομή ακολουθούν οι θέσεις στάθμευσης, όπως άλλωστε αναμέναμε και από τα ιστογράμματα.
+
+Στο σημείο αυτό θα πρέπει να σημειωθεί ότι μπορεί να ταιριάζει κάποια άλλη υπεργεωμετρική κατανομή. Μη καθορίζοντας τις παραμέτρους, η συνάρτηση `qqPlot_epipleon_katanomes()` έβαλε αυτές που έχουν προκαθοριστεί. Μπορεί να θελήσουμε επί παραδείγματι να θέσουμε παραμέτρους `m = 120`, `n = 100` και `k = 70`. Τοιαύτη περιπτώσει γράφουμε:
+
+```{r}
+qqPlot_epipleon_katanomes(thesisNA, distribution = "hypergeometric", params = c(m = 120, n = 100, k = 70))
+```
+
+Οπότε βλέπουμε ότι και πάλι έχουμε απόκλιση και από αυτήν την περίπτωση υπεργεωμετρικής κατανομής.
+
+
+## Για εξακρίβωση ομοιότητας κατανομών δειγμάτων
+
+Το γράφημα Q-Q είναι ένα πολύ χρήσιμο εργαλείο και πέραν από τη διαπίστωση, αν κάποια δεδομένα ακολουθούν την τάδε ή τη δείνα κατανομή. Με αυτό το γράφημα μπορούμε επίσης να εξετάσουμε αν δύο δεδομένα ακολουθούν την ίδια κατανομή ή όχι.
+
+Εδώ θα συγκρίνουμε τις διαμέτρους των δέντρων με τα ύψη τους. Οπότε γράφουμε αρχικά:
+
+```{r}
+ipsos <- Trees_In_Camden$Height.In.Metres
+```
+
+ώστε να αντλήσουμε τα ύψη των δέντρων.
+
+Η συνάρτηση που θα χρησιμοποιήσουμε είναι η παρακάτω:
+
+```{r}
+grafima_qq_sigkr <- function(dedomena1, dedomena2) {
+  qqplot(dedomena1, dedomena2)
+   
+  q1_1 <- quantile(dedomena1, probs = 0.25, na.rm = TRUE)[1]
+  q1_2 <- quantile(dedomena2, probs = 0.25, na.rm = TRUE)[1]
+  q3_1 <- quantile(dedomena1, probs = 0.75, na.rm = TRUE)[1]
+  q3_2 <- quantile(dedomena2, probs = 0.75, na.rm = TRUE)[1]
+   
+  synt_dieyth <- (q3_2-q1_2) / (q3_1-q1_1)
+  y0 <- q1_2 - synt_dieyth * q1_1
+  abline(a = y0, b = synt_dieyth)
+}
+```
+
+Έτσι, γράφουμε:
+
+```{r}
+grafima_qq_sigkr(diametros,ipsos)
+```
+
+κι έχουμε ότι το γράφημα Q-Q που σχηματίζεται αντιστοιχώντας τα ποσοστημόρια των διαμέσων στα ποσοστημόρια των υψών δεν είναι ευθεία γραμμή. Αυτό σημαίνει ότι οι δύο αυτές μεταβλητές δεν ακολουθούν την ίδια κατανομή.
+
+Όλος ο κώδικας που χρησιμοποιήσαμε είναι ο:
+
+```{r}
+#| eval = F
+diametros <- Trees_In_Camden$`Diameter In Centimetres At Breast Height`
+diametrosNA <- diametros[!is.na(diametros)]
+thesis <- Parking_Bays$`Parking Spaces`
+thesisNA <- thesis[!is.na(thesis)]
+if(!require(fitdistrplus)){
+    install.packages("fitdistrplus")
+    library(fitdistrplus)
+}
+descdist(diametrosNA, discrete = FALSE, boot = 200)
+descdist(thesisNA, discrete = TRUE, boot = 200)
+if(!require(car)){
+    install.packages("car")
+    library(car)
+}
+qqPlot(diametrosNA, dist = "unif")
+qqPlot(diametrosNA, dist = "exp")
+par(mfrow=c(2,3))
+qqPlot(thesisNA, dist = "unif")
+qqPlot(thesisNA, dist = "binom", size = 10, prob = 1/6)
+qqPlot(thesisNA, dist = "geom", prob = 0.5)
+qqPlot(thesisNA, dist = "nbinom", size = 3, prob = 18/37)
+qqPlot(thesisNA, dist = "pois", lambda = 8)
+qqPlot_epipleon_katanomes <- function(data, distribution, params = NULL, quantiles = c(0.25, 0.75), n_points = 100) {
+  sorted_data <- sort(data)
+  n <- length(data)
+  theoretical_quantiles <- qunif((1:n) / (n + 1))  # Default to uniform quantiles
+   
+  if (distribution == "exponential") {
+    if (is.null(params)) {
+      params <- 1 / mean(data)
+    }
+    theoretical_quantiles <- qexp((1:n) / (n + 1), rate = params)
+  } else if (distribution == "normal") {
+    if (is.null(params)) {
+      params <- c(mean(data), sd(data))
+    }
+    theoretical_quantiles <- qnorm((1:n) / (n + 1), mean = params[1], sd = params[2])
+  } else if (distribution == "uniform") {
+    if (is.null(params)) {
+      params <- c(min(data), max(data))
+    }
+    theoretical_quantiles <- qunif((1:n) / (n + 1), min = params[1], max = params[2])
+  } else if (distribution == "binomial") {
+    if (is.null(params)) {
+      params <- c(n = length(data), p = 0.5)
+    }
+    theoretical_quantiles <- qbinom((1:n) / (n + 1), size = params[1], prob = params[2])
+  } else if (distribution == "geometric") {
+    if (is.null(params)) {
+      params <- 0.5
+    }
+    theoretical_quantiles <- qgeom((1:n) / (n + 1), prob = params)
+  } else if (distribution == "hypergeometric") {
+    if (is.null(params)) {
+      params <- c(m = n/2, n = n/2, k = n/4)
+    }
+    theoretical_quantiles <- qhyper((1:n) / (n + 1), m = params[1], n = params[2], k = params[3])
+  } else if (distribution == "negative_binomial") {
+    if (is.null(params)) {
+      params <- c(size = 5, prob = 0.5)
+    }
+    theoretical_quantiles <- qnbinom((1:n) / (n + 1), size = params[1], prob = params[2])
+  } else if (distribution == "poisson") {
+    if (is.null(params)) {
+      params <- 2
+    }
+    theoretical_quantiles <- qpois((1:n) / (n + 1), lambda = params)
+  } else if (distribution == "logarithmic") {
+    if (is.null(params)) {
+      params <- 0.5
+    }
+    theoretical_quantiles <- qlogis((1:n) / (n + 1), location = params)
+  } else if (distribution == "gamma") {
+    if (is.null(params)) {
+      params <- c(shape = 2, rate = 1)
+    }
+    theoretical_quantiles <- qgamma((1:n) / (n + 1), shape = params[1], rate = params[2])
+  } else if (distribution == "beta") {
+    if (is.null(params)) {
+      params <- c(shape1 = 2, shape2 = 5)
+    }
+    theoretical_quantiles <- qbeta((1:n) / (n + 1), shape1 = params[1], shape2 = params[2])
+  } else if (distribution == "chisq") {
+    if (is.null(params)) {
+      params <- 3
+    }
+    theoretical_quantiles <- qchisq((1:n) / (n + 1), df = params)
+  } else if (distribution == "t") {
+    if (is.null(params)) {
+      params <- 5
+    }
+    theoretical_quantiles <- qt((1:n) / (n + 1), df = params)
+  } else if (distribution == "cauchy") {
+    if (is.null(params)) {
+      params <- c(location = 0, scale = 1)
+    }
+    theoretical_quantiles <- qcauchy((1:n) / (n + 1), location = params[1], scale = params[2])
+  } else if (distribution == "weibull") {
+    if (is.null(params)) {
+      params <- c(shape = 2, scale = 1)
+    }
+    theoretical_quantiles <- qweibull((1:n) / (n + 1), shape = params[1], scale = params[2])
+  } else if (distribution == "lnorm") {
+    if (is.null(params)) {
+      params <- c(meanlog = 0, sdlog = 1)
+    }
+    theoretical_quantiles <- qlnorm((1:n) / (n + 1), meanlog = params[1], sdlog = params[2])
+  } else if (distribution == "nbinom") {
+    if (is.null(params)) {
+      params <- c(size = 5, prob = 0.5)
+    }
+    theoretical_quantiles <- qnbinom((1:n) / (n + 1), size = params[1], prob = params[2])
+  } else if (distribution == "poisgamma") {
+    if (is.null(params)) {
+      params <- c(lambda = 2, p = 0.5, a = 1, b = 1)
+    }
+    theoretical_quantiles <- qpoisgamma((1:n) / (n + 1), lambda = params[1], p = params[2], a = params[3], b = params[4])
+  } else if (distribution == "gammaalt") {
+    if (is.null(params)) {
+      params <- c(shape = 2, scale = 1)
+    }
+    theoretical_quantiles <- qgammaalt((1:n) / (n + 1), shape = params[1], scale = params[2])
+  } else {
+    stop("Unsupported distribution")
+  }
+   
+  t1_index <- round(quantiles[1] * n)
+  t3_index <- round(quantiles[2] * n)
+  t1 <- theoretical_quantiles[t1_index]
+  r1 <- sorted_data[t1_index]
+  t3 <- theoretical_quantiles[t3_index]
+  r3 <- sorted_data[t3_index]
+  l <- (r3-r1)/(t3-t1)
+  y0 <- r1-l*t1
+   
+  plot(theoretical_quantiles, sorted_data, pch = 16, col = 'blue',
+       xlab = 'Theoretical Quantiles', ylab = 'Sample Quantiles',
+       main = paste("Q-Q Plot for", distribution, "Distribution"),
+       sub = paste("Sample Size:", n, "Quantiles:", quantiles[1], "and", quantiles[2]))
+   
+  abline(a = y0, b = l, col = 'red', lty = 2, lwd = 2)
+ 
+  legend('topleft', legend = c('Sample Quantiles', 'Theoretical Quantiles'),
+         col = c('blue', 'red'), pch = c(16, 16))
+}
+qqPlot_epipleon_katanomes(thesisNA, distribution = "hypergeometric")
+qqPlot_epipleon_katanomes(thesisNA, distribution = "hypergeometric", params = c(m = 120, n = 100, k = 70))
+ipsos <- Trees_In_Camden$`Height In Metres`
+grafima_qq_sigkr <- function(dedomena1, dedomena2) {
+  qqplot(dedomena1, dedomena2)
+   
+  q1_1 <- quantile(dedomena1, probs = 0.25, na.rm = TRUE)[1]
+  q1_2 <- quantile(dedomena2, probs = 0.25, na.rm = TRUE)[1]
+  q3_1 <- quantile(dedomena1, probs = 0.75, na.rm = TRUE)[1]
+  q3_2 <- quantile(dedomena2, probs = 0.75, na.rm = TRUE)[1]
+   
+  synt_dieyth <- (q3_2-q1_2) / (q3_1-q1_1)
+  y0 <- q1_2 - synt_dieyth * q1_1
+  abline(a = y0, b = synt_dieyth)
+}
+grafima_qq_sigkr(diametros,ipsos)
+```
+
+
+

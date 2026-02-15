@@ -1,0 +1,150 @@
+---
+title: "Αξιολόγηση μεταχειρισμένων αυτοκινήτων"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+```{r}
+#| echo = F
+rm(list = ls())
+```
+
+<div class="alert-danger">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>
+
+
+Ποιες μάρκες έχουν μεταπωλητική αξία όταν έχουν πολλά χιλιόμετρα στην πλάτη τους; Ποια αυτοκίνητα είναι αξιόπιστα όταν γεράσουν; Ας δούμε με πόσα χιλιόμετρα πωλείται κάθε βενζινοκίνητο όχημα στο car.gr.
+
+
+Από εδώ:
+https://www.car.gr/classifieds/cars/view/337799572-renault-captur?from-promotion=1
+10η αναζήτηση για renault, 14η, 17η
+
+
+```
+{"@type":"ListItem","position":3,"name":"Citroen","item":"https://car.gr/used-cars/citroen.html?make=13214"}
+
+mileageFromOdometer:{"@type":"QuantitativeValue",value:109000,unitText:"km"}
+
+"mileageFromOdometer":{"@type":"QuantitativeValue","value":109000,"unitText":"km"},"model":"C3","fuelType":"Πετρέλαιο","@type":"Car","manufacturer":"Citroen"
+```
+
+
+```{r}
+#| eval = FALSE
+if(!require(rvest)){
+  install.packages("rvest")
+  library(rvest)
+}
+if(!require(dplyr)){
+  install.packages("dplyr")
+  library(dplyr)
+}
+if(!require(readr)){
+  install.packages("readr")
+  library(readr)
+}
+```
+
+
+
+```{r}
+#| eval = FALSE
+# Αρχικοποίηση κενής λίστας για την αποθήκευση όλων των URLs
+all_urls <- c()
+
+# Ο αριθμός των σελίδων που θέλεις να ελέγξεις
+num_pages <- 4507
+
+# Επαναληπτική διαδικασία για να περάσεις από όλες τις σελίδες
+for (i in 1:num_pages) {
+  # Δημιουργία του URL της τρέχουσας σελίδας
+  page_url <- paste0("https://www.car.gr/classifieds/cars/?category=15001&offer_type=sale&pg=", i)
+  
+  # Λήψη της σελίδας
+  main_page <- read_html(page_url)
+  
+  # Απόσπαση όλων των συνδέσμων που οδηγούν σε αγγελίες αυτοκινήτων
+  urls <- main_page %>%
+    html_nodes("a[href^='/classifieds/cars/view/']") %>%
+    html_attr("href") %>%
+    unique() %>%
+    paste0("https://www.car.gr", .)  # Δημιουργία πλήρους URL
+  
+  # Προσθήκη των URLs στη λίστα
+  all_urls <- c(all_urls, urls)
+}
+
+# Δημιουργία ενός κενού dataframe για την αποθήκευση των δεδομένων
+data <- data.frame(χιλιόμετρα = integer(),
+                   καύσιμο = character(),
+                   μάρκα = character(),
+                   stringsAsFactors = FALSE)
+
+# Αναζήτηση δεδομένων σε κάθε URL
+for (url in all_urls) {
+  print(paste("Processing:", url))
+  
+  # Χειρισμός εξαιρέσεων με tryCatch
+  page <- tryCatch({
+    read_html(url)
+  }, error = function(e) {
+    message(paste("Error accessing:", url))
+    return(NULL)
+  })
+  
+  if (is.null(page)) {
+    next
+  }
+  
+  # Απόσπαση των τιμών χιλιομέτρων, καυσίμου και μάρκας
+  mileage <- page %>% html_nodes(xpath = "//script[contains(., 'mileageFromOdometer')]") %>%
+    html_text() %>%
+    gsub(".*\"mileageFromOdometer\":\\{\"@type\":\"QuantitativeValue\",\"value\":(\\d+),\"unitText\":\"km\"\\}.*", "\\1", .) %>%
+    .[1]  # Επιλογή της πρώτης ένδειξης
+  
+  fuel <- page %>% html_nodes(xpath = "//script[contains(., 'fuelType')]") %>%
+    html_text() %>%
+    gsub(".*\"fuelType\":\"([^\"]+)\".*", "\\1", .) %>%
+    .[1]  # Επιλογή της πρώτης ένδειξης
+  
+  manufacturer <- page %>% html_nodes(xpath = "//script[contains(., 'manufacturer')]") %>%
+    html_text() %>%
+    gsub(".*\"manufacturer\":\"([^\"]+)\".*", "\\1", .) %>%
+    .[1]  # Επιλογή της πρώτης ένδειξης
+  
+  # Προσθήκη των δεδομένων στο dataframe
+  data <- rbind(data, data.frame(χιλιόμετρα = as.integer(mileage),
+                                 καύσιμο = fuel,
+                                 μάρκα = manufacturer,
+                                 stringsAsFactors = FALSE))
+}
+
+```
+
+```
+Error in open.connection(x, "rb") : 
+  Timeout was reached: [www.car.gr] SSL/TLS connection timeout
+```
+
+
+```{r}
+#| eval = FALSE
+# Αποθήκευση του dataframe σε CSV αρχείο
+write_csv(data, "cars_data.csv")
+```
+
+
+

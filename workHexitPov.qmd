@@ -1,0 +1,742 @@
+---
+title: "Έξοδος από τη φτώχεια."
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+
+
+```{r}
+#| echo = F
+rm(list = ls())
+```
+
+# Παρουσίαση δεδομένων 
+
+::: {.panel-tabset}
+
+Στον παρακάτω πίνακα παρουσιάζονται οι εβδομαδιαίες ώρες που χρειάζεται να εργαστεί μια οικογένεια που λαμβάνει το ελάχιστο εγγυημένο εισόδημα, ώστε να εξέλθει από τη φτώχεια (δείκτης `WORKEXPOV`), όπως αυτός αντλήθηκε από την αντίστοιχη σελίδα του [OECD](https://data-explorer.oecd.org/vis?lc=en&df[ds]=DisseminateArchiveDMZ&df[id]=DF_DP_LIVE&df[ag]=OECD&df[vs]=&av=true&pd=%2C&dq=.WORKEXPOV...A&to[TIME_PERIOD]=false&vw=tb&ly[cl]=TIME_PERIOD&ly[rs]=SUBJECT%2CMEASURE&ly[rw]=LOCATION). Το όριο της φτώχειας στην προκειμένη περίπτωση υπολογίζεται ως το 50% του διάμεσου διαθέσιμου εισοδήματος στη χώρα.
+
+Τα δεδομένα αφορούν (`SUBJECT`):
+
+- ζευγάρια χωρίς εργασία με 2 παιδιά (`UNEMP_COUPL2CHLD`),
+
+- ζευγάρια χωρίς εργασία, που δεν έχουν 2 παιδιά (`UNEMP_COUPLNOCHLD`),
+
+- ένα άτομο με δύο παιδιά (`SNGL2CHLD`),
+
+- ένα άτομο χωρίς παιδιά (`SNGLNOCHLD`).
+
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+WORKEXPOV <- read.csv("WORKEXPOV.csv", na.string = "")
+knitr::kable(head(WORKEXPOV)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+if(!require(plotly)){
+    install.packages("plotly")
+    library(plotly)
+}
+if(!require(ggplot2)){
+  install.packages("ggplot2")
+  library(ggplot2)
+}
+if(!require(ggridges)){
+  install.packages("ggridges")
+  library(ggridges)
+}
+if(!require(rstatix)){
+    install.packages("rstatix")
+    library(rstatix)
+}
+library(rstatix)
+if(!require(viridis)){
+    install.packages("viridis")
+    library(viridis)
+}
+```
+
+```{r}
+#| echo = FALSE
+WORKEXPOV <- WORKEXPOV[WORKEXPOV$Measure == "Hours at minimum wage",]
+```
+
+Ακολουθεί μια συνοπτική παρουσίαση της κατάστασης στα χρόνια 2001-2023 που αφορά την κάθε χώρα ξεχωριστά, συμπεριλαμβανομένης και της Ελλάδας.
+
+## Ζευγάρι με 2 παιδιά
+
+```{r}
+#| echo = FALSE
+couple2child23global <- WORKEXPOV[WORKEXPOV$SUBJECT=="UNEMP_COUPL2CHLD",]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplot(couple2child23global, aes(x = OBS_VALUE, y = as.factor(LOCATION), fill = after_stat(x))) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01, gradient_lwd = 1.) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_fill_viridis(name = "ώρες", option = "C") +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "χώρα")
+```
+
+## Ζευγάρι χωρίς παιδιά
+
+```{r}
+#| echo = FALSE
+coupleNOchild23global <- WORKEXPOV[WORKEXPOV$SUBJECT=="UNEMP_COUPLNOCHLD",]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplot(coupleNOchild23global, aes(x = OBS_VALUE, y = as.factor(LOCATION), fill = after_stat(x))) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01, gradient_lwd = 1.) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_fill_viridis(name = "ώρες", option = "C") +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "χώρα")
+```
+
+## Μόνος με 2 παιδιά
+
+```{r}
+#| echo = FALSE
+single2child23global <- WORKEXPOV[WORKEXPOV$SUBJECT=="SNGL2CHLD",]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplot(single2child23global, aes(x = OBS_VALUE, y = as.factor(LOCATION), fill = after_stat(x))) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01, gradient_lwd = 1.) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_fill_viridis(name = "ώρες", option = "C") +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "χώρα")
+```
+
+## Μόνος χωρίς παιδιά
+
+```{r}
+#| echo = FALSE
+singleNOchild23global <- WORKEXPOV[WORKEXPOV$SUBJECT=="SNGLNOCHLD",]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplot(singleNOchild23global, aes(x = OBS_VALUE, y = as.factor(LOCATION), fill = after_stat(x))) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01, gradient_lwd = 1.) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_fill_viridis(name = "ώρες", option = "C") +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "χώρα")
+```
+
+```{r}
+#| echo = FALSE
+WORKEXPOV$ISgr <- ifelse(WORKEXPOV$Country=="Greece", "GR", "notGr")
+```
+
+
+```{r}
+#| echo = FALSE
+WORKEXPOV$is23 <- ifelse(WORKEXPOV$TIME_PERIOD==2023, "'23", "παλαιότερα")
+```
+
+```{r}
+#| echo = F
+WORKEXPOVeuGR <- WORKEXPOV[WORKEXPOV$LOCATION=="GRC" | WORKEXPOV$LOCATION=="EU28", ]
+WORKEXPOV <- WORKEXPOV[WORKEXPOV$LOCATION != "EU28"&WORKEXPOV$LOCATION != "OECD",]
+```
+
+```{r}
+#| echo = FALSE
+couple2child23global <- WORKEXPOV[WORKEXPOV$SUBJECT=="UNEMP_COUPL2CHLD",]
+```
+
+```{r}
+#| echo = FALSE
+coupleNOchild23global <- WORKEXPOV[WORKEXPOV$SUBJECT=="UNEMP_COUPLNOCHLD",]
+```
+
+```{r}
+#| echo = FALSE
+single2child23global <- WORKEXPOV[WORKEXPOV$SUBJECT=="SNGL2CHLD",]
+```
+
+```{r}
+#| echo = FALSE
+singleNOchild23global <- WORKEXPOV[WORKEXPOV$SUBJECT=="SNGLNOCHLD",]
+```
+
+:::
+
+# Πορεία στο χρόνο 
+
+::: {.panel-tabset}
+
+Σε πρώτη φάση θα ερευνήσουμε την εξέλιξη της κατάστασης στην πορεία του χρόνου. Πώς αλλάζει ο κόπος που καταβάλει κάποιος για να βγει από τη φτώχεια; Συγκεκριμένα, συμβαίνει κάτι διαφορετικό παγκοσμίως στο 2023;
+
+## Ζευγάρι με 2 παιδιά
+
+Ας δούμε πρώτα την περίπτωση που ένα ζευγάρι έχει 2 παιδιά. Όσον αφορά την περίπτωση της Ελλάδας και της Ε.Ε., φαίνεται ν' ακολουθούν μια σταθερή μετά από μια πτωτική πορεία οι ώρες εργασίας που απαιτούνται για την έξοδο από την κατάσταση της φτώχειας. Είναι αυτό σημάδι επικείμενης ανόδου, καθόσον πλησίον ενός ελαχίστου οι μεταβολές είναι ανεπαίσθητες; Θέλουμε μελλοντικά δοδομένα γι' αυτό. Είναι μήπως η πτωτική πορεία τμήμα ενός ευρύτερου σκαμπανεβάσματος; Θέλουμε παλαιότερα δεδομένα γι' αυτό.
+
+
+```{r}
+#| echo = FALSE
+couple2child23EU <- WORKEXPOVeuGR[WORKEXPOVeuGR$SUBJECT=="UNEMP_COUPL2CHLD",]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+couple2child23euPlot <- ggplot(couple2child23EU, aes(x=TIME_PERIOD, y=OBS_VALUE, group = LOCATION, colour = LOCATION))
+
+couple2child23euPlot + geom_line() +
+  labs(title = "Πορεία στο χρόνο των ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       x = "έτος",
+       y = "ώρες εργασίας για έξοδο από φτώχεια",
+       colour = "Περιοχή")
+```
+
+Σε παγκόσμιο επίπεδο, από την άλλη, δεν φαίνεται να υπάρχει κάποια αλλαγή, τόσο καθόλο το διάστημα 2001-23 που μελετάμε, όσο και ίσως ανάμεσα στο 2023 και στις παλαιότερες εποχές.
+
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplot(couple2child23global, aes(x = OBS_VALUE, y = as.factor(TIME_PERIOD), fill = after_stat(x))) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01, gradient_lwd = 1.) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_fill_viridis(name = "ώρες", option = "C") +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "έτος")
+```
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+couple2child23globalPlot <- ggplot(couple2child23global, aes(x=OBS_VALUE, fill = is23))
+couple2child23globalPlot + geom_density(aes(y = after_stat(density) * 100),alpha=0.3) +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "ποσοστό (%)",
+       fill = "Έτος")
+```
+
+```{r}
+#| echo = FALSE
+couple2child23globalPlot <- ggplot(couple2child23global, aes(x=is23, y=OBS_VALUE))
+ggplotly(couple2child23globalPlot + geom_boxplot()+
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       y = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       x = "Έτος"))
+```
+
+Φαίνεται το '23 να είναι ελαφρώς χειρότερο από τα προγηγούμενα έτη; Είναι όμως έτσι; Τι λέει γι' αυτό ένας έλεγχος Wilcoxon;
+
+
+```{r}
+#| echo = FALSE
+wilcox.test(data = couple2child23global, OBS_VALUE~is23)
+```
+
+Ο παραπάνω έλεγχος δεν φαίνεται να έδωσε καταφατική απάντηση στο παραπάνω ερώτημα. Τουλάχιστον όχι σε όσους δεν λογίζουν ως σπάνιο ένα ενδεχόμενο που συμβαίνει με πιθανότητα `r 100*wilcox.test(data = couple2child23global, OBS_VALUE~is23)$p.value`%, όσο δηλαδή η p-τιμή.
+
+## Ζευγάρι χωρίς παιδί
+
+Πάμε τώρα να δούμε τι συμβαίνει όταν το ζευγάρι δεν έχει παιδιά. Και πάλι βλέπουμε μια σταθεροποίηση ύστερα από μια πτώση προς τα κάτω. Τα ίδια ερωτήματα που είχαμε θέσει στην ενότητα που μελετάγαμε τα ζευγάρια με δύο παιδιά, τα ίδια μπορούμε να θέσουμε και τώρα, χωρίς φυσικά να μπορούμε και πάλι να δώσουμε απάντηση.
+
+```{r}
+#| echo = FALSE
+coupleNOchild23EU <- WORKEXPOVeuGR[WORKEXPOVeuGR$SUBJECT=="UNEMP_COUPLNOCHLD",]
+```
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+coupleNOchild23euPlot <- ggplot(coupleNOchild23EU, aes(x=TIME_PERIOD, y=OBS_VALUE, group = LOCATION, colour = LOCATION))
+
+coupleNOchild23euPlot + geom_line()+
+  labs(title = "Πορεία στο χρόνο των ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       x = "έτος",
+       y = "ώρες εργασίας για έξοδο από φτώχεια",
+       colour = "Περιοχή")
+```
+
+Και σε αυτή την περίπτωση το 2023 φαίνεται να είναι λίγο διαφορετικό αν εστιάσουμε πάνω του, αλλά μέσα στο ευρύτερο κάδρο δεν φαίνεται τελικά να διαφέρει. 
+
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplot(coupleNOchild23global, aes(x = OBS_VALUE, y = as.factor(TIME_PERIOD), fill = after_stat(x))) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01, gradient_lwd = 1.) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_fill_viridis(name = "ώρες", option = "C") +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "έτος")
+```
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+coupleNOchild23globalPlot <- ggplot(coupleNOchild23global, aes(x=OBS_VALUE, fill = is23))
+coupleNOchild23globalPlot + geom_density(aes(y = after_stat(density) * 100),alpha=0.3) +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "ποσοστό (%)",
+       fill = "Έτος")
+```
+
+```{r}
+#| echo = FALSE
+coupleNOchild23globalPlot2 <- ggplot(coupleNOchild23global, aes(x=is23, y=OBS_VALUE))
+ggplotly(coupleNOchild23globalPlot2 + geom_boxplot()+
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια",
+       y = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       x = "Έτος"))
+```
+
+Ο έλεγχος Wilcoxon για άλλη μια φορά δεν μας δίνει δικαίωμα να επικαλεστούμε ότι κάτι διαφορετικό συμβαίνει το '23.
+
+```{r}
+#| echo = FALSE
+wilcox.test(data = coupleNOchild23global, OBS_VALUE~is23)
+```
+
+## Μόνος με 2 παιδιά
+
+Η περίπτωση αυτή δεν έχει να πει κάτι διαφορετικό από τις δύο άλλες που σχολιάσαμε, οπότε αρκούμαστε μονάχα στην παρουσίαση των γραφημάτων και του ελέγχου Wilcoxon.
+
+```{r}
+#| echo = FALSE
+singleNOchild23EU <- WORKEXPOVeuGR[WORKEXPOVeuGR$SUBJECT=="SNGL2CHLD",]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+singleNOchild23euPlot <- ggplot(singleNOchild23EU, aes(x=TIME_PERIOD, y=OBS_VALUE, group = LOCATION, colour = LOCATION))
+
+singleNOchild23euPlot + geom_line()+
+  labs(title = "Πορεία στο χρόνο των ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       x = "έτος",
+       y = "ώρες εργασίας για έξοδο από φτώχεια",
+       colour = "Περιοχή")
+```
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplot(single2child23global, aes(x = OBS_VALUE, y = as.factor(TIME_PERIOD), fill = after_stat(x))) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01, gradient_lwd = 1.) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_fill_viridis(name = "ώρες", option = "C") +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "έτος")
+```
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+single2child23globalPlot <- ggplot(single2child23global, aes(x=OBS_VALUE, fill = is23))
+single2child23globalPlot + geom_density(aes(y = after_stat(density) * 100),alpha=0.3) +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "ποσοστό (%)",
+       fill = "Έτος")
+```
+
+```{r}
+#| echo = FALSE
+single2child23globalPlot2 <- ggplot(single2child23global, aes(x=is23, y=OBS_VALUE))
+ggplotly(single2child23globalPlot2 + geom_boxplot()+
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια",
+       y = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       x = "Έτος"))
+```
+
+
+```{r}
+#| echo = FALSE
+wilcox.test(data = single2child23global, OBS_VALUE~is23)
+```
+
+
+## Μόνος χωρίς παιδιά
+
+Η περίπτωση αυτή δεν έχει να πει κάτι διαφορετικό από τις δύο πρώτες που σχολιάσαμε, οπότε αρκούμαστε μονάχα στην παρουσίαση των γραφημάτων και του ελέγχου Wilcoxon.
+
+```{r}
+#| echo = FALSE
+singleNOchild23EU <- WORKEXPOVeuGR[WORKEXPOVeuGR$SUBJECT=="SNGLNOCHLD",]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+singleNOchild23euPlot <- ggplot(singleNOchild23EU, aes(x=TIME_PERIOD, y=OBS_VALUE, group = LOCATION, colour = LOCATION))
+
+singleNOchild23euPlot + geom_line()+
+  labs(title = "Πορεία στο χρόνο των ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       x = "έτος",
+       y = "ώρες εργασίας για έξοδο από φτώχεια",
+       colour = "Περιοχή")
+```
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplot(singleNOchild23global, aes(x = OBS_VALUE, y = as.factor(TIME_PERIOD), fill = after_stat(x))) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01, gradient_lwd = 1.) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_fill_viridis(name = "ώρες", option = "C") +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια \n('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "έτος")
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+singleNOchild23globalPlot <- ggplot(singleNOchild23global, aes(x=OBS_VALUE, fill = is23))
+singleNOchild23globalPlot + geom_density(aes(y = after_stat(density) * 100),alpha=0.3) +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "ποσοστό (%)",
+       fill = "Έτος")
+```
+
+```{r}
+#| echo = FALSE
+singleNOchild23globalPlot2 <- ggplot(singleNOchild23global, aes(x=is23, y=OBS_VALUE))
+ggplotly(singleNOchild23globalPlot2 + geom_boxplot(outlier.shape = NA)+
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια",
+       y = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       x = "Έτος"))
+```
+
+```{r}
+#| echo = FALSE
+wilcox.test(data = singleNOchild23global, OBS_VALUE~is23)
+```
+
+
+:::
+
+# Παίζει ρόλο το να έχεις παιδί; 
+
+::: {.panel-tabset}
+
+## Ζευγάρι
+
+Θα εξετάσουμε το ερώτημα «Παίζει ρόλο το να έχεις παιδί;» πρώτα για τα ζευγάρια.
+
+```{r}
+#| echo = FALSE
+couple <- WORKEXPOV[(WORKEXPOV$SUBJECT=="UNEMP_COUPL2CHLD" | WORKEXPOV$SUBJECT=="UNEMP_COUPLNOCHLD"),]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+couplePlot <- ggplot(couple, aes(x=OBS_VALUE, fill = SUBJECT))
+couplePlot + geom_density(aes(y = after_stat(density) * 100),alpha=0.3)+
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια ('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "ποσοστό (%)",
+       fill = "Με 2 παιδιά ή χωρίς;")
+```
+
+```{r}
+#| echo = FALSE
+couplePlot2 <- ggplot(couple, aes(x=SUBJECT, y=OBS_VALUE))
+couplePlot2 + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))+
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια ('01-'23)",
+       y = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       x = "Με 2 παιδιά ή χωρίς;")
+```
+
+Φαίνεται το ότι να έχει ένα ζευγάρι παιδιά κάνει πιο δύσκολο αυτό να εξέλθει από τη φτώχεια. Ας το ελέγξουμε και με έναν έλεγχο Wilcoxon.
+
+
+```{r}
+#| echo = FALSE
+wilcox.test(data = couple, OBS_VALUE~SUBJECT)
+```
+
+Η p-τιμή είναι αρκετά μικρή, ήτοι δείχνει ότι είναι απίθανο η ύπαρξη παιδιών να μην επηρεάζει τον κόπο για να βγει από τη φτώχεια ένα ζευγάρι. Ας εξετάσουμε και το μέγεθος της επίδρασης του παράγοντα «ύπραξη παιδιού».
+
+
+```{r}
+#| echo = FALSE
+wilcox_effsize(data = couple, OBS_VALUE~SUBJECT)
+```
+
+Το r του Wilcoxon είναι `r wilcox_effsize(data = couple, OBS_VALUE~SUBJECT)$effsize`, το οποίο υποδηλώνει μικρό προς μεσαίο μέγεθος επίδρασης.
+
+Τέλος, παρουσιάζουμε την εξέλιξη της διαφοροποίησης μεταξύ του έχειν ή όχι 2 παιδιά στην πορεία του χρόνου.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplot(couple, aes(x = OBS_VALUE, y = as.factor(TIME_PERIOD), fill = SUBJECT)) +
+  geom_density_ridges(alpha=0.7) +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια ('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "έτος",
+       fill = "Με 2 παιδιά ή χωρίς;")
+```
+
+## Μόνος
+
+Ας μελετήσουμε τώρα το ερώτημα «Παίζει ρόλο το να έχεις παιδί;» όσον αφορά την περίπτωση του ενος ενήλικα.
+
+```{r}
+#| echo = FALSE
+single <- WORKEXPOV[(WORKEXPOV$SUBJECT=="SNGL2CHLD" | WORKEXPOV$SUBJECT=="SNGLNOCHLD"),]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+singlePlot <- ggplot(single, aes(x=OBS_VALUE, fill = SUBJECT))
+singlePlot + geom_density(aes(y = after_stat(density) * 100),alpha=0.3)+
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια ('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "ποσοστό (%)",
+       fill = "Με 2 παιδιά ή χωρίς;")
+```
+
+```{r}
+#| echo = FALSE
+singlePlot2 <- ggplot(single, aes(x=SUBJECT, y=OBS_VALUE))
+singlePlot2 + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))+
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια (2023)",
+       y = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       x = "Με 2 παιδιά ή χωρίς;")
+```
+
+Και σε αυτή την περίπτωση φαίνεται η ύπαρξη παιδιών να κάνει πιο δύσκολη την έξοδο από τη φτώχεια. Είναι όντως έτσι όπως βλέπουν τα μάτια μας;
+
+
+```{r}
+#| echo = FALSE
+wilcox.test(data = single, OBS_VALUE~SUBJECT)
+```
+
+Ο έλεγχος Wilcoxon επιβεβαιώνει με τη μικροσκοπική p-τιμή που εξάγει ότι είναι απίθανο το αντίθετο σενάριο. Ας δούμε και το μέγεθος της επίδρασης των παιδιών.
+
+
+```{r}
+#| echo = FALSE
+wilcox_effsize(data = single, OBS_VALUE~SUBJECT)
+```
+
+
+Το r του Wilcoxon (`r wilcox_effsize(data = single, OBS_VALUE~SUBJECT)$effsize`) πάλι διλώνει μικρό προς μεσαίο μέγεθος επίδρασης της ύπαρξης παιδιών στη δυσκολία εξόδου από τη φτώχεια. Βέβαια, είναι σαφώς μεγαλύτερο από την περίπτωση που μελετούσαμε ζευγάρια, κάτι που αντικατοπτρίζει και τις δυσκολίες που αντιμετωπίζει μια μονογονεϊκή οικογένεια.
+
+Και πάλι κάνουμε μια οπτική παρουσίαση της εξέλιξης της επίδρασης του παράγοντα «έχω δύο παιδιά ή καθόλου» στη δυσκολία εξόδου από τη φτώχεια.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplot(single, aes(x = OBS_VALUE, y = as.factor(TIME_PERIOD), fill = SUBJECT)) +
+  geom_density_ridges(alpha=0.7) +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια ('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "έτος",
+       fill = "Με 2 παιδιά ή χωρίς;")
+```
+
+
+:::
+
+# Παίζει ρόλο το να είσαι ζευγάρι ή μόνος;
+
+::: {.panel-tabset}
+
+Σε τούτη την ενότητα θα εξετάσουμε αν επιδρά στη δυσκολία εξόδου από τη φτώχεια το να είσαι ζευγάρι ή μόνος.
+
+## Με 2 παιδιά
+
+Πάμε πρώτα να δούμε τι συμβαίνει, αν υπάρχουν δυο παιδιά στην οικογένεια.
+
+```{r}
+#| echo = FALSE
+child2 <- WORKEXPOV[(WORKEXPOV$SUBJECT=="UNEMP_COUPL2CHLD" | WORKEXPOV$SUBJECT=="SNGL2CHLD"),]
+```
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+child2Plot <- ggplot(child2, aes(x=OBS_VALUE, fill = SUBJECT))
+child2Plot + geom_density(aes(y = after_stat(density) * 100),alpha=0.3) +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια ('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "ποσοστό (%)",
+       fill = "Ζευγάρι ή μόνος")
+```
+
+```{r}
+#| echo = FALSE
+child2Plot2 <- ggplot(child2, aes(x=SUBJECT, y=OBS_VALUE))
+child2Plot2 + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))+
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια ('01-'23)",
+       y = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       x = "Ζευγάρι ή μόνος;")
+```
+
+Φαίνεται πως ένα ζευγάρι χρειάζεται περισσότερες ώρες εργασίας για να βγει από την κατάσταση της φτώχειας. Να δούμε τι έχει να πει γι' αυτό κι ένας έλεγχος Wilcoxon.
+
+
+```{r}
+#| echo = FALSE
+wilcox.test(data = child2, OBS_VALUE~SUBJECT)
+```
+
+Η εξαιρετικά μικρή p-τιμή κάνει απίθανο κάθε αντίθετο σενάριο, ενώ παράλληλα το μέγεθος επίδρασης, όπως φαίνεται παρακάτω, δηλώνει μεσαίο μέγεθος επίδρασης.
+
+```{r}
+#| echo = FALSE
+wilcox_effsize(data = child2, OBS_VALUE~SUBJECT)
+```
+
+Ακολουθεί για άλλη μια φορά η οπτική αναπαράσταση της εξέλιξης στο χρόνο του ζητήματος που μελετάμε.
+
+Τέλος, παρουσιάζουμε την εξέλιξη στην πάροδο του χρόνου της διαφοροποίησης μεταξύ του να είναι κανείς μόνος ή ζευγάρι.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplot(child2, aes(x = OBS_VALUE, y = as.factor(TIME_PERIOD), fill = SUBJECT)) +
+  geom_density_ridges(alpha=0.7) +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια ('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "έτος",
+       fill = "Ζευγάρι ή μόνος")
+```
+
+
+## Χωρίς παιδί
+
+Τι γίνεται στην περίπτωση που δεν υπάρχουν γονεϊκές ευθύνες; Αυτό θα το δούμε τώρα.
+
+```{r}
+#| echo = FALSE
+childNO <- WORKEXPOV[(WORKEXPOV$SUBJECT=="UNEMP_COUPLNOCHLD" | WORKEXPOV$SUBJECT=="SNGLNOCHLD"),]
+```
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+childNOPlot <- ggplot(childNO, aes(x=OBS_VALUE, fill = SUBJECT))
+childNOPlot + geom_density(aes(y = after_stat(density) * 100),alpha=0.3) +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια ('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "ποσοστό (%)",
+       fill = "Ζευγάρι ή μόνος")
+```
+
+```{r}
+#| echo = FALSE
+childNOPlot2 <- ggplot(childNO, aes(x=SUBJECT, y=OBS_VALUE))
+childNOPlot2 + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))+
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια ('01-'23)",
+       y = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       x = "Ζευγάρι ή μόνος;")
+```
+
+Για άλλη μια φορά ένα ζευγάρι απαιτεί περισσότερες ώρες εργασίας για την έξοδο από τη φτώχεια, πόρισμα που επιβεβαιώνει και ο κάτωθι έλεγχος Wilcoxon.
+
+
+```{r}
+#| echo = FALSE
+wilcox.test(data = childNO, OBS_VALUE~SUBJECT)
+```
+
+Το μέγεθος επίδρασης αυτή τη φορά είναι μεσαίο προς μεγάλο, όπως δείχνει το r του Wilcoxon.
+
+```{r}
+#| echo = FALSE
+wilcox_effsize(data = childNO, OBS_VALUE~SUBJECT)
+```
+
+Εν τέλει, την πορεία στο χρόνο της διαφοροποίησης μεταξύ του να είναι κανείς μόνος ή ζευγάρι.
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplot(childNO, aes(x = OBS_VALUE, y = as.factor(TIME_PERIOD), fill = SUBJECT)) +
+  geom_density_ridges(alpha=0.7) +
+  labs(title = "Κατανομή ωρών εργασίας για έξοδο από φτώχεια ('01-'23)",
+       x = "εβδομαδιαίες ώρες μέχρι να εξέλθει από τη φτώχεια",
+       y = "έτος",
+       fill = "Ζευγάρι ή μόνος")
+```
+
+
+:::
+
+
+

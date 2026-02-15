@@ -1,0 +1,57 @@
+---
+title: "Κύματα Kondratiev"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+```{r}
+#| echo = F
+rm(list = ls())
+```
+
+<div class="alert-danger">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>
+
+
+Συντελεστής τζίνι. ΑΕΠ
+
+# Στατιστικός έλεγχος περιοδικότητας 
+
+Τεστ. Να αναλύσω περισσότερο. Ίσως όμως και οκ.
+
+`
+if(!require(ptest)){
+    install.packages("ptest")
+    library(ptest)
+}
+`
+
+```{r}
+#ptestg(massExt)
+#ptestg(gamoiSynolots)
+#ptestg(yTs)
+```
+
+
+
+```{r}
+#ptestg(massExt, method = c("Fisher", "robust", "extended", "extendedRobust",                     "FisherRSR"), multiple = FALSE)
+#ptestg(massExt,method="Fisher")
+#ptestg(gamoiSynolots,method="Fisher")
+# ptestg(massExt,method="robust")
+# ptestg(massExt,method="extended")
+# ptestg(massExt,method="extendedRobust")
+# ptestg(massExt,method="FisherRSR")
+```

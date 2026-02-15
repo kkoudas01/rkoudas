@@ -1,0 +1,1012 @@
+---
+title: "Πόθεν έσχες βουλευτών Ν.Δ."
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+
+
+```{r}
+#| eval = FALSE,
+#| echo = FALSE
+# ΓΙΑ ΚΑΤΕΒΑΣΜΑ ΔΕΔΟΜΕΝΩΝ (ανενεργο)
+rm(list = ls())
+
+if(!require(httr)){
+    install.packages("httr")
+    library(httr)
+}
+if(!require(jsonlite)){
+    install.packages("jsonlite")
+    library(jsonlite)
+}
+if(!require(dplyr)){
+    install.packages("dplyr")
+    library(dplyr)
+}
+if(!require(progress)){  # Για την εμφάνιση προόδου
+    install.packages("progress")
+    library(progress)
+}
+
+# --- 2. Ορισμός του εύρους ετών που μας ενδιαφέρει ---
+start_year <- 2015
+end_year <- 2021
+target_years <- as.character(start_year:end_year) # Μετατροπή σε χαρακτήρες για το API
+
+cat("Προετοιμασία για ανάκτηση δεδομένων για τα οικονομικά έτη από", start_year, "έως", end_year, "\n")
+
+# --- 3. Βήμα: Ανάκτηση όλων των slugs των βουλευτών ---
+cat("Βήμα 1/2: Ανακτώνται τα slugs όλων των βουλευτών...\n")
+
+search_url_base <- "https://pothenesxes.vouliwatch.gr/api/members-search"
+all_members_slugs <- list()
+
+response_all_members <- GET(paste0(search_url_base, "?q="))
+
+if (status_code(response_all_members) == 200) {
+  all_members_data <- fromJSON(content(response_all_members, "text", encoding = "UTF-8"), flatten = TRUE)
+  if (nrow(all_members_data) > 0) {
+    all_members_slugs <- all_members_data$slug
+    cat("Βρέθηκαν", length(all_members_slugs), "διαφορετικά slugs βουλευτών.\n")
+  } else {
+    cat("Προσοχή: Δεν βρέθηκαν slugs βουλευτών. Ελέγξτε το API /members-search.\n")
+    stop("Δεν είναι δυνατή η ανάκτηση των slugs των βουλευτών. Η διαδικασία διακόπτεται.")
+  }
+} else {
+  warning(paste("Αποτυχία ανάκτησης όλων των slugs. Status Code:", status_code(response_all_members)))
+  print(content(response_all_members, "text", encoding = "UTF-8"))
+  stop("Δεν είναι δυνατή η ανάκτηση των slugs των βουλευτών. Η διαδικασία διακόπτεται.")
+}
+
+# --- 4. Βήμα: Ανάκτηση αναλυτικών στοιχείων για κάθε βουλευτή, για κάθε έτος, με τυχαία καθυστέρηση ---
+cat("\nΒήμα 2/2: Ανακτώνται αναλυτικά στοιχεία για κάθε βουλευτή για όλα τα επιλεγμένα έτη με τυχαία καθυστέρηση...\n")
+
+member_details_url <- "https://pothenesxes.vouliwatch.gr/api/member"
+DEDOMENAvouli <- list() 
+
+min_delay <- 1 # Ελάχιστη καθυστέρηση σε δευτερόλεπτα
+max_delay <- 3 # Μέγιστη καθυστέρηση σε δευτερόλεπτα
+
+# Ο συνολικός αριθμός αιτημάτων θα είναι ο αριθμός των βουλευτών επί τον αριθμό των ετών
+total_requests <- length(all_members_slugs) * length(target_years)
+
+pb <- progress_bar$new(
+  format = "  Πρόοδος [:bar] :percent (:eta)",
+  total = total_requests,
+  clear = FALSE,
+  width = 60
+)
+
+for (slug in all_members_slugs) {
+  for (year in target_years) {
+    pb$tick() # Ενημέρωση μπάρας προόδου για κάθε αίτημα
+
+    request_body <- list(
+      data = list(
+        slug = slug,
+        year = year # Ρητά το τρέχον έτος
+      )
+    )
+
+    response_details <- POST(member_details_url,
+                             body = toJSON(request_body, auto_unbox = TRUE),
+                             add_headers("Content-Type" = "application/json"))
+
+    if (status_code(response_details) == 200) {
+      member_data <- fromJSON(content(response_details, "text", encoding = "UTF-8"), flatten = TRUE)
+      # Ελέγχουμε αν υπάρχουν δεδομένα για το συγκεκριμένο έτος
+      if (!is.null(member_data$member) && !is.null(member_data$member$fiscal)) {
+        # Δημιουργούμε ένα μοναδικό όνομα για το στοιχείο της λίστας (π.χ., "slug_year")
+        list_name <- paste0(slug, "_", year)
+        DEDOMENAvouli[[list_name]] <- member_data$member # Αλλαγή του ονόματος της λίστας
+      } else {
+        # Αν δεν υπάρχουν δεδομένα για το έτος, σημειώνουμε το slug_year ως NULL ή κενό
+        warning(paste0("Δεν βρέθηκαν δεδομένα πόθεν έσχες για τον βουλευτή ", slug, " για το έτος ", year, "."))
+        DEDOMENAvouli[[paste0(slug, "_", year)]] <- NULL # Αλλαγή του ονόματος της λίστας
+      }
+    } else {
+      warning(paste0("Αποτυχία ανάκτησης δεδομένων για τον βουλευτή με slug: ", slug, " για το έτος ", year, ". Status Code: ", status_code(response_details)))
+      DEDOMENAvouli[[paste0(slug, "_", year)]] <- NULL # Αλλαγή του ονόματος της λίστας
+    }
+
+    # Τυχαία καθυστέρηση, μη με μπανάρουν
+    random_sleep_time <- runif(1, min = min_delay, max = max_delay)
+    Sys.sleep(random_sleep_time)
+  }
+}
+
+cat("\nΟλοκληρώθηκε η ανάκτηση δεδομένων για όλα τα επιλεγμένα έτη.\n")
+
+# --- 5. Βήμα: Αποθήκευση της λίστας σε αρχείο .rds ---
+output_file_path <- paste0("DEDOMENAvouli_", start_year, "_", end_year, ".rds") 
+saveRDS(DEDOMENAvouli, file = output_file_path) 
+
+cat("Τα δεδομένα αποθηκεύτηκαν επιτυχώς στο αρχείο:", output_file_path, "\n")
+```
+
+# Παρουσίαση δεδομένων
+
+
+Κάνοντας κάποιες αυτονόητες παραδοχές, θα μπορούσαμε να πούμε ότι όποιος ασχολείται με την πολιτική χάνει λεφτά. Απόλυτα λογικό εκ πρώτης όψεως, καθόσον, όταν πολιτεύεται κάποιος, σταματάει τη δουλειά του, συγκρούεται με συμφέροντα και πολεμάται κ.τ.λ. Έτσι λέει μια στοιχειώδης ηθική ότι συμβαίνουν τα πράγματα. Συμβαίνουν όμως έτσι; Μήπως η πραγματικότητα έρχεται σε αντίθεση με αυτό που θα ήταν το δέον να συμβαίνει; Επί παραδείγματι, ένας καχύποπτος θα μπορούσε να πει «Όταν κάποιος αποκτά τη δυνατότητα διαχείρισης του Κράτους, τότε αποκτά και τη δυνατότητα να πέσει με τα μούτρα στο φαΐ». Ενώ κάποιος άλλος θα μπορούσε να πει πως όλα τα παραπάνω είναι θεωρίες συνωμοσίας, ότι το πολιτεύεσθαι δεν προκαλεί καμία παραπάνω εισοδηματική αλλαγή από ένα οποιοδήποτε ζήτημα της ζωής ενός ανθρώπου, όπως το να κουρευτεί ή να ρίξει μια βουτιά στη θάλασσα.  Στην παρούσα εργασία θα μελετήσουμε αυτό ακριβώς το ζήτημα.
+
+Προς τούτο θα εξετάσουμε κατά πόσον τα νόμιμα εισοδήματα των νεοδημοκρατών βουλευτών έχουν ανοδικές τάσεις μετά την άνοδό τους στην εξουσία. Για τη σχετική έρευνα αντλήσαμε δεδομένα από τη σελίδα [Vouliwatch](https://pothenesxes.vouliwatch.gr/) και αυτά αποθηκεύτηκαν στο αρχείο `DEDOMENAvouli_2015_2021.rds`. Επειδή η άντλησή τους διήρκεσε πάνω από 2 ώρες, ο κώδικας που την εκτελούσε έχει απενεργοποιηθεί. Επίσης, επειδή δεν προσφέρει κάτι στην ανάγνωση της παρούσης εργασίας, ο εν λόγω κώδικας έχει κρυφτεί. Βεβαια, ο αναγνώστης που ενδιαφέρεται, μπορεί να τον βρει στον κώδικα της παρούσης σελίδας (`pothenesxes.Rmd`)   που βρίσκεται στο [αποθετήριο του GitHub της όλης σελίδας](https://github.com/kkoudas01/r4social), στο οποίο σημείο μπορεί να βρει και το αρχείο `DEDOMENAvouli_2015_2021.rds`.
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+# Εισαγωγή αποθηκευμένων δεδομένων. Το περιεκτικότερο είναι το DEDOMENAvouli_2015_2021.rds
+rm(list = ls())
+
+if(!require(purrr)){
+    install.packages("purrr")
+    library(purrr)
+}
+if(!require(dplyr)){
+    install.packages("dplyr")
+    library(dplyr)
+}
+if(!require(tidyr)){
+    install.packages("tidyr")
+    library(tidyr)
+}
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+if(!require(plotly)){
+    install.packages("plotly")
+    library(plotly)
+}
+
+if(!require(reshape)){
+    install.packages("reshape")
+    library(reshape)
+}
+if(!require(reshape2)){
+    install.packages("reshape2")
+    library(reshape2)
+}
+if(!require(tidyr)){
+    install.packages("tidyr")
+    library(tidyr)
+}
+if(!require(corrplot)){
+    install.packages("corrplot")
+    library(corrplot)
+}
+if(!require(ape)){
+    install.packages("ape")
+    library(ape)
+}
+if(!require(dendextend)){
+    install.packages("dendextend")
+    library(dendextend)
+}
+if(!require(circlize)){
+    install.packages("circlize")
+    library(circlize)
+}
+if(!require(pheatmap)){
+  install.packages("pheatmap")
+  library(pheatmap)
+}
+if (!require(heatmaply)) {
+  install.packages("heatmaply")
+  library(heatmaply)
+}
+DEDOMENAvouli <- readRDS("DEDOMENAvouli_2015_2021.rds")
+
+# vouliDEDOMENA <- readRDS("vouliDEDOMENA.rds")
+# vouliDATA <- readRDS("vouliDATA.rds")
+
+```
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+# ΓΙΑ ΚΑΤΕΒΑΣΜΑ ΑΝΑΛΥΤΙΚΟΥ ΕΙΣΟΔΗΜΑΤΟΣ
+# Φόρτωση των απαραίτητων βιβλιοθηκών
+
+
+# Τα εισοδήματα του κάθε βουλευτή και της συζύγου, αναλυτικά
+
+eisodima <- map_dfr(DEDOMENAvouli, function(person) {
+
+  # Έλεγχος αν υπάρχουν έσοδα για το τρέχον πρόσωπο/έτος
+  if (length(person[["fiscal"]][["revenues"]][[1]][["amount"]]) > 0) {
+    
+    # Δημιουργία ενός dataframe (tibble) για το τρέχον πρόσωπο.
+    # Η λέξη 'person' εδώ αντιπροσωπεύει το κάθε στοιχείο της λίστας
+    # DEDOMENAvouli ξεχωριστά σε κάθε επανάληψη.
+    tibble(
+      ΚΩΔΙΚΟ_ΟΝΟΜΑ = person[["slug"]],
+      ΕΤΟΣ_ΧΡΗΣΗΣ = person[["fiscal"]][["year_of_use"]],
+      ONOMA = person[["first_name"]],
+      ΕΠΩΝΥΜΟ = person[["last_name"]],
+      ΚΟΜΜΑ = person[["fiscal"]][["politicalparty.name"]],
+      ΕΙΣΟΔΗΜΑ = person[["fiscal"]][["revenues"]][[1]][["amount"]],
+      ΕΙΔΟΣ_ΕΙΣΟΔΗΜΑΤΟΣ = person[["fiscal"]][["revenues"]][[1]][["source"]],
+      ΣΥΖΥΓΟΣ = person[["fiscal"]][["revenues"]][[1]][["partner"]],
+      ΦΥΛΟ = person[["gender"]],
+      ΚΥΒΕΡΝΗΤΙΚΗ_ΘΕΣΗ = person[["fiscal"]][["goverment_position_id"]]
+    )
+    
+  } else {
+    # Αν το τρέχον πρόσωπο δεν έχει έσοδα, το προσπερνάμε
+    NULL
+  }
+  
+})
+eisodima$ΕΙΣΟΔΗΜΑ <- as.numeric(eisodima$ΕΙΣΟΔΗΜΑ)
+```
+
+Αρχικά παραθέτουμε τα αναλυτικά στοιχεία του εισοδήματος μόνο κάποιων τυχαία επιλεγμένων βουλευτών, διότι η παρουσίαση του πίνακα με όλα τα στοιχεία όλων των βουλευτών διόγκωνε δραματικά την εκτέλεση του κώδικα. Φυσικά, η μελέτη μας δεν θα αρκεστεί σε αυτά τα λίγα ονόματα. Τέλος, πριν προχωρήσουμε, να επισημάνουμε πως οι γραμμές, που στη στήλη `ΣΥΖΥΓΟΣ` γράφουν `1`, αφορούν το εισόδημα του συζύγου κι όχι του βουλευτή.
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(eisodima[sample(length(eisodima$ΚΩΔΙΚΟ_ΟΝΟΜΑ),20),-1]) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+
+# Τα συνολικά εισοδήματα του κάθε βουλευτή. Συνολικά, δηλαδή, μαζί με της συζύγου και χωρίς κατηγοριοποίηση
+
+# ΣΥΝΟΛΙΚΟ ΕΙΣΟΔΗΜΑ, ΠΕΡΙΟΥΣΙΑ κτλ
+pothen_esxes_total <- map_dfr(DEDOMENAvouli, function(person) {
+  
+  # Για κάθε στοιχείο "person" στη λίστα, δημιουργούμε μια γραμμή στο dataframe
+  tibble(
+    ΚΩΔΙΚΟ_ΟΝΟΜΑ = person[["slug"]],
+    ΕΤΟΣ_ΧΡΗΣΗΣ = person[["fiscal"]][["year_of_use"]],
+    ONOMA = person[["first_name"]],
+    ΕΠΩΝΥΜΟ = person[["last_name"]],
+    ΚΟΜΜΑ = person[["fiscal"]][["politicalparty.name"]],
+    ΕΙΣΟΔΗΜΑ = person[["fiscal"]][["total_revenue"]],
+    ΑΚΙΝΗΤΑ = person[["fiscal"]][["total_properties"]],
+    ΚΙΝΗΤΗ_ΠΕΡΙΟΥΣΙΑ = person[["fiscal"]][["total_mobiles"]],
+    ΚΑΤΑΘΕΣΕΙΣ = person[["fiscal"]][["total_deposits"]],
+    ΜΕΤΟΧΕΣ = person[["fiscal"]][["total_stocks"]],
+    ΔΑΝΕΙΑ = person[["fiscal"]][["total_loans"]],
+    ΦΥΛΟ = person[["gender"]],
+      ΚΥΒΕΡΝΗΤΙΚΗ_ΘΕΣΗ = person[["fiscal"]][["goverment_position_id"]]
+  )
+  
+})
+pothen_esxes_total$ΕΙΣΟΔΗΜΑ <- as.numeric(pothen_esxes_total$ΕΙΣΟΔΗΜΑ)
+pothen_esxes_total$ΚΑΤΑΘΕΣΕΙΣ <- as.numeric(pothen_esxes_total$ΚΑΤΑΘΕΣΕΙΣ)
+```
+
+Παρουσιάζουμε επίσης και τα οικογενειακά περιουσιακά και εισοδηματικά στοιχεία του κάθε βουλευτή.
+
+
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(pothen_esxes_total[sample(length(pothen_esxes_total$ΚΩΔΙΚΟ_ΟΝΟΜΑ),20),-1]) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+eisodima_ND <- eisodima[eisodima$ΚΟΜΜΑ=="Νέα Δημοκρατία",]
+pothen_esxes_ND <- pothen_esxes_total[pothen_esxes_total$ΚΟΜΜΑ=="Νέα Δημοκρατία",]
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+# Αυτό διασφαλίζει ότι ψάχνουμε για την πλήρη 7ετία 2015-2021
+desired_years <- 2015:2021
+num_desired_years <- length(desired_years)
+
+# Προαιρετικό: Φιλτράρουμε το dataframe ώστε να περιέχει μόνο τα έτη που μας ενδιαφέρουν
+pothen_esxes_ND <- pothen_esxes_ND %>%
+  filter(ΕΤΟΣ_ΧΡΗΣΗΣ %in% desired_years)
+
+# 3. Βρίσκουμε τους βουλευτές που έχουν καταγραφές για ΟΛΑ τα επιθυμητά έτη
+vouleutes_all_years <- pothen_esxes_ND %>%
+  group_by(ΚΩΔΙΚΟ_ΟΝΟΜΑ) %>%
+  # Μετράμε τις μοναδικές χρονιές για κάθε βουλευτή
+  summarise(num_years_recorded = n_distinct(ΕΤΟΣ_ΧΡΗΣΗΣ)) %>%
+  # Κρατάμε μόνο αυτούς που έχουν καταγραφές όσες και οι επιθυμητές χρονιές
+  filter(num_years_recorded == num_desired_years) %>%
+  pull(ΚΩΔΙΚΟ_ΟΝΟΜΑ)
+
+# 4. Δημιουργούμε το τελικό dataframe
+pothen_esxes_ND <- pothen_esxes_ND %>%
+  filter(ΚΩΔΙΚΟ_ΟΝΟΜΑ %in% vouleutes_all_years)
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+eisodima_ND <- eisodima_ND %>%
+  filter(ΕΤΟΣ_ΧΡΗΣΗΣ %in% desired_years)
+
+# 3. Βρίσκουμε τους βουλευτές που έχουν καταγραφές για ΟΛΑ τα επιθυμητά έτη
+vouleutes_all_years <- eisodima_ND %>%
+  group_by(ΚΩΔΙΚΟ_ΟΝΟΜΑ) %>%
+  # Μετράμε τις μοναδικές χρονιές για κάθε βουλευτή
+  summarise(num_years_recorded = n_distinct(ΕΤΟΣ_ΧΡΗΣΗΣ)) %>%
+  # Κρατάμε μόνο αυτούς που έχουν καταγραφές όσες και οι επιθυμητές χρονιές
+  filter(num_years_recorded == num_desired_years) %>%
+  pull(ΚΩΔΙΚΟ_ΟΝΟΜΑ)
+
+# 4. Δημιουργούμε το τελικό dataframe
+eisodima_ND <- eisodima_ND %>%
+  filter(ΚΩΔΙΚΟ_ΟΝΟΜΑ %in% vouleutes_all_years)
+```
+
+# Εισόδημα
+
+## Οικογενειακό εισόδημα βουλευτή
+
+
+Αρχικά παρουσιάζουμε το οικογενειακό εισόδημα του κάθε βουλευτή. 
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+eisodimaCommaPlot <- ggplot(pothen_esxes_ND, aes(x=ΕΤΟΣ_ΧΡΗΣΗΣ, y=ΕΙΣΟΔΗΜΑ, group=ΚΩΔΙΚΟ_ΟΝΟΜΑ))
+
+ggplotly(eisodimaCommaPlot +
+  geom_line(colour="blue") +
+  labs(title = "Οικογενειακό εισόδημα βουλευτών ΝΔ ανά έτος"))
+```
+
+Παρατηρούμε αφύσικη εισοδηματική άνοδο, σε σχέση με τους υπολοίπους νεοδημοκράτες βουλευτές, στους:
+
+- [Γεωργία Μαρτίνου](https://vouliwatch.gr/mp/martinoy-georgia),
+
+- [Κυριάκος Μητσοτάκης](https://vouliwatch.gr/mp/mitsotakis-kyriakos),
+
+- [Ντόρα Μπακογιάννη](https://vouliwatch.gr/mp/mpakogianni-theodora),
+
+- [Βασίλειος Κικίλιας](https://vouliwatch.gr/mp/kikilias-vasileios) και
+
+- [Μάκης Βορίδης](https://vouliwatch.gr/mp/voridis-mayroydis).
+
+Υπάρχει και μια ανοδική τάση στους:
+
+- [Νικόλαος Δένδιας](https://vouliwatch.gr/mp/dendias-nikolaos) και
+
+- [Νίκη Κεραμέως](https://vouliwatch.gr/mp/kerameos-niki),
+
+αλλά καθόσον δεν φαίνεται τόσο απότομη όσο των υπολοίπων και ούτε αρχίζει από το 2019, ας είμαστε επιφυλακτικοί, τουλάχιστον αρχικά.
+
+Στο σημείο αυτό, κάποιος κακοπροαίρετος θα μπορούσε να φέρει την ένσταση *«Ο Κ. Μητσοτάκης βρήκε στημένο μαγαζί 50 ετών, με έτοιμη πελατεία και γνωστούς προμηθευτές. Λογικό είναι να έχει αλματώδη άνοδο σε σχέση με τους υπολοίπους νεοδημοκράτες. Πρέπει να εξετάσεις και γαλάζια παιδιά με πιο μικρά καταστήματα»*. Κάποιος καλοπροαίρετος θα έλεγε *«Ο Κ. Μητσοτάκης έχει τελειώσει το Χάρβαρντ. Έχει επιχειρηματικό δαιμόνιο που δεν κατέχουν οι άλλοι και μπορεί να κάνει την κρίση ευκαιρία με πιο αποδοτικό τρόπο. Πρέπει να ελέγξεις την οικονομική άνοδο και άλλων βουλευτών, που δεν έχουν την δικιά του κατάρτιση»*. Μπορεί αυτοί να διαφωνούν στην ερμηνεία της εισοδηματικής ανόδου του Κ. Μητσοτάκη, συμφωνούν όμως κι οι δύο ότι πρέπει να ψάξουμε κι άλλους.
+
+Αυτό και θα κάνουμε! Θα βρούμε τους βουλευτές που το μέσο εισόδημά τους τα έτη 2020-2021 είναι μεγαλύτερο από το μέσο εισόδημα των ετών 2015-2018. Για την ακρίβεια, θα αναφέρουμε τους βουλευτές που έχουν τόσο μεγαλύτερο εισόδημα τα έτη 2020-2021, που πρακτικά να ήταν απίθανη μια τέτοια άνοδος. Συγκεκριμένα, λόγω της λειψούς ποσότητας δεδομένων, βασιστήκαμε στην πλευρική ανισότητα Chebyshev. Σύμφωνα με αυτήν, το να τύχουμε άτομα με εισόδημα μεγαλύτερο από 2  <a href="#" title="Τυπική απόκλιση κάποιου συνόλου αριθμών είναι ένα νούμερο που δείχνει πόσο πολύ απλωμένοι είναι οι αριθμοί μας. Όταν έχουμε μεγάλη τυπική απόκλιση σημαίνει ότι τα δεδομένα μας είναι πολύ απλωμένα. Όταν η τυπική απόκλιση είναι μικρή, τότε τα δεδομένα μας είναι πολύ συγκεντρωμένα γύρω από τη μέση τιμή τους.">τυπικές αποκλίσεις</a> από τη μέση τιμή είναι λιγότερο από 20% πιθανό να συμβεί, άρα «χτυπάνε καμπανάκια» ότι κάτι περίεργο συμβαίνει εκεί.  Τέλος πάντων, οι εν λόγω βουλευτές είναι οι κάτωθι:
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+find_profitable_individuals <- function(df, value_col, sd_multiplier) {
+  
+  profitable_individuals <- c()
+  unique_names <- unique(df$ΚΩΔΙΚΟ_ΟΝΟΜΑ)
+  
+  for (name in unique_names) {
+    
+    data_pre_2019 <- df[df$ΚΩΔΙΚΟ_ΟΝΟΜΑ == name & df$ΕΤΟΣ_ΧΡΗΣΗΣ < 2019, ]
+    data_post_2019 <- df[df$ΚΩΔΙΚΟ_ΟΝΟΜΑ == name & df$ΕΤΟΣ_ΧΡΗΣΗΣ > 2019, ]
+    
+    # Ελέγχουμε ότι υπάρχουν τουλάχιστον 2 καταχωρήσεις σε κάθε περίοδο.
+    # Αυτό είναι απαραίτητο για να υπολογιστεί σωστά η τυπική απόκλιση (sd).
+    if (nrow(data_pre_2019) >= 2 && nrow(data_post_2019) >= 2) {
+      
+      # Εκτελούμε τον μοναδικό, απλοποιημένο έλεγχο
+      if ((mean(data_pre_2019[[value_col]]) + sd_multiplier * sd(data_pre_2019[[value_col]])) < max(data_post_2019[[value_col]])) {
+        
+        profitable_individuals <- c(profitable_individuals, name)
+      }
+    }
+  }
+  
+  return(profitable_individuals)
+}
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+kerdoforoiBoyleytes <- find_profitable_individuals(
+  df = pothen_esxes_ND,
+  value_col = "ΕΙΣΟΔΗΜΑ",
+  sd_multiplier = 2
+)
+kerdoforoiBoyleytes
+```
+
+
+
+Βλέπουμε ότι στην κατηγορία των πλουτισάντων μετά το 2019 εμφανίζεται και ο [«Μη με ακουμπάτε, έχω ασυλία»](https://www.protagon.gr/epikairotita/politiki/thema-avgenaki-sti-nd-gia-to-ksereis-poios-eimai-egw-kai-to-xtypima-se-ypallilo-tou-el-venizelos-44342967109) κος [Ε. Αυγενάκης](https://vouliwatch.gr/mp/aygenakis-eleytherios), ένα πρόσωπο που απασχολεί για άλλη μια φορά την επικαιρότητα αυτές τις μέρες που έχει «σκάσει» το σκάνδαλο του ΟΠΕΚΕΠΕ. Επίσης ο έλεγχος αυτός λέει ότι τελικά δεν είναι και τόσο δικαιολογημένη η εισοδηματική άνοδος του [Ν. Δένδια](https://vouliwatch.gr/mp/dendias-nikolaos) και της  [Ν. Κεραμέως](https://vouliwatch.gr/mp/kerameos-niki).
+
+Ας κάνουμε ένα ακόμα διάγραμμα μόνο με τα εισοδήματα των προαναφερθέντων βουλευτών. 
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+pothen_esxes_NDelit <- pothen_esxes_ND[pothen_esxes_ND$ΚΩΔΙΚΟ_ΟΝΟΜΑ %in% kerdoforoiBoyleytes, ]
+eisodimaElitPlot <- ggplot(pothen_esxes_NDelit, aes(x=ΕΤΟΣ_ΧΡΗΣΗΣ, y=ΕΙΣΟΔΗΜΑ, group=ΚΩΔΙΚΟ_ΟΝΟΜΑ, colour=ΚΩΔΙΚΟ_ΟΝΟΜΑ))
+
+ggplotly(eisodimaElitPlot +
+  geom_line() +
+  labs(title = "Οικογενειακό εισόδημα βουλευτών ΝΔ ανά έτος"))
+```
+
+Ο αναγνώστης παρατηρεί πως, επειδή κάποιων τα εισοδήματα αυξήθηκαν εξωφρενικά, οι χρονογραμμές κάποιων άλλων έχουν γίνει ένα ακατανόητο κουβάρι. Η λύση σε αυτό είναι να απεικονίσουμε τις χρονογραμμές των εσόδων σε λογαριθμική κλίμακα. Στη λογαριθμική κλίμακα, αντί οι αριθμοί του κατακόρυφου άξονα να αυξάνονται σταθερά (π.χ. 10, 20, 30, ...), αυξάνονται όλο και πιο γρήγορα (π.χ. 10, 100, 1000,...). Αυτό σημαίνει ότι συμπιέζονται τα μεγάλα νούμερα περισσότερο από τα μικρά. Π.χ. το 1 από το 10 (διαφορά 9 μονάδων) θα απεικονίζεται να έχει την ίδια απόσταση με το 10 από το 100 (διαφορά 90 μονάδων) ή το 100 από το 1000 (διαφορά 900 μονάδων).  Φυσικά, οι αυξομειώσεις είναι όπως και στο «κανονικό» γράφημα, πάλι έχουμε αύξηση εκεί που ήταν αύξηση, και μείωση εκεί που ήταν μείωση, με τη διαφορά ότι αυτές  πλέον δεν έχουν το οπτικό μέγεθος που θα περιμέναμε, αλλά όσο μεγαλύτερες είναι, τόσο περισσότερο τις συμπιέζουμε, ώστε να απεικονιστούν μεγάλες και μικρές ευκρινώς. 
+
+Προσωπικά ο γράφων βρήκε καυστικά αστείο που τελικά χρειάστηκε να κάνει το γράφημα σε λογαριθμική κλίμακα για να γίνει αυτό ευκρινές. Ας το δούμε, λοιπόν:
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+pothen_esxes_NDelit <- pothen_esxes_ND[pothen_esxes_ND$ΚΩΔΙΚΟ_ΟΝΟΜΑ %in% kerdoforoiBoyleytes, ]
+eisodimaElitPlot <- ggplot(pothen_esxes_NDelit, aes(x=ΕΤΟΣ_ΧΡΗΣΗΣ, y=ΕΙΣΟΔΗΜΑ, group=ΚΩΔΙΚΟ_ΟΝΟΜΑ, colour=ΚΩΔΙΚΟ_ΟΝΟΜΑ))
+
+ggplotly(eisodimaElitPlot +
+  geom_line() +
+  labs(title = "Οικογενειακό εισόδημα βουλευτών ΝΔ ανά έτος") +
+  scale_y_log10())
+```
+
+Εδώ βλέπουμε κάποιους που η άνοδος στην εξουσία συνέπεσε με μια γενικότερη βελτιωτική πορεία στα οικονομικά (π.χ. [Κ. Μητσοτάκης](https://vouliwatch.gr/mp/mitsotakis-kyriakos)), άλλους που το 2020 είχαν μια καλή μπάζα και μετά πέσανε (π.χ. [Κ. (Αχ.) Καραμανλής](https://vouliwatch.gr/mp/karamanlis-ahillea)) και άλλους που άργησαν να πάρουν μπρος (π.χ. [Ε. Αυγενάκης](https://vouliwatch.gr/mp/aygenakis-eleytherios)). Επίσης, θα πρέπει να πούμε πως μην σας ξεγελά η όψη μιας μικρής γραμμικής ανοδικής πορείας. Μια τέτοια πορεία στη λογαριθμική κλίμακα ισοδυναμεί με εκθετική αύξηση!
+
+
+Υπήρξαν όμως κάποιοι που ξεχώρισαν ακόμα περισσότερο; Θα δείξουμε τώρα και τους βουλευτές που είχαν ακόμα μεγαλύτερη αύξηση. Θα βρούμε τους βουλευτές που είχανε αυξητική πορεία που να καθιστά λιγότερο από 1% πιθανό να τύχουμε τόσο μεγάλες τιμές (απόσταση 10 τυπικών αποκλίσεων από τη μέση τιμή). Ας τους δούμε κι αυτούς:
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+kerdoforoiBoyleytes1 <- find_profitable_individuals(
+  df = pothen_esxes_ND,
+  value_col = "ΕΙΣΟΔΗΜΑ",
+  sd_multiplier = 10
+)
+kerdoforoiBoyleytes1
+```
+
+
+
+Κι ας δούμε και τα εισοδήματά τους πάλι σε «κανονική» και λογαριθμική κλίμακα (sic!):
+
+::: {.panel-tabset}
+
+#### «Κανονική» κλίμακα {.unnumbered }
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+pothen_esxes_NDelit1 <- pothen_esxes_ND[pothen_esxes_ND$ΚΩΔΙΚΟ_ΟΝΟΜΑ %in% kerdoforoiBoyleytes1, ]
+eisodimaElitPlot1 <- ggplot(pothen_esxes_NDelit1, aes(x=ΕΤΟΣ_ΧΡΗΣΗΣ, y=ΕΙΣΟΔΗΜΑ, group=ΚΩΔΙΚΟ_ΟΝΟΜΑ, colour=ΚΩΔΙΚΟ_ΟΝΟΜΑ))
+
+ggplotly(eisodimaElitPlot1 +
+  geom_line() +
+  labs(title = "Οικογενειακό εισόδημα βουλευτών ΝΔ ανά έτος") )
+```
+
+#### Λογαριθμική κλίμακα  {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplotly(eisodimaElitPlot1 +
+  geom_line() +
+  labs(title = "Οικογενειακό εισόδημα βουλευτών ΝΔ ανά έτος") +
+  scale_y_log10())
+```
+
+:::
+
+Πριν κλείσουμε θα πρέπει να επαναλάβουμε πως τα παραπάνω δείχνουν τους βουλευτές που είχαν αφύσικη οικονομική άνοδο μετά την κατάκτηση της εξουσίας. 
+
+- Κάποιοι αυτό θα μπορούσαν να πουν πως είναι απλά σύμπτωση, πως όλως τυχαίως πλούτισαν άτομα που απασχολούν την ευρωπαϊκή δικαιοσύνη για κλοπή χρημάτων της Ε.Ε. και πως δεν υπάρχει πραγματική διαφοροποίηση από τους υπολοίπους βουλευτές.
+
+- Κάποιοι άλλοι θα μπορούσαν να πουν πως απλά οι παραπάνω καταγεγραφέντες βουλευτές είναι επιχειρηματικά δαιμόνια, άτομα που όταν [χιλιάδες επιχειρήσεις έβαζαν λουκέτο λόγω της καραντίνας](https://www.inegsee.gr/wp-content/uploads/2022/11/EPIPTOSEIS-COVID_19_e-book.pdf), αυτοί είχαν το μυαλό να κάνουν την κρίση ευκαιρία και θησαύρισαν.
+
+- Τέλος κάποιοι θα μπορούσαν να πουν πως οι παραπάνω, όταν βρήκαν την ευκαιρία, έπεσαν σαν τις ακρίδες πάνω στο δημόσιο σιτάρι.
+
+Στους τελευταίους κάποιος θα μπορούσε να φέρει την αντίρρηση ότι όταν χρηματίζεις έναν πολιτικό ή όταν αυτός κλέβει δημόσιο χρήμα, δεν κόβει απόδειξη, δεν περνάει τα χρήματα αυτά στην φορολογική του δήλωση, άρα δεν καταγράφονται στα δεδομένα που χρησιμοποιεί η παρούσα έρευνα. Αληθώς! Αυτά τα χρήματα πηγαινοέρχονται μέσα σε βαλίτσες κατά το μοντέλο της [Ε. Καϊλή](https://vouliwatch.gr/mp/kaili-eya). Το θέμα είναι πως αυτά τα χρήματα ο χ-ψ πολιτικός δεν θα τα αποθηκεύσει σε κάνα κελάρι, να του τα φάνε τα ποντίκια και η υγρασία. Θα τα «ξεπλύνει» και θα τα βάλει στην τράπεζα. Ή θα τα επενδύσει σε επιχειρήσεις για να αβγατίσουνε. Μπορεί, λοιπόν, να μην δυνάμεθα να κάνουμε στατιστική ανάλυση επί του περιεχομένου μιας βαλίτσας, αλλά μπορούμε επί μιας «ξεπλυμένης» εκδοχής της, η οποία καταγράφεται στη φορολογική δήλωση.
+
+Εν πάση περιπτώσει, το ποια ερμηνεία θα υιοθετήσει ο αναγνώστης άπτεται και του γενικότερου ερμηνευτικού σχήματος με το οποίο εξετάζει όλη την ελληνική κοινωνικο-οικονομικο-πολιτική κατάσταση της Ελλάδας. Εδώ δεν θα επεκταθούμε παραπάνω.
+
+
+## Ατομικό εισόδημα βουλευτή
+
+Στην ενότητα αυτή θα εξετάσουμε τα προσωπικά εισοδήματα του κάθε βουλευτή, μόνου του, χωρίς τη σύζυγο.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+eisodimaBouleytes <- eisodima_ND[eisodima_ND$ΣΥΖΥΓΟΣ==0,]
+eisodimaBouleytesSum <- eisodimaBouleytes %>%
+  group_by(ΚΩΔΙΚΟ_ΟΝΟΜΑ, ΕΤΟΣ_ΧΡΗΣΗΣ) %>%
+  summarise(
+    ΕΙΣΟΔΗΜΑ = sum(ΕΙΣΟΔΗΜΑ, na.rm = TRUE),
+    # Κρατάμε την πρώτη τιμή για τις υπόλοιπες στήλες
+    ONOMA = first(ONOMA),
+    ΕΠΩΝΥΜΟ = first(ΕΠΩΝΥΜΟ),
+    ΕΙΔΟΣ_ΕΙΣΟΔΗΜΑΤΟΣ = first(ΕΙΔΟΣ_ΕΙΣΟΔΗΜΑΤΟΣ),
+    ΣΥΖΥΓΟΣ = first(ΣΥΖΥΓΟΣ),
+    ΦΥΛΟ = first(ΦΥΛΟ),
+    ΚΥΒΕΡΝΗΤΙΚΗ_ΘΕΣΗ = first(ΚΥΒΕΡΝΗΤΙΚΗ_ΘΕΣΗ),
+    ΚΟΜΜΑ = first(ΚΟΜΜΑ),
+    .groups = 'drop' # Απο-ομαδοποίηση μετά τον υπολογισμό
+  ) %>%
+  # Επαναταξινόμηση των στηλών στην αρχική τους σειρά
+# ΣΩΣΤΟΣ ΚΩΔΙΚΑΣ
+# ΤΕΛΙΚΟΣ ΣΩΣΤΟΣ ΚΩΔΙΚΑΣ
+dplyr::select(all_of(names(eisodimaBouleytes)))
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+eisodimaBouleytesSumPlot <- ggplot(eisodimaBouleytesSum, aes(x=ΕΤΟΣ_ΧΡΗΣΗΣ, y=ΕΙΣΟΔΗΜΑ, group=ΚΩΔΙΚΟ_ΟΝΟΜΑ))
+
+ggplotly(eisodimaBouleytesSumPlot +
+  geom_line(colour="blue") +
+  labs(title = "Εισόδημα βουλευτών ΝΔ ανά έτος"))
+```
+
+Και πάλι θα βρούμε τους βουλευτές που ξεχώρισαν.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+kerdoforoiBoyleytes0 <- find_profitable_individuals(
+  df = eisodimaBouleytesSum,
+  value_col = "ΕΙΣΟΔΗΜΑ",
+  sd_multiplier = 2
+)
+kerdoforoiBoyleytes0
+```
+
+Οι βουλευτές που ξεχωρίζουν για το ατομικό τους εισόδημα, αλλά όχι για το οικογενειακό τους (βλ. προηγούμενη ενότητα) είναι οι παρακάτω:
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+setdiff(kerdoforoiBoyleytes0,kerdoforoiBoyleytes)
+```
+
+Ενώ εμφανίζονται και στις δύο λίστες, αυτή με τους ξεχωρίσαντες ως προς το οικογενειακό εισόδημα κι αυτή με τους ξεχωρίσαντες ως προς το ατομικό εισόδημα, οι κάτωθι:
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+intersect(kerdoforoiBoyleytes0,kerdoforoiBoyleytes)
+```
+
+Ας πάμε να εξετάσουμε και γραφικά την πρόοδο του καθενός. Να υπενθυμίσουμε πως η αλματώδης άνοδος των εισοδημάτων κάποιων βουλευτών μάς εξανάγκασε και πάλι να κάνουμε το γράφημα σε «κανονική» και σε λογαριθμική κλίμακα.
+
+::: {.panel-tabset}
+
+#### «Κανονική» κλίμακα {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+pothen_esxes_NDelit0 <- eisodimaBouleytesSum[eisodimaBouleytesSum$ΚΩΔΙΚΟ_ΟΝΟΜΑ %in% kerdoforoiBoyleytes0, ]
+eisodimaElitPlot0 <- ggplot(pothen_esxes_NDelit0, aes(x=ΕΤΟΣ_ΧΡΗΣΗΣ, y=ΕΙΣΟΔΗΜΑ, group=ΚΩΔΙΚΟ_ΟΝΟΜΑ, colour=ΚΩΔΙΚΟ_ΟΝΟΜΑ))
+
+ggplotly(eisodimaElitPlot0 +
+  geom_line() +
+  labs(title = "Ατομικό εισόδημα βουλευτών ΝΔ ανά έτος"))
+```
+
+
+#### Λογαριθμική κλίμακα  {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplotly(eisodimaElitPlot0 +
+  geom_line() +
+  labs(title = "Ατομικό εισόδημα βουλευτών ΝΔ ανά έτος") +
+  scale_y_log10())
+```
+
+:::
+
+
+Όπως και στην προηγούμενη ενότητα θα ξεχωρίσουμε την ελίτ της ελίτ. Αυτούς που πλούτισαν με τον πιο απίθανο τρόπο (1% πιθανό).
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+kerdoforoiBoyleytes01 <- find_profitable_individuals(
+  df = eisodimaBouleytesSum,
+  value_col = "ΕΙΣΟΔΗΜΑ",
+  sd_multiplier = 10
+)
+kerdoforoiBoyleytes01
+```
+
+Και παρουσιάζουμε και την οικονομική τους πορεία και γραφικά.
+
+::: {.panel-tabset}
+
+
+#### «Κανονική» κλίμακα {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+pothen_esxes_NDelit01 <- eisodimaBouleytesSum[eisodimaBouleytesSum$ΚΩΔΙΚΟ_ΟΝΟΜΑ %in% kerdoforoiBoyleytes01, ]
+eisodimaElitPlot01 <- ggplot(pothen_esxes_NDelit01, aes(x=ΕΤΟΣ_ΧΡΗΣΗΣ, y=ΕΙΣΟΔΗΜΑ, group=ΚΩΔΙΚΟ_ΟΝΟΜΑ, colour=ΚΩΔΙΚΟ_ΟΝΟΜΑ))
+
+ggplotly(eisodimaElitPlot01 +
+  geom_line() +
+  labs(title = "Ατομικό εισόδημα βουλευτών ΝΔ ανά έτος") )
+```
+
+#### Λογαριθμική κλίμακα  {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplotly(eisodimaElitPlot01 +
+  geom_line() +
+  labs(title = "Ατομικό εισόδημα βουλευτών ΝΔ ανά έτος") +
+  scale_y_log10())
+```
+
+:::
+
+
+
+## Εισόδημα συζύγου βουλευτή
+
+Στην ενότητα αυτή θα εξετάσουμε τα προσωπικά εισοδήματα της συζύγου του κάθε βουλευτή. 
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+eisodimaSyzygoi <- eisodima_ND[eisodima_ND$ΣΥΖΥΓΟΣ==1,]
+eisodimaSyzygoiSum <- eisodimaSyzygoi %>%
+  group_by(ΚΩΔΙΚΟ_ΟΝΟΜΑ, ΕΤΟΣ_ΧΡΗΣΗΣ) %>%
+  summarise(
+    ΕΙΣΟΔΗΜΑ = sum(ΕΙΣΟΔΗΜΑ, na.rm = TRUE),
+    # Κρατάμε την πρώτη τιμή για τις υπόλοιπες στήλες
+    ONOMA = first(ONOMA),
+    ΕΠΩΝΥΜΟ = first(ΕΠΩΝΥΜΟ),
+    ΕΙΔΟΣ_ΕΙΣΟΔΗΜΑΤΟΣ = first(ΕΙΔΟΣ_ΕΙΣΟΔΗΜΑΤΟΣ),
+    ΣΥΖΥΓΟΣ = first(ΣΥΖΥΓΟΣ),
+    ΦΥΛΟ = first(ΦΥΛΟ),
+    ΚΥΒΕΡΝΗΤΙΚΗ_ΘΕΣΗ = first(ΚΥΒΕΡΝΗΤΙΚΗ_ΘΕΣΗ),
+    ΚΟΜΜΑ = first(ΚΟΜΜΑ),
+    .groups = 'drop' # Απο-ομαδοποίηση μετά τον υπολογισμό
+  ) %>%
+  # Επαναταξινόμηση των στηλών στην αρχική τους σειρά
+# ΣΩΣΤΟΣ ΚΩΔΙΚΑΣ
+# ΤΕΛΙΚΟΣ ΣΩΣΤΟΣ ΚΩΔΙΚΑΣ
+dplyr::select(all_of(names(eisodimaSyzygoi)))
+```
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+eisodimaBouleytesSumPlot <- ggplot(eisodimaSyzygoiSum, aes(x=ΕΤΟΣ_ΧΡΗΣΗΣ, y=ΕΙΣΟΔΗΜΑ, group=ΚΩΔΙΚΟ_ΟΝΟΜΑ))
+
+ggplotly(eisodimaBouleytesSumPlot +
+  geom_line(colour="blue") +
+  labs(title = "Εισόδημα συζύγων βουλευτών ΝΔ ανά έτος"))
+```
+
+Οι σύζυγοι των βουλευτών που ξεχώρισαν είναι οι κάτωθι.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+kerdoforesSyzigoi <- find_profitable_individuals(
+  df = eisodimaSyzygoiSum,
+  value_col = "ΕΙΣΟΔΗΜΑ",
+  sd_multiplier = 2
+)
+kerdoforesSyzigoi
+```
+
+Βλέπουμε πως οι σύζυγοι που πλούτισαν αφύσικα μετά τις νικηφόρες για τη ΝΔ εκλογές, αλλά χωρίς να έχουν πλουτίσει οι ίδιοι οι βουλευτές είναι οι σύζυγοι των παρακάτω.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+setdiff(kerdoforesSyzigoi,kerdoforoiBoyleytes0)
+```
+
+Κάποιος καχύποπτος θα γούρλωνε τα μάτια. Πώς γίνεται να οφελήθηκαν οι σύζυγοι βουλευτών από την άνοδό τους στην εξουσία; Μπορούν να βάζουν χέρι στο δημόσιο ταμείο κι αυτοί; Κάποιος άλλος θα έλεγε πως δεν είναι απαραίτητο να είναι επιχειρηματικό πνεύμα ένας βουλευτής, αλλά μπορεί να είναι ο σύζυγος. Ο καθένας επιλέγει την ερμηνεία που του φαίνεται πιο λογική.
+
+Αντίθετα με αυτό που εξετάσαμε παραπάνω, πλούτισαν μαζί με τους συζύγους τους οι σύζυγοι των παρακάτω.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+intersect(kerdoforoiBoyleytes0,kerdoforesSyzigoi)
+```
+
+Να τοι πάλι οι Μ. Βορίδης και Ε. Αυγενάκης! Ένας καλοπροαίρετος θα έλεγε πως ένα κοφτερό μυαλό του επιχειρείν θα ταιριάξει με ένα άλλο κοφτερό μυαλό του επιχειρείν, οπότε είναι λογικό να βλέπουμε αυτή την ταύτιση. Ένας καχύποπτος θα κουνούσε το κεφάλι. Ας δούμε όμως και γραφικά τα ατομικά εισοδήματα των συζύγων των βουλευτών. Εδώ θα πρέπει να πούμε πως ναι μεν δεν συναντάμε τα εξοφρενικά ποσά που συναντούσαμε στους βουλευτές, αλλά η μεγάλη απόκλιση μεταξύ των συζύγων κατέστησε αναγκαία τη λογαριθμική κλίμακα για άλλη μια φορά.
+
+::: {.panel-tabset}
+
+
+#### «Κανονική» κλίμακα {.unnumbered }
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+sizigoiElit <- eisodimaSyzygoiSum[eisodimaSyzygoiSum$ΚΩΔΙΚΟ_ΟΝΟΜΑ %in% kerdoforesSyzigoi, ]
+sizigoiElitPlot <- ggplot(sizigoiElit, aes(x=ΕΤΟΣ_ΧΡΗΣΗΣ, y=ΕΙΣΟΔΗΜΑ, group=ΚΩΔΙΚΟ_ΟΝΟΜΑ, colour=ΚΩΔΙΚΟ_ΟΝΟΜΑ))
+
+ggplotly(sizigoiElitPlot +
+  geom_line() +
+  labs(title = "Εισόδημα συζύγων βουλευτών ΝΔ ανά έτος") )
+```
+
+#### Λογαριθμική κλίμακα  {.unnumbered }
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplotly(sizigoiElitPlot +
+  geom_line() +
+  labs(title = "Εισόδημα συζύγων βουλευτών ΝΔ ανά έτος")  +
+  scale_y_log10())
+```
+
+
+:::
+
+
+Από τους προαναφερθέντες συζύγους ξεχώρισαν με τον πιο μεγάλο πλουτισμό οι σύζυγοι των παρακάτω:
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+kerdoforesSyzigoi1 <- find_profitable_individuals(
+  df = eisodimaSyzygoiSum,
+  value_col = "ΕΙΣΟΔΗΜΑ",
+  sd_multiplier = 10
+)
+kerdoforesSyzigoi1
+```
+
+Γραφικά αυτοί έχουν ως εξής.
+
+::: {.panel-tabset}
+
+
+#### «Κανονική» κλίμακα {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+sizigoiElit1 <- eisodimaSyzygoiSum[eisodimaSyzygoiSum$ΚΩΔΙΚΟ_ΟΝΟΜΑ %in% kerdoforesSyzigoi1, ]
+sizigoiElitPlot1 <- ggplot(sizigoiElit1, aes(x=ΕΤΟΣ_ΧΡΗΣΗΣ, y=ΕΙΣΟΔΗΜΑ, group=ΚΩΔΙΚΟ_ΟΝΟΜΑ, colour=ΚΩΔΙΚΟ_ΟΝΟΜΑ))
+
+ggplotly(sizigoiElitPlot1 +
+  geom_line() +
+  labs(title = "Εισόδημα συζύγων βουλευτών ΝΔ ανά έτος") )
+```
+
+#### Λογαριθμική κλίμακα  {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplotly(sizigoiElitPlot1 +
+  geom_line() +
+  labs(title = "Εισόδημα συζύγων βουλευτών ΝΔ ανά έτος") +
+  scale_y_log10() )
+```
+
+:::
+
+
+# Καταθέσεις 
+
+Στην ενότητα αυτή θα ξεχωρίσουμε τους βουλευτές ως προς τις οικογενειακές καταθέσεις τους. Παρουσιάζουμε καταρχάς τη συμπεριφορά όλων.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+katatheseisPlot <- ggplot(pothen_esxes_ND, aes(x=ΕΤΟΣ_ΧΡΗΣΗΣ, y=ΚΑΤΑΘΕΣΕΙΣ, group=ΚΩΔΙΚΟ_ΟΝΟΜΑ))
+
+ggplotly(katatheseisPlot +
+  geom_line(colour="blue") +
+  labs(title = "Οικογενειακές καταθέσεις βουλευτών ΝΔ ανά έτος"))
+```
+
+Από αυτούς ξεχώρισαν οι παρακάτω. Αυτοί είχαν καταθέσεις που θα ήταν λιγότερο από 20% πιθανό να εξηγήσει ο παράγοντας «τύχη».
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+kerdoforoiBoyleytesKatath <- find_profitable_individuals(
+  df = pothen_esxes_ND,
+  value_col = "ΚΑΤΑΘΕΣΕΙΣ",
+  sd_multiplier = 2
+)
+kerdoforoiBoyleytesKatath
+```
+
+Ποιους συναντήσαμε και πριν; Ποι ξεχώρισαν και ως προς τα οικογενειακά τους εισοδήματα, αλλά και ως προς τις καταθέσεις τους; Αυτοί είναι οι:
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+intersect(kerdoforoiBoyleytesKatath,kerdoforoiBoyleytes)
+```
+
+Αντίθετα, ποιοι είχαν αφύσικα αυξημένες καταθέσεις, χωρίς να αυτές να δικαιολογούνται από τα εισοδήματά τους; Αυτοί είναι οι:
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+setdiff(kerdoforoiBoyleytesKatath,kerdoforoiBoyleytes)
+```
+
+Στο σημείο αυτό αρχίζει να γίνεται πιο ενδιαφέρον το πράγμα. Ας δούμε τους βουλευτές που ξεχώρισαν μόνο ως προς τις καταθέσεις τους, χωρίς αυτό να δικαιολογείται, όχι μόνο από το οικογενειακό τους εισόδημα, αλλά και από το ατομικό και το συζυγικό.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+boylUnion <- union(kerdoforoiBoyleytes,kerdoforoiBoyleytes0)
+boylUnion <- union(boylUnion,kerdoforesSyzigoi)
+setdiff(kerdoforoiBoyleytesKatath,boylUnion)
+```
+
+Οι παραπάνω βουλευτές, σε σχέση με τα έτη 2015-2018, δεν είχαν κάτι το ξεχωριστό τα έτη 2020-2021 ως προς τα ατομικά τους εισοδήματα, ούτε οι σύζυγοί τους ξεχώρισαν ως προς αυτά, αλλά ούτε και συνδυαστικά το οικογενειακό τους εισόδημα ξεχώρισε. Παραταύτα, οι καταθέσεις τους είχαν αφύσικα αλματώδη άνοδο. Αυτό μπορεί να είναι κόκκινη σημαία για κάποιον καχύποπτο, μπορεί να είναι μια ανώδυνη σύμπτωση για κάποιον καλοπροαίρετο. Η παρούσα έρευνα δεν θα επεκταθεί ως προς αυτό.
+
+Ας δούμε τώρα τα παραπάνω και γραφικά.
+
+::: {.panel-tabset}
+
+### «Κανονική» κλίμακα {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+katatheseiselit <- pothen_esxes_ND[pothen_esxes_ND$ΚΩΔΙΚΟ_ΟΝΟΜΑ %in% kerdoforoiBoyleytesKatath, ]
+katatheseisElitPlot <- ggplot(katatheseiselit, aes(x=ΕΤΟΣ_ΧΡΗΣΗΣ, y=ΕΙΣΟΔΗΜΑ, group=ΚΩΔΙΚΟ_ΟΝΟΜΑ, colour=ΚΩΔΙΚΟ_ΟΝΟΜΑ))
+
+ggplotly(katatheseisElitPlot +
+  geom_line() +
+  labs(title = "Οικογενειακές καταθέσεις βουλευτών ΝΔ ανά έτος"))
+```
+
+### Λογαριθμική κλίμακα  {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplotly(katatheseisElitPlot +
+  geom_line() +
+  labs(title = "Οικογενειακές καταθέσεις βουλευτών ΝΔ ανά έτος") +
+  scale_y_log10())
+```
+
+:::
+
+
+Όπως και στην ενότητα που αφορούσε τα έσοδα, έτσι κι εδώ με τις καταθέσεις, θα εξετάσουμε και αυτούς τους βουλευτές που η άνοδός τους ήταν εξαιρετικά απίθανη (λιγότερο από 1%) να συμβεί. Αυτοί είναι οι:
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+kerdoforoiBoyleytesKatath1 <- find_profitable_individuals(
+  df = pothen_esxes_ND,
+  value_col = "ΚΑΤΑΘΕΣΕΙΣ",
+  sd_multiplier = 10
+)
+kerdoforoiBoyleytesKatath1
+```
+
+Την χρονική εξέλιξη των καταθέσεων των προαναφερθέντων βουλευτών την βλέπουμε εδώ.
+
+::: {.panel-tabset}
+
+### «Κανονική» κλίμακα {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+katatheseiselit1 <- pothen_esxes_ND[pothen_esxes_ND$ΚΩΔΙΚΟ_ΟΝΟΜΑ %in% kerdoforoiBoyleytesKatath1, ]
+katatheseisElitPlot1 <- ggplot(katatheseiselit1, aes(x=ΕΤΟΣ_ΧΡΗΣΗΣ, y=ΕΙΣΟΔΗΜΑ, group=ΚΩΔΙΚΟ_ΟΝΟΜΑ, colour=ΚΩΔΙΚΟ_ΟΝΟΜΑ))
+
+ggplotly(katatheseisElitPlot1 +
+  geom_line() +
+  labs(title = "Οικογενειακές καταθέσεις βουλευτών ΝΔ ανά έτος") )
+```
+
+### Λογαριθμική κλίμακα  {.unnumbered }
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+ggplotly(katatheseisElitPlot1 +
+  geom_line() +
+  labs(title = "Οικογενειακές καταθέσεις βουλευτών ΝΔ ανά έτος") +
+  scale_y_log10())
+```
+
+
+:::
+
+Κλείνοντας, ίσως να έχει ενδιαφέρον να δούμε τους βουλευτές που με τον έναν ή τον άλλο τρόπο (οικογενειακό εισόδημα, ατομικό, συζύγου) οφελήθηκαν από την άνοδο της ΝΔ στην εξουσία. 
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+boylUnion <- union(kerdoforoiBoyleytes,kerdoforoiBoyleytes0)
+boylUnion <- union(boylUnion,kerdoforesSyzigoi)
+union(kerdoforoiBoyleytesKatath,boylUnion)
+```
+
+Άρα ποιοι μένουν που φαίνεται να μην οφελήθηκαν; Ας τους δούμε κι αυτούς!
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+boylUnion <- union(kerdoforoiBoyleytes,kerdoforoiBoyleytes0)
+boylUnion <- union(boylUnion,kerdoforesSyzigoi)
+boylUnion <- union(kerdoforoiBoyleytesKatath,boylUnion)
+setdiff(eisodima_ND$ΚΩΔΙΚΟ_ΟΝΟΜΑ,boylUnion)
+```
+
+# Ακίνητα
+
+<div class="alert-danger">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>
+
+# Κινητή περιουσία
+
+<div class="alert-danger">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>
+
+
+
+---
+
+
+
+<script> (function(v,o,u,l,i){l=v.createElement(o);l.async=1;l.src=u; i=v.getElementsByTagName(o)[0];i.parentNode.insertBefore(l,i); })(document,'script','https://vouliwatch.gr/resources/widget-dark.js') </script>
+Click to switch to the original text.Click to Translate Page.SettingsPDF Translate

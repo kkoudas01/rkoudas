@@ -1,0 +1,35 @@
+.PHONY: all clean
+
+R_MARKDOWN_FILES := $(wildcard *.Rmd */*.Rmd) # Προσάρμοσε αυτό για να βρεις όλα τα Rmd σου
+HTML_FILES := $(patsubst %.Rmd,%.html,$(R_MARKDOWN_FILES))
+
+all: $(HTML_FILES)
+
+# Κανόνας για τη μετατροπή ενός μεμονωμένου Rmd σε HTML
+%.html: %.Rmd
+	@echo "Μετατρέπω το $< σε $@"
+	R -e "rmarkdown::render('$<', output_file='$(subst .Rmd,.html,$<)', new_session=TRUE)"
+
+# Κανόνας για το _site.yml
+# Αν το _site.yml αλλάξει, ίσως θέλεις να κάνεις re-render όλα τα HTML αρχεία.
+# Αυτό κάνει το 'all' να εξαρτάται από το _site.yml.
+# Αν δεν το θέλεις αυτό, αφαίρεσε το _site.yml από τις εξαρτήσεις του 'all'.
+all: _site.yml
+
+# Προσαρμοσμένος κανόνας για το _site.yml αν επηρεάζει την απόδοση άλλων αρχείων
+_site.yml:
+	@echo "Το _site.yml άλλαξε, αυτό μπορεί να ενεργοποιήσει ένα πλήρες re-render ανάλογα με τη ρύθμισή σου."
+	# Ίσως θέλεις να 'αγγίξεις' άλλα αρχεία Rmd εδώ για να αναγκάσεις ένα re-render
+	# Ή να κάνεις άλλα Rmd να εξαρτώνται απευθείας από το _site.yml.
+
+# Κανόνας για τον καθαρισμό των παραγόμενων αρχείων HTML και του φακέλου docs
+clean:
+	@echo "Καθαρίζω τα παραγόμενα αρχεία..."
+	rm -f $(HTML_FILES)
+	rm -rf docs # Αν ο output_dir σου είναι 'docs'
+	@echo "Ο καθαρισμός ολοκληρώθηκε."
+
+# Παράδειγμα για τον ίδιο τον φάκελο 'docs', αν θέλεις να τον διαχειριστείς ρητά
+# docs: $(HTML_FILES)
+# 	@echo "Αντιγράφω αρχεία στον φάκελο docs..."
+# 	rsync -avz --delete --exclude '.*' --exclude '*~' --exclude '*.Rproj' . docs/

@@ -1,0 +1,266 @@
+---
+title: "Έλεγχος κανονικότητας"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+```{r}
+#| echo = F
+rm(list = ls())
+```
+
+# Anderson-Darling έλεγχος κανονικότητας
+
+Πολλές διεργασίες στη Στατιστική έχουν προϋπόθεση να αντλούμε δείγματα από [κανονικό πληθυσμό](normalDist.html). Υπάρχουν διάφοροι στατιστικοί έλεγχοι αυτού του πράγματος, όπως οι $\mathcal{X}^2$, Kolmogorov-Smirnov, Shapiro-Wilk και Anderson-Darling. Εμείς εδώ, επενδύουμε στη λιτότητα των επιλογών με στόχο την ευκολία χρήσης. Έτσι, μετά από κάποια [περισυλλογή](https://www.jaqm.ro/issues/volume-6,issue-3/pdfs/1_engmann_cousineau.pdf), θ’ ασχοληθούμε με τους δύο τελευταίους.
+
+Αντλήσαμε δεδομένα από τα στατιστικά στοιχεία του [Freie Universität](https://www.fu-berlin.de/en/) και τα αποθηκεύσαμε σε ένα αρχείο ονόματι students.xlsx, του οποίου παρουσιάζουμε μόνο τις πρώτες 100 γραμμές για λόγους ταχύτητας εκτέλεσης του κώδικα. Θα εξετάσουμε κατά πόσον τα βάρη των φοιτητών είναι κανονικά κατανεμημένα. Η μηδενική υπόθεση θα είναι ότι ακολουθούν την κανονική κατανομή, και θα δούμε κατά πόσον αυτή απορρίπτεται ή όχι.
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+if(!require(readxl)){
+    install.packages("readxl")
+    library(readxl)
+}
+students <- readxl::read_excel("students.xlsx")
+knitr::kable(head(students, n=100)) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "max-content", height = "200px")
+```
+
+Αρχικά θα εγκαταστήσουμε και θα χρησιμοποιήσουμε το πακέτο `nortest`:
+
+```{r}
+if(!require(nortest)){
+    install.packages("nortest")
+    library(nortest)
+}
+```
+
+Ακολούθως θα χρησιμοποιήσουμε τη συνάρτηση `ad.test()`, όπου σαν όρισμα θα βάλουμε τη λίστα με τους αριθμούς των οποίων θέλουμε να ελέγξουμε την κανονικότητά τους (δηλαδή την `students$weight`). Οπότε γράφουμε:
+
+```{r}
+ad.test(students$weight)
+```
+
+Οπότε βρίσκουμε p-τιμή πάρα πολύ μικρή. Αυτό σημαίνει ότι η μηδενική υπόθεση απορρίπτεται, άρα τα βάρη των φοιτητών δεν ακολουθούν την κανονική κατανομή.
+
+
+
+
+# Γραφικός έλεγχος
+
+::: {.panel-tabset}
+
+
+## Καμπύλη κανονικής κατανομής πάνω από ιστόγραμμα
+
+Πέραν των διαφόρων ελέγχων κανονικότητας μπορούμε να εξακριβώσουμε και γραφικά το αν έχουμε κανονικά κατανεμημένους αριθμούς ή όχι. Σε αυτό θα μας βοηθήσει να προσαρμόσουμε στα ιστογράμματα και την αντίστοιχη καμπύλη κανονικής κατανομής χρησιμοποιώντας τη συνάρτηση `curve()`. Για την ακρίβεια θα χρησιμοποιήσουμε μια πιο εξειδικευμένη εκδοχή της, την `curve(dnorm(x, mean=🎻🎻🎻, sd=⏲⏲⏲), add=TRUE)`, όπου:
+
+-   στο `🎻🎻🎻` γράφουμε τη μέση τιμή του δείγματός μας, δηλαδή την `mean(students$height)`,
+
+-   στο `⏲⏲⏲` γράφουμε την τυπική απόκλιση του δείγματός μας, δηλαδή την `sd(students$height)` και
+
+-   γράφουμε `add=TRUE` για να μπει επιπλέον η καμπύλη στο ιστόγραμμα.
+
+```{r}
+hist(students$weight, freq = F)
+curve(dnorm(x, mean=mean(students$weight), sd=sd(students$weight)), add=TRUE)
+hist(students$height, freq = F)
+curve(dnorm(x, mean=mean(students$height), sd=sd(students$height)), add=TRUE)
+```
+
+Βλέπουμε λοιπόν ότι η κατανομή των υψών είναι λίγο πιο ομοιομορφη από την κανονική, οι τιμές τους είναι αρκετά απλωμένες γύρω από τη μέση τιμή. Και η κατανομή των βαρών φαίνεται να διαφέρει από την κανονική, μιας και αυτά είναι συσσωρευμένα γύρω από μικρές τιμές.
+
+
+## Γράφημα QQ
+
+Η αλήθεια είναι πως δεν ήταν τόσο εύκολο να δούμε γιατί τα ύψη δεν είναι κανονικά κατανεμημένα. Πολλοί δεν θα πείθονταν από τα λεγόμενά μας περί αρκετά απλωμένων τιμών. Αυτοί ίσως να έπρεπε να εξετάσουν κι ένα άλλου τύπου γράφημα, το γράφημα Q-Q.
+
+Το γράφημα Q-Q είναι απλά ένα διάγραμμα διασποράς ανάμεσα στα ποσοστημόρια του δείγματος και της κανονικής κατανομής με ίδια μέση τιμή και τυπική απόκλιση. Έτσι, αν έχουμε κανονικά κατανεμημένους αριθμούς, τότε το γράφημα Q-Q θα είναι μια ευθεία γραμμή.
+
+```{r}
+#| echo = F
+par(mfrow = c(1,2))
+set.seed(1)
+normalD <- rnorm(1000)
+hist(normalD, freq=F)
+curve(dnorm(x, mean(normalD), sd(normalD)), add=TRUE, col="red", lwd=2)
+qqnorm(normalD)
+qqline(normalD)
+mtext("Κανονική κατανομή", side = 3, line = - 1.3, outer = TRUE, cex = 1.5)
+```
+
+Αντίθετα, αν η έλλειψη κανονικότητας αντικατοπτρίζεται στην ασυμμετρία, δηλαδή έχουμε τιμές μαζεμένες στη μία ή στην άλλη μεριά, τότε θα ξεφεύγει η μία ή η άλλη «ουρά» του γραφήματος Q-Q.
+
+```{r}
+#| echo = F
+par(mfrow = c(1,2))
+set.seed(1)
+rightSkewed <- rbeta(10000,1.5,5)
+hist(rightSkewed, freq=F)
+curve(dnorm(x, mean(rightSkewed), sd(rightSkewed)), add=TRUE, col="red", lwd=2)
+qqnorm(rightSkewed)
+qqline(rightSkewed)
+mtext("Δεν υπάρχει συμμετρία (συσσώρευση στα αριστερά)", side = 3, line = - 1.3, outer = TRUE, cex = 1.5)
+par(mfrow = c(1,2))
+leftSkewed <- rbeta(10000,5,1.5)
+hist(leftSkewed, freq=F)
+curve(dnorm(x, mean(leftSkewed), sd(leftSkewed)), add=TRUE, col="red", lwd=2)
+qqnorm(leftSkewed)
+qqline(leftSkewed)
+mtext("Δεν υπάρχει συμμετρία (συσσώρευση στα δεξιά)", side = 3, line = - 1.3, outer = TRUE, cex = 1.5)
+```
+
+Απόκλιση από την κανονικότητα ενδέχεται να έχουμε είτε επειδή οι τιμές μας είναι πολύ συγκεντρωμένες γύρω από τη μέση τιμή ή, στους αντίποδες αυτής της περίπτωσης, αν είναι πολύ διασκορπισμένες. Και αυτό το γεγονός αντικατοπτρίζεται σε ένα γράφημα Q-Q.
+
+```{r}
+#| echo = F
+par(mfrow = c(1,2))
+set.seed(3.14)
+Center <- 0.1*rnorm(1000)^3
+hist(Center, freq=F, xlim=c(-2.5, 2.5), ylim=c(0, 1.1))
+curve(dnorm(x, mean(Center), sd(Center)), add=TRUE, col="red", lwd=2)
+qqnorm(Center)
+qqline(Center)
+mtext("Μεγάλη κεντρική συσσώρευση", side = 3, line = - 1.3, outer = TRUE, cex = 1.5)
+```
+
+```{r}
+#| echo = F
+par(mfrow = c(1,2))
+set.seed(1)
+nCenter <- sqrt(5+runif(1000, min = 0, max = 10))
+hist(nCenter, freq=F, xlim=c(1.5, 5), ylim=c(0, 1))
+curve(dnorm(x, mean(nCenter), sd(nCenter)), add=TRUE, col="red", lwd=2)
+qqnorm(nCenter)
+qqline(nCenter)
+mtext("Υπερβολικός διασκορπισμός", side = 3, line = - 1.3, outer = TRUE, cex = 1.5)
+```
+
+Τέλος, ακόμα μεγαλύτερη απόκλιση από την κανονικότητα έχουμε όταν οι τιμές των δεδομένων μας είναι συγκεντρωμένες σε δύο ή περισσότερες περιοχές. Σε αυτή την περίπτωση το γράφημα Q-Q θα παρουσιάζει χάσματα κι αυτό είναι μια ουσιαστική διαφορά σε σχέση με το [γράφημα ασυμμετρίας](asymmetria.html#22_Γράφημα_ασυμμετρίας.
+
+```{r}
+par(mfrow = c(1,2))
+nn <- 1e3
+set.seed(1)
+betas <- rbeta(nn,2,2)
+Bimodal <- c(betas[1:(nn/2)]*2+1,
+          betas[(nn/2+1):nn]*2+3.3)
+hist(Bimodal, freq=F, ylim=c(0, 0.4))
+curve(dnorm(x, mean(Bimodal), sd(Bimodal)), add=TRUE, col="red", lwd=2)
+qqnorm(Bimodal)
+qqline(Bimodal)
+mtext("Δίκορφο ιστόγραμμα", side = 3, line = - 1.3, outer = TRUE, cex = 1.5)
+```
+
+Πώς όμως σχηματίζουμε το εν λόγω γράφημα; Θα χρειαστούμε τις συναρτήσεις qqnorm() και `qqline()`, όπου σαν όρισμα θα βάλουμε τη λίστα με τους αριθμούς των οποίων θέλουμε να ελέγξουμε την κανονικότητά τους (δηλαδή την `students$weight`). Οπότε γράφουμε:
+
+```{r}
+qqnorm(students$weight)
+qqline(students$weight)
+qqnorm(students$height)
+qqline(students$height)
+```
+
+Έτσι προκύπτουν τα γραφήματα Q-Q των βαρών και των υψών των φοιτητών αντίστοιχα, όπως και οι ευθείες που θα έπρεπε να σχηματίζουν αν ήταν κανονικά κατανεμημένα.
+
+Έτσι βλέπουμε και πάλι ότι ούτε τα βάρη, αλλά ούτε και τα ύψη είναι κανονικά κατανεμημένα,
+
+Όλος ο σημερινός κώδικας παρατίθεται αμέσως μετά:
+
+```{r}
+#| eval = F
+if(!require(nortest)){
+    install.packages("nortest")
+    library(nortest)
+}
+ad.test(students$weight)
+ad.test(students$height)
+hist(students$weight, freq = F)
+curve(dnorm(x, mean=mean(students$weight), sd=sd(students$weight)), add=T)
+hist(students$height, freq = F)
+curve(dnorm(x, mean=mean(students$height), sd=sd(students$height)), add=TRUE)
+qqnorm(students$weight)
+qqline(students$weight)
+qqnorm(students$height)
+qqline(students$height)
+```
+
+:::
+
+
+# Shapiro-Wilk έλεγχος κανονικότητας
+
+Ο έλεγχος Anderson-Darling δεν δίνει αξιόπιστα αποτελέσματα, αν το δείγμα μας είναι μικρό. Σε αυτή την περίπτωση θα πρέπει να χρησιμοποιήσουμε τον έλεγχο Shapiro-Wilk. Και αυτός δέχεται ως μηδενική υπόθεση την παραδοχή ότι έχουμε κανονικά κατανεμημένους αριθμούς.
+
+Από τη σελίδα [αυτή](https://www.data.gov.uk/) αντλήσαμε στοιχεία για τα έξοδα του Εθνικού Μουσείου Φυσικής Ιστορίας κατά τον Ιούνιο του 2023, τα οποία τα αποθηκεύσαμε σε ένα αρχείο ονόματι foi-expenditure-over-25000-june-2023.xlsx.
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+if(!require(readxl)){
+    install.packages("readxl")
+    library(readxl)
+}
+foi_expenditure_over_25000_june_2023 <- readxl::read_excel("foi-expenditure-over-25000-june-2023.xlsx")
+knitr::kable(foi_expenditure_over_25000_june_2023) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+Γράφουμε λοιπόν:
+
+```{r}
+if(!require(nortest)){
+    install.packages("nortest")
+    library(nortest)
+}
+shapiro.test(foi_expenditure_over_25000_june_2023$Amount)
+```
+
+Φυσικά, η γραμμή 1 μπορεί να παραλειφθεί, αν έχει εγκατασταθεί ήδη το πακέτο. Βρίσκουμε, λοιπόν, p-τιμή μικρότερη του ήδη απειροελάχιστου $2.2\cdot 10^{-16}$, όπερ σημαίνει ότι η μηδενική υπόθεση πρέπει να απορριφθεί ως απίθανη. Συνεπώς τα έξοδα του Ιουνίου του 2023 δεν είναι κανονικά κατανεμημένα.
+
+Τα παραπάνω μπορούν να διαπιστωθούν και από το γράφημα Q-Q:
+
+```{r}
+qqnorm(foi_expenditure_over_25000_june_2023$Amount)
+qqline(foi_expenditure_over_25000_june_2023$Amount)
+```
+
+Βρίσκουμε, λοιπόν, κάτι που απέχει παρασάγγας από ευθεία γραμμή.
+
+Συνολικά ο κώδικάς μας ήταν ο:
+
+```{r}
+#| eval = F
+if(!require(nortest)){
+    install.packages("nortest")
+    library(nortest)
+}
+shapiro.test(foi_expenditure_over_25000_june_2023$Amount)
+qqnorm(foi_expenditure_over_25000_june_2023$Amount)
+qqline(foi_expenditure_over_25000_june_2023$Amount)
+```
+
+
+
+
+
+

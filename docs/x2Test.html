@@ -1,0 +1,3028 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Κώστας Κούδας">
+<meta name="dcterms.date" content="2026-02-11">
+
+<title>χ2 έλεγχος για την ανεξαρτησία – r-koudas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-9e15f8fb9e1f2f288bfbe28f6ca11029.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d4e7eba1b0800a1ca47ff171d485106f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">🐈 Αρχική</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./ergaleia.html" aria-current="page"> <i class="bi bi-tools" role="img">
+</i> 
+<span class="menu-text">Εργαλεία</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./ereynes.html"> <i class="bi bi-flask" role="img">
+</i> 
+<span class="menu-text">Έρευνες</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./entos_ektos.html"> <i class="bi bi-cup-hot" role="img">
+</i> 
+<span class="menu-text">Εντός εκτός κι επί τα αυτά</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tTest.html">Έλεγχος υποθέσεων</a></li><li class="breadcrumb-item"><a href="./x2Test.html">χ2 έλεγχος για την ανεξαρτησία</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ergaleia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ΕΡΓΑΛΕΙΑ</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pinakes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Πίνακες δεδομένων</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Περιγραφική στατιστική</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Συχνότητες</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./syxnotites.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Συχνότητες</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pikilomorfia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Μέτρηση ποικιλομορφίας</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./piechart.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Κυκλικό διάγραμμα</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./barplot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ραβδόγραμμα</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./histogram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ιστόγραμμα</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./metrathesis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Μέτρα θέσης</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./metradiasporas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Μέτρα διασποράς</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./asymmetria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Μέτρα ασυμμετρίας</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Συσχέτιση</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./metrasysxetisis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Μέτρα συσχέτισης</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Προσδιορισμός συσχέτισης</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./diagramSysxet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Διαγράμματα</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./eytheiesPalindr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ευθείες παλινδρόμησης</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./kampylesPalindr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Καμπύλες παλινδρόμησης</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./geosp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Απεικονιση γεωχωρικών δεδομένων</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Πιθανότητες</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ennoiaPith.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Η έννοια της πιθανότητας</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ergaliaPith.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Βασικά εργαλεία</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Εκτιμητική</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ektimMean.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Για μέση τιμή</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ektimPososto.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Για το ποσοστό</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bootstrapMethod.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Μέθοδος Bootstrap</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Έλεγχος υποθέσεων</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tTest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">t-έλεγχος για το ποσοστό</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tTestMean.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">t-έλεγχος για τη μέση τιμή</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./zTest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">z-έλεγχος για διαφορά ποσοστών</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./x2Test.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">χ2 έλεγχος για την ανεξαρτησία</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./anova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Επίδραση ενός παράγοντα (ANOVA)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">Προσδιορισμός κατανομής</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./findDist.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Προσδιορισμός κατανομής</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./NormTest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Έλεγχος κανονικότητας</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./GraphFindDist.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Γραφικός προσδιορισμός</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">Μαρκοβιανές αλυσίδες</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./metabMarkov.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Περιγραφή μεταβάσεων</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./metabMarkovPol.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Μεταβάσεις σε περισσότερα βήματα</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./SankeyDiagrams.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Οπτικοποίηση ροών (Sankey)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+ <span class="menu-text">Χρονικές σειρές</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./timeBasic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Βασικά εργαλεία</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./motiba.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Μοτίβα</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./periodikotita.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Μελέτη εποχικότητας</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arima.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Πρόβλεψη (ARIMA)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true">
+ <span class="menu-text">Πολυμεταβλητή ανάλυση</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false">
+ <span class="menu-text">Περιγραφική στατιστική</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./astrogramma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Αστρόγραμμα</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false">
+ <span class="menu-text">Ανάλυση συστοιχιών</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./distTree.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Μήτρα απόστασης – δεντρόγραμμα</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false">
+ <span class="menu-text">Απεικόνιση σε λιγότερες διαστάσεις</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mds.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Διατακτική πολυδιάστατη κλίμακα (MDS)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cora.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ανάλυση Αντιστοιχίας</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ανάλυση κυρίων συνιστωσών (PCA)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#από-πίνακα-συχνοτήτων" id="toc-από-πίνακα-συχνοτήτων" class="nav-link active" data-scroll-target="#από-πίνακα-συχνοτήτων"><span class="header-section-number">1</span> Από πίνακα συχνοτήτων</a></li>
+  <li><a href="#από-πίνακα-δεδομένων" id="toc-από-πίνακα-δεδομένων" class="nav-link" data-scroll-target="#από-πίνακα-δεδομένων"><span class="header-section-number">2</span> Από πίνακα δεδομένων</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tTest.html">Έλεγχος υποθέσεων</a></li><li class="breadcrumb-item"><a href="./x2Test.html">χ2 έλεγχος για την ανεξαρτησία</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">χ2 έλεγχος για την ανεξαρτησία</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Κώστας Κούδας </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 11, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="από-πίνακα-συχνοτήτων" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Από πίνακα συχνοτήτων</h1>
+<p>Στην παρούσα ενότητα θα εξετάσουμε αν δύο μεταβλητές είναι ανεξάρτητες. Συγκεκριμένα, αντλήσαμε στοιχεία από τη σελίδα του <a href="https://ucr.fbi.gov/nibrs/2018/tables/data-tables">FBI</a> που αφορούν τη σχέση του θύματος στο εκάστοτε έγκλημα με τον θύτη του. Για παράδειγμα βλέπουμε <a href="https://ucr.fbi.gov/nibrs/2018/tables/pdfs/relationship_of_victims_to_offenders_by_offense_category_2018.pdf/at_download/file">εκεί</a> ότι 25105 σεξουαλικές επιθέσεις γίνονται από μέλη της οικογένειας, ενώ μόνο 6796 γίνονται από αγνώστους.</p>
+<p>Τα στοιχεία αυτά αποθηκεύτηκαν σε ένα αρχείο ονόματι egklUSA2018.xlsx.</p>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped caption-top">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">...1</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">Family Member</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">Family Member and Other</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">Known to Victim and Other</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">Stranger</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">All Other</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Assault Offenses</td>
+<td style="text-align: right;">318101</td>
+<td style="text-align: right;">43614</td>
+<td style="text-align: right;">731611</td>
+<td style="text-align: right;">131014</td>
+<td style="text-align: right;">168924</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Homicide Offenses</td>
+<td style="text-align: right;">783</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">1756</td>
+<td style="text-align: right;">558</td>
+<td style="text-align: right;">1847</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Human Trafficking Offenses</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">294</td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">127</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kidnapping/Abduction</td>
+<td style="text-align: right;">4301</td>
+<td style="text-align: right;">227</td>
+<td style="text-align: right;">11586</td>
+<td style="text-align: right;">1883</td>
+<td style="text-align: right;">2246</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sex Offenses</td>
+<td style="text-align: right;">25105</td>
+<td style="text-align: right;">788</td>
+<td style="text-align: right;">52893</td>
+<td style="text-align: right;">6796</td>
+<td style="text-align: right;">13327</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Robbery</td>
+<td style="text-align: right;">943</td>
+<td style="text-align: right;">236</td>
+<td style="text-align: right;">15193</td>
+<td style="text-align: right;">30135</td>
+<td style="text-align: right;">28872</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Θέλουμε να δούμε αν σε ένα έγκλημα η σχέση του θύματος με τον θύτη και το είδος του εγκλήματος είναι ανεξάρτητα πράγματα.</p>
+<ul>
+<li><p>Θέλουμε να δούμε, δηλαδή, αν η γνώση του είδους του εγκλήματος προσφέρει κάτι στην γνώση της σχέσης θύματος-θύτη. Π.χ. αν έχει γίνει μια σεξουαλική επίθεση, κάνει πιο πιθανό να είναι ο δράστης της οικογενείας, σε σχέση με το να γινόταν κάποιο άλλο έγκλημα, όπως π.χ. η ληστεία; Ή μήπως το είδος του εγκλήματος αφήνει ανεπηρέαστη την πιθανότητα ο δράστης να είναι της οικογενείας;</p></li>
+<li><p>Και αντίστροφα: Θέλουμε να δούμε αν η γνώση της σχέσης θύματος-θύτη προσφέρει κάτι στη γνώση του εγκλήματος. Αν π.χ. τελέσει ένα έγκλημα ένας άγνωστος στο θύμα θύτης, κάνει πιο πιθανό αυτό το έγκλημα να είναι μια ληστεία, σε σχέση με το να ήταν ο θύτης μέλος της οικογενείας; Ή μήπως η σχέση θύματος-θύτη αφήνει ανεπηρέαστη την πιθανότητα να είναι το έγκλημα ληστεία; Ορίζουμε ως μηδενική υπόθεση το ότι οι μεταβλητές «σχέση με το θύμα» και «είδος εγκλήματος» είναι ανεξάρτητες και θα δούμε κατά πόσον αυτή θα απορριφθεί, οπότε τελικά θα αποδειχθεί ότι δεν ήταν ανεξάρτητες.</p></li>
+</ul>
+<p>Ο πίνακάς μας είναι σχεδόν σε βολική μορφή, διότι:</p>
+<ul>
+<li><p>η κάθε στήλη αποτελείται από τις συχνότητες των εγκλημάτων με βάση τη σχέση με το θύμα,</p></li>
+<li><p>η κάθε γραμμή αποτελείται τις συχνότητες των εγκλημάτων με βάση το είδος του εγκλήματος.</p></li>
+</ul>
+<p>Είναι <u>σχεδόν</u> σε βολική μορφή, διότι περιέχει και στήλη με μη-αριθμητικά δεδομένα, κι αυτή είναι η 1η. Συνεπώς, για να έχουμε στήλες μόνο με αριθμητικά δεδομένα, γράφουμε:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>egklUSA <span class="ot">&lt;-</span> egklUSA2018[ , <span class="fu">c</span>(<span class="st">"Family Member"</span>, <span class="st">"Family Member and Other"</span>, <span class="st">"Known to Victim and Other"</span>, <span class="st">"Stranger"</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Οπότε έτσι έχει πεταχτεί εκτός η πρώτη στήλη.</p>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped caption-top">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">Family Member</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">Family Member and Other</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">Known to Victim and Other</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">Stranger</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">318101</td>
+<td style="text-align: right;">43614</td>
+<td style="text-align: right;">731611</td>
+<td style="text-align: right;">131014</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">783</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">1756</td>
+<td style="text-align: right;">558</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">294</td>
+<td style="text-align: right;">69</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4301</td>
+<td style="text-align: right;">227</td>
+<td style="text-align: right;">11586</td>
+<td style="text-align: right;">1883</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">25105</td>
+<td style="text-align: right;">788</td>
+<td style="text-align: right;">52893</td>
+<td style="text-align: right;">6796</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">943</td>
+<td style="text-align: right;">236</td>
+<td style="text-align: right;">15193</td>
+<td style="text-align: right;">30135</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Τέλος γράφουμε:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(egklUSA)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's Chi-squared test
+
+data:  egklUSA
+X-squared = 127270, df = 15, p-value &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Η p-τιμή είναι πάρα πολύ μικρή. Αυτό σημαίνει ότι η μηδενική υπόθεση απορρίπτεται, διότι διαφορετικά η πιθανότητα να τύχουμε κάτι τέτοιο θα είναι λιγότερο από 1 στα 1000000000000000. Άρα οι μεταβλητές «σχέση με το θύμα» και «είδος εγκλήματος» <u>δεν</u> είναι ανεξάρτητες.</p>
+<p>Δηλαδή:</p>
+<ul>
+<li><p>Αν π.χ. έχει γίνει μια σεξουαλική επίθεση επηρεάζεται η πιθανότητα ο θύτης να είναι άγνωστος, σε σχέση με το αν ξέραμε ότι έχει γίνει ληστεία. Με άλλα λόγια, κάποια εγκλήματα κάνουν πιο πιθανό να είναι ο θύτης άγνωστος, σε σχέση με κάποια άλλα.</p></li>
+<li><p>Ή, αν π.χ. τελέσει ένα έγκλημα ένας άγνωστος στο θύμα θύτης, επηρεάζεται η πιθανότητα το έγκλημα αυτό να ήταν ληστεία, σε σχέση με το αν ξέραμε ότι ήταν σεξουαλική παρενόχληση. Με άλλα λόγια, κάποιοι θύτες κάνουν πιο πιθανό ένα έγκλημα, σε σχέση με κάποιους άλλους θύτες.</p></li>
+</ul>
+<p>Συνολικά, ο λιγοστός κώδικας που γράψαμε ήταν ο κάτωθι:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>egklUSA <span class="ot">&lt;-</span> egklUSA2018[ , <span class="fu">c</span>(<span class="st">"Family Member"</span>, <span class="st">"Family Member and Other"</span>, <span class="st">"Known to Victim and Other"</span>, <span class="st">"Stranger"</span>)]</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(egklUSA)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="από-πίνακα-δεδομένων" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Από πίνακα δεδομένων</h1>
+<p>Εδώ θα χρησιμοποιήσουμε έναν πίνακα άλλης μορφής. Θα χρησιμοποιήσουμε τα στατιστικά στοιχεία του <a href="https://www.fu-berlin.de/en/">Freie Universität</a> που τα αποθηκεύσαμε σε ένα αρχείο ονόματι students.xlsx. Παραθέτουμε τις πρώτες 100 καταχωρήσεις του πίνακα, για λόγους ταχύτητας εκτέλεσης του κώδικα.</p>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped caption-top">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">stud.id</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">name</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">gender</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">age</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">height</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">weight</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">religion</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">nc.score</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">semester</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">major</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">minor</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">score1</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">score2</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">online.tutorial</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">graduated</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">salary</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">833917</td>
+<td style="text-align: left;">Gonzales, Christina</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">64.8</td>
+<td style="text-align: left;">Muslim</td>
+<td style="text-align: right;">1.91</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">898539</td>
+<td style="text-align: left;">Lozano, T'Hani</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">73.0</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.56</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">379678</td>
+<td style="text-align: left;">Williams, Hanh</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">168</td>
+<td style="text-align: right;">70.6</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.24</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">45</td>
+<td style="text-align: left;">46</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">807564</td>
+<td style="text-align: left;">Nem, Denzel</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">79.7</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.37</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">383291</td>
+<td style="text-align: left;">Powell, Heather</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">175</td>
+<td style="text-align: right;">71.4</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">1.46</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">256074</td>
+<td style="text-align: left;">Perez, Jadrian</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">189</td>
+<td style="text-align: right;">85.8</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">1.34</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">754591</td>
+<td style="text-align: left;">Clardy, Anita</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">156</td>
+<td style="text-align: right;">65.9</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.11</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">146494</td>
+<td style="text-align: left;">Allen, Rebecca Marie</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">167</td>
+<td style="text-align: right;">65.7</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">2.03</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">58</td>
+<td style="text-align: left;">62</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">723584</td>
+<td style="text-align: left;">Tracy, Robert</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">195</td>
+<td style="text-align: right;">94.4</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.29</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">57</td>
+<td style="text-align: left;">67</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">314281</td>
+<td style="text-align: left;">Nimmons, Laura</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">165</td>
+<td style="text-align: right;">66.0</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">1.19</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">200803</td>
+<td style="text-align: left;">Lang, Mackenzie</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">162</td>
+<td style="text-align: right;">66.8</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.04</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">62</td>
+<td style="text-align: left;">61</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">45254.108020687003</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">444907</td>
+<td style="text-align: left;">Rodriguez, Brianna</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">66.8</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">3.81</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">76</td>
+<td style="text-align: left;">82</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">354271</td>
+<td style="text-align: left;">Covar Orendain, Christopher</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">185</td>
+<td style="text-align: right;">84.6</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">71</td>
+<td style="text-align: left;">76</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">40552.790242531002</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">317812</td>
+<td style="text-align: left;">Lopez, Monique</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">158</td>
+<td style="text-align: right;">64.4</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">2.50</td>
+<td style="text-align: left;">6th</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">66</td>
+<td style="text-align: left;">70</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">27007.030294282002</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">604115</td>
+<td style="text-align: left;">Davis, Shagun</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">66.3</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">1.92</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">889551</td>
+<td style="text-align: left;">Adams, Jose</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">73.9</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">3.61</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">87</td>
+<td style="text-align: left;">91</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">350040</td>
+<td style="text-align: left;">Hines, Haileigh</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">156</td>
+<td style="text-align: right;">61.7</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">2.27</td>
+<td style="text-align: left;">6th</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">57</td>
+<td style="text-align: left;">54</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">33969.159268048999</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">240279</td>
+<td style="text-align: left;">Daugherty, Jesus</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">82.1</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">1.42</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">865835</td>
+<td style="text-align: left;">Roybal, Ebony</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">162</td>
+<td style="text-align: right;">69.2</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">1.32</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">69</td>
+<td style="text-align: left;">46</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">137196</td>
+<td style="text-align: left;">Baysinger, Tanisha</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">168</td>
+<td style="text-align: right;">70.9</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">2.33</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">708242</td>
+<td style="text-align: left;">Phillips, Laiba</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">167</td>
+<td style="text-align: right;">68.5</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.79</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">77</td>
+<td style="text-align: left;">80</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">499002</td>
+<td style="text-align: left;">Culbertson, Deshawn</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">175</td>
+<td style="text-align: right;">70.4</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.97</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">873149</td>
+<td style="text-align: left;">O Reilly, Joshua</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">70.3</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.68</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">807361</td>
+<td style="text-align: left;">Johnson, Stephanie</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">155</td>
+<td style="text-align: right;">67.0</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">2.30</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">531029</td>
+<td style="text-align: left;">Mix, Aziel</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">81.8</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">2.11</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">69</td>
+<td style="text-align: left;">65</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">970589</td>
+<td style="text-align: left;">Gonzalez, Dixie</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">145</td>
+<td style="text-align: right;">54.0</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.14</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">250298</td>
+<td style="text-align: left;">Clark, Janelle</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">161</td>
+<td style="text-align: right;">66.8</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.45</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">45</td>
+<td style="text-align: left;">37</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">763393</td>
+<td style="text-align: left;">Woolsey, Bronson</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">80.1</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.09</td>
+<td style="text-align: left;">5th</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">61</td>
+<td style="text-align: left;">73</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">50617.641869938998</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">544433</td>
+<td style="text-align: left;">Diawara, Erica</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">71.4</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.75</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">252935</td>
+<td style="text-align: left;">Lord, Benjamin</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">69.6</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">3.94</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">89</td>
+<td style="text-align: left;">90</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">453762</td>
+<td style="text-align: left;">Cordova, Justin</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">73.0</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.26</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">759365</td>
+<td style="text-align: left;">Hayes, Vamshi</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">192</td>
+<td style="text-align: right;">88.9</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.19</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">44</td>
+<td style="text-align: left;">36</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">662678</td>
+<td style="text-align: left;">French, Sidney</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">175</td>
+<td style="text-align: right;">72.6</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">3.03</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">65</td>
+<td style="text-align: left;">70</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">188703</td>
+<td style="text-align: left;">Torres, Andrew</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">173</td>
+<td style="text-align: right;">75.7</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.19</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">74</td>
+<td style="text-align: left;">74</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">806369</td>
+<td style="text-align: left;">Medina, Diamond</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">170</td>
+<td style="text-align: right;">71.6</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">2.27</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">679521</td>
+<td style="text-align: left;">Pascua, Burphy</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">176</td>
+<td style="text-align: right;">74.1</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">4.00</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">72</td>
+<td style="text-align: left;">75</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">371307</td>
+<td style="text-align: left;">Glenn-Bracey, Mia</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">75.6</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.09</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">411253</td>
+<td style="text-align: left;">Yang, Manuel</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">185</td>
+<td style="text-align: right;">80.7</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">3.15</td>
+<td style="text-align: left;">5th</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">54</td>
+<td style="text-align: left;">46</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">37391.872365386</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">835757</td>
+<td style="text-align: left;">Lujan, Malia</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">68.3</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">2.12</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">86</td>
+<td style="text-align: left;">92</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">35598.881686346998</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">232384</td>
+<td style="text-align: left;">Formby, Christina</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">171</td>
+<td style="text-align: right;">74.5</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.43</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">871735</td>
+<td style="text-align: left;">Nelson, Anddi</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">153</td>
+<td style="text-align: right;">64.9</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">1.15</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">503879</td>
+<td style="text-align: left;">Lucas, Asashia</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">64.4</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.66</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">52</td>
+<td style="text-align: left;">33</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">186259</td>
+<td style="text-align: left;">Holguin, Lance</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">190</td>
+<td style="text-align: right;">89.3</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">3.46</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">890074</td>
+<td style="text-align: left;">Ontiveros, Aleena</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">173</td>
+<td style="text-align: right;">78.3</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">2.67</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">493398</td>
+<td style="text-align: left;">Clark, Marlana</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">170</td>
+<td style="text-align: right;">68.0</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">2.45</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">902697</td>
+<td style="text-align: left;">Phan, Edeer</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">62.2</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">2.92</td>
+<td style="text-align: left;">5th</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">78</td>
+<td style="text-align: left;">75</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">39703.744884975997</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">679949</td>
+<td style="text-align: left;">Robles Escamilla, Rosario</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">170</td>
+<td style="text-align: right;">69.6</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">3.23</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">509606</td>
+<td style="text-align: left;">Longwolf, Addam</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">171</td>
+<td style="text-align: right;">72.1</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">2.03</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">773757</td>
+<td style="text-align: left;">Romero, Keyanna</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">66.2</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.37</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">83</td>
+<td style="text-align: left;">73</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">889115</td>
+<td style="text-align: left;">Carter, Robert</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">181</td>
+<td style="text-align: right;">76.2</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">1.32</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">280980</td>
+<td style="text-align: left;">Jumbo, Isiah</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">161</td>
+<td style="text-align: right;">66.7</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">55</td>
+<td style="text-align: left;">42</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">879108</td>
+<td style="text-align: left;">Dillenberg, Soraya</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">65.9</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.43</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">756828</td>
+<td style="text-align: left;">Nguyen, Juancarlos</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">170</td>
+<td style="text-align: right;">68.0</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.83</td>
+<td style="text-align: left;">5th</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">71</td>
+<td style="text-align: left;">69</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">873225</td>
+<td style="text-align: left;">Shanahan, Carlos</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">72.8</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.89</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">267025</td>
+<td style="text-align: left;">Brown, Nhan</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">171</td>
+<td style="text-align: right;">65.7</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">2.77</td>
+<td style="text-align: left;">&gt;6th</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">57</td>
+<td style="text-align: left;">58</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">30086.764812451998</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">865072</td>
+<td style="text-align: left;">Tak, Ruben</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">184</td>
+<td style="text-align: right;">83.3</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">2.87</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">63</td>
+<td style="text-align: left;">67</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">180057</td>
+<td style="text-align: left;">Hussainy, Luis</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">173</td>
+<td style="text-align: right;">73.2</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">2.80</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">350628</td>
+<td style="text-align: left;">Maven, Yee Joo</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">167</td>
+<td style="text-align: right;">73.3</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.13</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">809000</td>
+<td style="text-align: left;">Payte, Alexander</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">83.5</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">2.23</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">286216</td>
+<td style="text-align: left;">Tate, Shelby</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">159</td>
+<td style="text-align: right;">63.0</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">2.01</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">373120</td>
+<td style="text-align: left;">Livingston, Sarah</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">167</td>
+<td style="text-align: right;">69.0</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">2.51</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">56</td>
+<td style="text-align: left;">52</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">31494.320815455001</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">797140</td>
+<td style="text-align: left;">Vang, Austin</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">81.8</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">3.14</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">201130</td>
+<td style="text-align: left;">Cebrun, Linda</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">62.9</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">2.59</td>
+<td style="text-align: left;">&gt;6th</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">64</td>
+<td style="text-align: left;">75</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">32519.224081044998</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">655450</td>
+<td style="text-align: left;">Meza Ramirez, Maricela</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">173</td>
+<td style="text-align: right;">78.1</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">2.08</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">401840</td>
+<td style="text-align: left;">Nicholson, Willow</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">171</td>
+<td style="text-align: right;">67.6</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">1.53</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">88</td>
+<td style="text-align: left;">93</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">358005</td>
+<td style="text-align: left;">Eydi Shahroodi, Erik</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">77.4</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">3.82</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">65</td>
+<td style="text-align: left;">63</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">42593.260382113003</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">680483</td>
+<td style="text-align: left;">Truong, Patrick</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">71.6</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">3.80</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">73</td>
+<td style="text-align: left;">73</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">60407.317266003003</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">275470</td>
+<td style="text-align: left;">Vasquez, Timothy</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">167</td>
+<td style="text-align: right;">65.9</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">3.96</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">89</td>
+<td style="text-align: left;">93</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">258961</td>
+<td style="text-align: left;">Warren, Justin</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">70.7</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">1.46</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">495076</td>
+<td style="text-align: left;">Frost, Yuvorn</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">194</td>
+<td style="text-align: right;">94.9</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.78</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">156460</td>
+<td style="text-align: left;">Minor, Alex</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">82.7</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">1.22</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">38</td>
+<td style="text-align: left;">49</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">249571</td>
+<td style="text-align: left;">Arkadie, Houa</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">152</td>
+<td style="text-align: right;">64.9</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">2.73</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">75</td>
+<td style="text-align: left;">83</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">962284</td>
+<td style="text-align: left;">Iverson, Sierra</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">154</td>
+<td style="text-align: right;">63.0</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">2.30</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">870282</td>
+<td style="text-align: left;">Bustamante-Harrison, Sierra</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">159</td>
+<td style="text-align: right;">60.6</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">1.88</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">42</td>
+<td style="text-align: left;">42</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">308092</td>
+<td style="text-align: left;">Treto, Teonna</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">153</td>
+<td style="text-align: right;">63.2</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">3.18</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">76</td>
+<td style="text-align: left;">75</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">694127</td>
+<td style="text-align: left;">Gonzales, Brianna</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">150</td>
+<td style="text-align: right;">63.3</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">2.62</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">841076</td>
+<td style="text-align: left;">Pacheco, Cydney</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">167</td>
+<td style="text-align: right;">72.8</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">2.73</td>
+<td style="text-align: left;">&gt;6th</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">74</td>
+<td style="text-align: left;">81</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">49111.427488433997</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">794058</td>
+<td style="text-align: left;">Castaneda-Amaya, Tyandra</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">149</td>
+<td style="text-align: right;">56.2</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">1.02</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">76</td>
+<td style="text-align: left;">61</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">518947</td>
+<td style="text-align: left;">Garcia, Yamel</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">155</td>
+<td style="text-align: right;">62.1</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">1.36</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">216224</td>
+<td style="text-align: left;">Ho, Javier</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">177</td>
+<td style="text-align: right;">77.5</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">2.17</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">980136</td>
+<td style="text-align: left;">Munoz, Derrick</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">77.1</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">1.63</td>
+<td style="text-align: left;">5th</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">69</td>
+<td style="text-align: left;">68</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">33068.848645060003</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">253731</td>
+<td style="text-align: left;">Castillo, Anastasia</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">159</td>
+<td style="text-align: right;">62.2</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">2.27</td>
+<td style="text-align: left;">6th</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">63</td>
+<td style="text-align: left;">75</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">37803.513208607001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">416538</td>
+<td style="text-align: left;">Serrano, Shanae</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">71.1</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">1.42</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">83</td>
+<td style="text-align: left;">79</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">888830</td>
+<td style="text-align: left;">Park, Damien</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">74.9</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">2.49</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">71</td>
+<td style="text-align: left;">74</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">306032</td>
+<td style="text-align: left;">Lesley, Tiffany</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">159</td>
+<td style="text-align: right;">62.4</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.76</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">536813</td>
+<td style="text-align: left;">Turner, Savannah</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">65.3</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">1.38</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">78</td>
+<td style="text-align: left;">76</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">732709</td>
+<td style="text-align: left;">Begay-Watson, Anthony</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">68.0</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">3.06</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">53</td>
+<td style="text-align: left;">46</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">514389</td>
+<td style="text-align: left;">Picard, Brittney</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">166</td>
+<td style="text-align: right;">67.9</td>
+<td style="text-align: left;">Muslim</td>
+<td style="text-align: right;">2.26</td>
+<td style="text-align: left;">5th</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">72</td>
+<td style="text-align: left;">77</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">35191.662764719003</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">367719</td>
+<td style="text-align: left;">Wilson, Navya</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">155</td>
+<td style="text-align: right;">67.5</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">2.03</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">71</td>
+<td style="text-align: left;">74</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">362637</td>
+<td style="text-align: left;">Dinh, Fidel</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">178</td>
+<td style="text-align: right;">76.7</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">2.45</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">76</td>
+<td style="text-align: left;">79</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">409917</td>
+<td style="text-align: left;">Huddleston, Tina</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">162</td>
+<td style="text-align: right;">61.8</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">1.21</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">977593</td>
+<td style="text-align: left;">Gonzalez, Merissa</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">181</td>
+<td style="text-align: right;">79.0</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.53</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">65</td>
+<td style="text-align: left;">65</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">884302</td>
+<td style="text-align: left;">Norris, Lauren</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">168</td>
+<td style="text-align: right;">69.4</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">2.45</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">689045</td>
+<td style="text-align: left;">Kim, Eaba</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">181</td>
+<td style="text-align: right;">80.0</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">2.83</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">706060</td>
+<td style="text-align: left;">Miranda Quintero, Olivia</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">158</td>
+<td style="text-align: right;">60.6</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">1.46</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">43</td>
+<td style="text-align: left;">52</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">168184</td>
+<td style="text-align: left;">Briseno, Davie</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">177</td>
+<td style="text-align: right;">79.4</td>
+<td style="text-align: left;">Muslim</td>
+<td style="text-align: right;">2.02</td>
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">93</td>
+<td style="text-align: left;">87</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">39342.522668919002</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">890431</td>
+<td style="text-align: left;">Garcia, Kush</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">73.8</td>
+<td style="text-align: left;">Catholic</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: left;">5th</td>
+<td style="text-align: left;">Mathematics and Statistics</td>
+<td style="text-align: left;">Social Sciences</td>
+<td style="text-align: left;">78</td>
+<td style="text-align: left;">90</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">345772</td>
+<td style="text-align: left;">Chandramouli, Nelson</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">176</td>
+<td style="text-align: right;">76.4</td>
+<td style="text-align: left;">Orthodox</td>
+<td style="text-align: right;">2.56</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;">Environmental Sciences</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">167649</td>
+<td style="text-align: left;">Edwards, Linh</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">166</td>
+<td style="text-align: right;">64.3</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.99</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Economics and Finance</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">372924</td>
+<td style="text-align: left;">Cook, Macallyson</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">173</td>
+<td style="text-align: right;">71.6</td>
+<td style="text-align: left;">Protestant</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;">Biology</td>
+<td style="text-align: left;">Political Science</td>
+<td style="text-align: left;">80</td>
+<td style="text-align: left;">79</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Εδώ, όπως βλέπει κι ο αναγνώστης, δεν μας δίνονται οι συχνότητες πχ των αγοριών ή των κοριτσιών. Έχουμε μια λίστα με φοιτητές κι από δίπλα τα προσωπικά, βιολογία και ακαδημαϊκά χαρακτηριστικά του καθενός.</p>
+<p>Ας υποθέσουμε, λοιπόν, ότι θέλουμε να εξετάσουμε αν το φύλο και η θρησκεία είναι ανεξάρτητες μεταβλητές. Δηλαδή η γνώση του θρησκεύματος ενός φοιτητή δίνει κάποιες πληροφορίες για το αν αυτός είναι αγόρι ή μήπως όχι; Ή η γνώση του φύλου του φοιτητή κάνει πιο πιθανό είναι αυτός π.χ. μουσουλμάνος;</p>
+<p>Γράφουμε:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(students<span class="sc">$</span>gender, students<span class="sc">$</span>religion)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's Chi-squared test
+
+data:  students$gender and students$religion
+X-squared = 6.3987, df = 4, p-value = 0.1713</code></pre>
+</div>
+</div>
+<p>Βρίσκουμε ότι η p-τιμή είναι 0.1713, δηλαδή μεγαλύτερη από το 0.05 που διαλέγουμε συνήθως ως επίπεδο σημαντικότητας. Επομένως δεν μπορούμε να απορρίψουμε τη μηδενική υπόθεση.</p>
+<p>Βλέπουμε δηλαδή ότι η ανεξαρτησία των μεταβλητών «φύλο» και «θρησκεία» δεν μπορεί να απορριφθεί, αν θέλουμε να είμαστε αρκετά αυστηροί. Η p-τιμή που βρήκαμε δείχνει ότι τέτοια δείγματα σαν αυτό που διαχειριζόμαστε τώρα είναι κα΄τα 17.13% πιθανό να επιλεγούν στην περίπτωση που το φύλο και η θρησκεία ήταν ανεξάρτητα. Δηλαδή δεν μιλάμε για κάτι τόσο απίθανο να συμβεί, που να μας κάνει να παραδεχτούμε ότι κάτι άλλο πέραν της τύχης συμβαίνει.</p>
+<p>Συνολικά χρησιμοποιήσαμε τον παρακάτω κώδικα:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(students<span class="sc">$</span>gender, students<span class="sc">$</span>religion)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

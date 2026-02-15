@@ -1,0 +1,292 @@
+---
+title: "Μήτρα απόστασης – δεντρόγραμμα"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+# Μήτρα απόστασης – δεντρόγραμμα
+
+```{r}
+#| echo = F
+rm(list = ls())
+```
+
+Στην ενότητα αυτή θα μελετήσουμε το εισόδημα των νοικοκυριών διαφόρων χωρών και θα προσπαθήσουμε να δούμε ποιες έχουν ομοιότητες μεταξύ τους. Αντλήσαμε δεδομένα από τον OECD και τ’ αποθηκεύσαμε σε ένα αρχείο ονόματι eisodima.csv. Για λόγους ταχύτητας εκτέλεσης του παρόντως κώδικα, παρουσιάζονται ακολούθως μόνο οι 100 πρώτες γραμμές.
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+eisodima <- read.csv("eisodima.csv")
+knitr::kable(head(eisodima, n=100)) %>%
+kable_styling("striped", full_width = F) %>%
+scroll_box(width = "max-content", height = "200px")
+```
+
+
+Στόχος μας είναι να βρούμε τις αποστάσεις των εισοδημάτων διαφόρων χωρών. Ακολούθως θα εξετάσουμε ποιες χώρες είναι κοντά μεταξύ τους και πιο απόμερα από άλλες. Δηλαδή, ίσως κάποιες χώρες να έχουν μικρή απόσταση η μία από την άλλη, συγκριτικά με τις αποστάσεις που έχουν από τις υπόλοιπες χώρες. Με αυτόν τον τρόπο μπορούμε να σχηματίσουμε ομάδες χωρών που να γειτονεύουν μεταξύ τους στο ζήτημα των εισοδημάτων των νοικοκυριών.
+
+Για να κάνουμε αυτή τη δουλειά θα χρειαστούμε τα πακέτα `pheatmap` και `dplyr`:
+
+```{r}
+#| message = F
+if(!require(pheatmap)){
+  install.packages("pheatmap")
+  library(pheatmap)
+}
+if(!require(dplyr)){
+  install.packages("dplyr")
+  library(dplyr)
+}
+```
+
+Ακολούθως ορίζουμε τη συνάρτηση `dentrogramma()` εντός της οποίας θα πάει ο πίνακας δεδομένων μας (για την ακρίβεια, το τμήμα του που μας ενδιαφέρει):
+
+```{r}
+dentrogramma <- function(stiles){
+  stiles <- stiles %>% select_if(~ !any(is.na(.)))
+  stiles_m <- as.matrix(stiles)
+  stiles_m.t <- t(stiles_m)
+  dist.stiles_m <- dist(stiles_m.t, diag = TRUE, upper = TRUE)
+  dist.stiles_m <- as.matrix(dist.stiles_m)
+  pheatmap(dist.stiles_m)
+}
+```
+
+Η συνάρτηση `dentrogramma()` θα πρέπει ως όρισμα να δεχτεί έναν πίνακα με στήλες αυτά που θέλουμε να συσχετίσουμε. Δυστυχώς, έτσι όπως μάς δίνεται ο πίνακας `eisodima` δεν βολεύει, οπότε θα τον αλλάξουμε λιγάκι.
+
+```{r}
+#| message = F
+if(!require(reshape)){
+  install.packages("reshape")
+  library(reshape)
+}
+if(!require(reshape2)){
+  install.packages("reshape2")
+  library(reshape2)
+}
+```
+
+```{r}
+eis <- eisodima[eisodima$SUBJECT == "GROSSADJ", c(1,6,7)]
+eis_wide <- dcast(eis, TIME ~ LOCATION, value.var="Value")
+```
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(eis_wide) %>%
+kable_styling("striped", full_width = F) %>%
+scroll_box(width = "100%", height = "200px")
+```
+
+Βλέπουμε ότι κάθε χώρα έχει μια στήλη με τα εισοδήματα των νοικοκυριών της σε διάφορα έτη. Προφανώς η πρώτη στήλη με τα έτη δεν είναι επιθυμητή, οπότε κάθε φορά θα την αφαιρούμε.
+
+Σημειωταίον ότι η εντολή `%>% select_if(~ !any(is.na(.)))` στον ορισμό της συνάρτησης `dentrogramma()` εξοστρακίζει τις στήλες που έχουν έστω και μία μη διαθέσιμη τιμή (`NA`). Οπότε, αν γράψουμε:
+
+```{r}
+#| eval = F
+dentrogramma(eis_wide[,-1])
+```
+εξαφανίζονται όλες οι στήλες, αφού κάθε μία τους περιέχει μία τουλάχιστον μη διαθέσιμη τιμή (`NA`). Συνεπώς παίρνουμε το μήνυμα σφάλματος: `Error in hclust(d, method = method) : must have n >= 2 objects to cluster`.
+
+Σε πρώτη φάση, λοιπόν, θα εξετάσουμε την απόκλιση των χωρών αν συνυπολογίσουμε τις οικονομίες τους τα έτη 2012 έως 2020, οπότε κάνουμε την ανάλογη επιλογή από τον πίνακα `eis_wide`:
+
+```{r}
+eis12_20 <- eis_wide[43:51,-1]
+```
+
+Ακολούθως γράφουμε:
+
+```{r}
+dentrogramma(eis12_20)
+```
+
+Έτσι προκύπτει ένας πίνακας που αφενός παρουσιάζει τις αποστάσεις μεταξύ των χωρών, αφετέρου ένα δεντρόγραμμα που δείχνει τις ομοδοποιήσεις που σχηματίζονται.
+
+Στον πίνακα αυτόν όσο πιο κόκκινο είναι ένα κελί, τόσο πιο μεγάλη είναι η απόσταση των χωρών που αυτό αντιστοιχεί. Έτσι, η Κόστα Ρίκα (`CRI`) φαίνεται να έχει μεγάλη απόσταση από τις ΗΠΑ (`USA`), ενώ η Γαλλία (`FRA`) φαίνεται να έχει μικρή απόσταση από τον Καναδά (`CAN`). Η δε Ελλάδα (`GRC`) έχει μικρή απόσταση από τη Σλοβακία (`SVK`), την Εσθονία (`EST`) και την Πολωνία (`POL`) και γι’ αυτό το λόγο το δεντρόγραμμα υποδεικνύει ότι αυτές σχηματίζουν μιαν ομάδα. Γειτονική ομάδα σε αυτές, αλλά πάντως διαφορετική, είναι η ομάδα της Κόστα Ρίκα (`CRI`), της Χιλής (`CHL`) και του Μεξικού (`MEX`). Από την άλλη, εντελώς απόμακρη είναι αυτή που σχηματίζει η Γαλλία (`FRA`) με το Βέλγιο (`BEL`).
+
+Αν θελήσουμε να εξετάσουμε τις αποστάσεις των χωρών (από άποψη εισοδημάτων των νοικοκυριών, φυσικά) το έτος 2021, γράφουμε:
+
+```{r}
+eis2021 <- eis_wide[52,-1]
+dentrogramma(eis2021)
+```
+
+Αυτή τη φορά η Ελλάδα (`GRC`) σχηματίζει μιαν ομάδα με τη Χιλή (`CHL`) και το Μεξικό (`MEX`). Η Εσθονία πλέον γειτονεύει (οικονομικά) με την Πορτογαλία (`PRT`).
+
+Κλείνοντας, θα πρέπει να αναφέρουμε κάτι που μπορεί να σκέφτηκε ήδη ο αναγνώστης. Πώς ορίστηκε η απόσταση μεταξύ των εισοδημάτων; Αν π.χ. εγώ βγάλω τους τελευταίους 3 μήνες 1200€, 1000€ και 1100€, ενώ η Γιάννα 1150€, 1300€ και 1000€, τότε πώς μπορώ να μετρήσω την απόσταση των εισοδημάτων μας; Όλοι καταλαβαίνουμε πώς μετράμε την γεωγραφική απόσταση Ελλάδας-Χιλής. Πώς μετράμε όμως την εισοδηματική τους απόσταση;
+
+Η συνηθισμένη απάντηση είναι «Με την ευκλείδεια μετρική, λες και τα εισοδήματα σχηματίζουν σημεία στο χώρο». Έτσι, στην περίπτωση εμού και της Γιάννας έχουμε δύο σημεία σ’ ένα χώρο 3 διαστάσεων, όπου το ένα σημείο έχει συντεταγμένες τα εισοδήματα του ενός και το άλλο τα εισοδήματα του άλλου. Η απόσταση των εισοδημάτων μας είναι η μεταξύ τους απόσταση σε αυτόν τον τρισδιάστατο χώρο.
+
+Φαντάζει λίγο αυθαίρετο να παρομοιάζουμε τα λεφτά με σημεία στο χώρο, ίσως και παράλογο. Στην πραγματικότητα όμως πολλά μαθηματικά εργαλεία βασίζονται στην ευκλείδεια μετρική, όπως π.χ. η τυπική απόκλιση. Αν μάλιστα λάβουμε υπ’ όψιν την ισοδυναμία της ευκλείδιας μετρικής με άλλες που προτείνονται, παύουμε να αισθανόμαστε τόσο αυθαίρετη την υιοθέτησή της ως τρόπο υπολογισμού αποστάσεων. Σε παρόμοια πλαίσια συνηγορεί και η ανισότητα Chebyshev στη γενικευμένη της μορφή. Ήδη όμως είπαμε πολλά. Όπως και να ‘χει, ο αναγνώστης καλό είναι να έχει σκεφτεί ποια μετρική θα χρησιμοποιήσει, πριν αρχίσει να βασίζεται πάνω της για εξαγωγή συμπερασμάτων (για περισσότερα βλ. [εδώ](https://www.politeianet.gr/books/9789604614417-bartholomew-j-david-kleidarithmos-analusi-polumetabliton-technikon-stis-koinonikes-epistimes-220461)).
+
+
+
+
+# Κυκλικό δεντρόγραμμα
+
+Στην περίπτωση που δεν ενδιαφερόμαστε να έχουμε τη μήτρα απόσταση, αλλά θέλουμε να έχουμε μόνο το δεντροδιάγραμμα, τότε μπορούμε να πράξουμε ως ακολούθως. Αρχικά εγκαθιστούμε τα πακέτα `dendextend` και `circlize`.
+
+```{r}
+#| message = F
+if(!require(dendextend)){
+  install.packages("dendextend")
+  library(dendextend)
+}
+if(!require(circlize)){
+  install.packages("circlize")
+  library(circlize)
+}
+```
+
+Ακολούθως ορίζουμε την συνάρτηση `kykliko_dentrogrammaBW()`.
+
+```{r}
+kykliko_dentrogrammaBW <- function(stiles,mikos){
+  stiles <- stiles %>% select_if(~ !any(is.na(.)))
+  stiles_m <- as.matrix(stiles)
+  stiles_m.t <- t(stiles_m)
+  dist.stiles_m <- dist(stiles_m.t, diag = TRUE, upper = TRUE)
+  hc <- as.dendrogram(hclust(dist.stiles_m))
+  circlize_dendrogram(hc,
+                    labels_track_height = NA,
+                    dend_track_height = mikos)
+}
+```
+
+Η πρώτη παράμετρος είναι ίδια με αυτή που χρησιμοποιούσε η συνάρτηση `dentrogramma()`. Η δεύτερη είναι ένας αριθμός πουδείχνει πόσο μεγάλα «κλαδιά» θέλουμε να έχει το δεντροδιάγραμμά μας. Προσοχή! Πολύ μεγάλα κλαδιά μπορεί να οδηγήσουν σε μηνύματα σφάλματος! Ας το δούμε όμως και πρακτικά:
+
+```{r}
+kykliko_dentrogrammaBW(eis2021, mikos = 0.2)
+```
+
+Το δεντρόγραμμα το φτιάξαμε κυκλικό, για να μπορεί να χωράει όσον το δυνατόν περισσότερα αντικείμενα προς σύγκριση. Ας αλλάξουμε τώρα την `mikos = 0.2` σε `mikos = 0.7`
+
+
+```{r}
+kykliko_dentrogrammaBW(eis2021, mikos = 0.7)
+```
+
+Παρατηρούμε ότι το μήκος των κλαδιών μεγάλωσε.
+
+Με αυτή την κατασκευή μπορούμε να αυτοματοποιήσουμε και την εύρεση των ομάδων των πλησιέστερων γειτώνων. Θα αλλάξουμε λίγο τη συνάρτηση `kykliko_dentrogrammaBW()` και θα φτιάξουμε μια νέα, την `kykliko_dentrogrammaCOL()`.
+
+```{r}
+kykliko_dentrogrammaCOL <- function(stiles,mikos,omades){
+  stiles <- stiles %>% select_if(~ !any(is.na(.)))
+  stiles_m <- as.matrix(stiles)
+  stiles_m.t <- t(stiles_m)
+  dist.stiles_m <- dist(stiles_m.t, diag = TRUE, upper = TRUE)
+  hc <- as.dendrogram(hclust(dist.stiles_m))
+  hc <- hc %>%
+  color_branches(k = omades) %>%
+  color_labels(k = omades)
+
+# Fan tree plot with colored labels
+circlize_dendrogram(hc,
+                    labels_track_height = NA,
+                    dend_track_height = mikos) 
+}
+```
+
+Η παράμετρος `omades` είναι για να μας χωρίσει τις προς σύγκριση χώρες σε ομάδες, το πλήθος των οποίων καθορίζεται από την τιμή της εν λόγω παραμέτρου. Έτσι γράφοντας `omades = 5` χωρίζονται οι χώρες σε 5 ομάδες βάσει των μεταξύ τους αποστάσεων.
+
+```{r}
+kykliko_dentrogrammaCOL(eis2021, mikos = 0.7, omades = 5)
+```
+
+Από την άλλη, αν γράψουμε `omades = 10`, οι ομάδες που σχηματίζονται είνα πλέον 10.
+
+```{r}
+kykliko_dentrogrammaCOL(eis2021, mikos = 0.7, omades = 10)
+```
+
+Συνολικά γράψαμε τον παρακάτω κώδικα:
+
+```{r}
+#| eval = F
+if(!require(pheatmap)){
+  install.packages("pheatmap")
+  library(pheatmap)
+}
+if(!require(dplyr)){
+  install.packages("dplyr")
+  library(dplyr)
+}
+dentrogramma <- function(stiles){
+  stiles <- stiles %>% select_if(~ !any(is.na(.)))
+  stiles_m <- as.matrix(stiles)
+  stiles_m.t <- t(stiles_m)
+  dist.stiles_m <- dist(stiles_m.t, diag = TRUE, upper = TRUE)
+  dist.stiles_m <- as.matrix(dist.stiles_m)
+  pheatmap(dist.stiles_m)
+}
+if(!require(reshape)){
+  install.packages("reshape")
+  library(reshape)
+}
+if(!require(reshape2)){
+  install.packages("reshape2")
+  library(reshape2)
+}
+eis <- eisodima[eisodima$SUBJECT == "GROSSADJ", c(1,6,7)]
+eis_wide <- dcast(eis, TIME ~ LOCATION, value.var="Value")
+dentrogramma(eis_wide[,-1])
+eis12_20 <- eis_wide[43:51,-1]
+dentrogramma(eis12_20)
+eis2021 <- eis_wide[52,-1]
+dentrogramma(eis2021)
+if(!require(dendextend)){
+  install.packages("dendextend")
+  library(dendextend)
+}
+if(!require(circlize)){
+  install.packages("circlize")
+  library(circlize)
+}
+kykliko_dentrogrammaBW <- function(stiles,mikos){
+  stiles <- stiles %>% select_if(~ !any(is.na(.)))
+  stiles_m <- as.matrix(stiles)
+  stiles_m.t <- t(stiles_m)
+  dist.stiles_m <- dist(stiles_m.t, diag = TRUE, upper = TRUE)
+  hc <- as.dendrogram(hclust(dist.stiles_m))
+  circlize_dendrogram(hc,
+                    labels_track_height = NA,
+                    dend_track_height = mikos)
+}
+kykliko_dentrogrammaBW(eis2021, mikos = 0.2)
+kykliko_dentrogrammaBW(eis2021, mikos = 0.7)
+kykliko_dentrogrammaCOL <- function(stiles,mikos,omades){
+  stiles <- stiles %>% select_if(~ !any(is.na(.)))
+  stiles_m <- as.matrix(stiles)
+  stiles_m.t <- t(stiles_m)
+  dist.stiles_m <- dist(stiles_m.t, diag = TRUE, upper = TRUE)
+  hc <- as.dendrogram(hclust(dist.stiles_m))
+  hc <- hc %>%
+  color_branches(k = omades) %>%
+  color_labels(k = omades)
+
+# Fan tree plot with colored labels
+circlize_dendrogram(hc,
+                    labels_track_height = NA,
+                    dend_track_height = mikos) 
+}
+kykliko_dentrogrammaCOL(eis2021, mikos = 0.7, omades = 5)
+kykliko_dentrogrammaCOL(eis2021, mikos = 0.7, omades = 10)
+```

@@ -1,0 +1,15 @@
+{
+  "hash": "0e72eee8fbfa9f945f8a045a6ecea285",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Δέντρα και δάση\"\nauthor: \"Κώστας Κούδας\"\ncache: TRUE\ndate: \"2026-02-11\"\nformat:\n  html:\n    toc: true\n    number-sections: true\n    fig-cap: true\n---\n\n\n\n<div class=\"alert-danger\">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>\n\n\n::: {.cell}\n\n```{.r .cell-code}\nrm(list = ls())\n```\n:::\n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

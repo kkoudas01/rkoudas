@@ -1,0 +1,55 @@
+---
+title: "Εξέταση τιμών ακινήτων"
+author: "Κώστας Κούδας"
+toc: true
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+<div class="alert-danger">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>
+
+
+# Εισαγωγή
+
+```{r}
+#| echo = F
+rm(list = ls())
+```
+
+```{r}
+#| echo = FALSE,
+#| eval = FALSE
+if(!require(tidyverse)){
+    install.packages("tidyverse")
+    library(tidyverse)
+}
+if(!require(Rcrawler)){
+    install.packages("Rcrawler")
+    library(Rcrawler)
+}
+# install_browser()
+```
+
+
+
+```{r}
+#| eval = FALSE
+Rcrawler(Website = "http://www.spitogatos.gr",
+         crawlUrlfilter = "/aggelia/",
+         no_cores = 4,
+         no_conn = 4,
+         MaxDepth = 1,
+         saveOnDisk = FALSE
+         )
+```
