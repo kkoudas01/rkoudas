@@ -158,7 +158,7 @@ website:
           href: workHexitPov.qmd
         - text: "Μετρώντας την ανισότητα (Gini)"
           href: gini.qmd
-        - text: "Πολιτικό προφίλ & Βουλευτές"
+        - text: "Το πολιτικό προφίλ των Ελλήνων εστιασμένο στ’ αριστερά"
           href: bouleytesCor.qmd
         - text: "Πόθεν Έσχες βουλευτών"
           href: pothenesxes.qmd
@@ -166,6 +166,8 @@ website:
           href: happy.qmd
         - text: "Αξιολόγηση Δημόσιων Υπηρεσιών"
           href: axiologisiDimon.qmd
+        - text: "Θέσεις αριστεράς για μεταναστευτικό"
+          href: metanastes.qmd
         - text: "Απεργιακές κινητοποιήσεις"
           href: strikes.qmd
         - text: "Εξέταση τιμών ακινήτων"

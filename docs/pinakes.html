@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2026-02-15">
+<meta name="dcterms.date" content="2026-02-17">
 
 <title>Πίνακες δεδομένων – r-koudas</title>
 <style>
@@ -610,11 +610,7 @@ window.Quarto = {
   <li><a href="#κατασκευή-λίστας" id="toc-κατασκευή-λίστας" class="nav-link" data-scroll-target="#κατασκευή-λίστας"><span class="header-section-number">1.2.1</span> Κατασκευή λίστας</a></li>
   <li><a href="#κατασκευή-πίνακα" id="toc-κατασκευή-πίνακα" class="nav-link" data-scroll-target="#κατασκευή-πίνακα"><span class="header-section-number">1.2.2</span> Κατασκευή πίνακα</a></li>
   </ul></li>
-  <li><a href="#εισαγωγή-αρχείων-από-άλλα-προγράμματα" id="toc-εισαγωγή-αρχείων-από-άλλα-προγράμματα" class="nav-link" data-scroll-target="#εισαγωγή-αρχείων-από-άλλα-προγράμματα"><span class="header-section-number">1.3</span> Εισαγωγή αρχείων από άλλα προγράμματα</a>
-  <ul class="collapse">
-  <li><a href="#αρχεία-excel-.xls-.xlsx" id="toc-αρχεία-excel-.xls-.xlsx" class="nav-link" data-scroll-target="#αρχεία-excel-.xls-.xlsx"><span class="header-section-number">1.3.1</span> Αρχεία Excel (.xls, .xlsx)</a></li>
-  <li><a href="#αρχεία-.csv-και-.txt" id="toc-αρχεία-.csv-και-.txt" class="nav-link" data-scroll-target="#αρχεία-.csv-και-.txt"><span class="header-section-number">1.3.2</span> Αρχεία .csv και .txt</a></li>
-  </ul></li>
+  <li><a href="#εισαγωγή-αρχείων-από-άλλα-προγράμματα" id="toc-εισαγωγή-αρχείων-από-άλλα-προγράμματα" class="nav-link" data-scroll-target="#εισαγωγή-αρχείων-από-άλλα-προγράμματα"><span class="header-section-number">1.3</span> Εισαγωγή αρχείων από άλλα προγράμματα</a></li>
   <li><a href="#json" id="toc-json" class="nav-link" data-scroll-target="#json"><span class="header-section-number">1.4</span> JSON</a></li>
   </ul></li>
   <li><a href="#επιλογή-στοιχείων-πίνακα" id="toc-επιλογή-στοιχείων-πίνακα" class="nav-link" data-scroll-target="#επιλογή-στοιχείων-πίνακα"><span class="header-section-number">2</span> Επιλογή στοιχείων πίνακα</a>
@@ -622,12 +618,7 @@ window.Quarto = {
   <li><a href="#νέος-πίνακας" id="toc-νέος-πίνακας" class="nav-link" data-scroll-target="#νέος-πίνακας"><span class="header-section-number">2.1</span> Νέος πίνακας</a></li>
   <li><a href="#νέα-λίστα" id="toc-νέα-λίστα" class="nav-link" data-scroll-target="#νέα-λίστα"><span class="header-section-number">2.2</span> Νέα λίστα</a></li>
   </ul></li>
-  <li><a href="#προσθήκη-στοιχείων-σε-πίνακα" id="toc-προσθήκη-στοιχείων-σε-πίνακα" class="nav-link" data-scroll-target="#προσθήκη-στοιχείων-σε-πίνακα"><span class="header-section-number">3</span> Προσθήκη στοιχείων σε πίνακα</a>
-  <ul class="collapse">
-  <li><a href="#προσθήκη-στήλης" id="toc-προσθήκη-στήλης" class="nav-link" data-scroll-target="#προσθήκη-στήλης"><span class="header-section-number">3.1</span> Προσθήκη στήλης</a></li>
-  <li><a href="#συγχώνευση-πινάκων-δίπλα-δίπλα" id="toc-συγχώνευση-πινάκων-δίπλα-δίπλα" class="nav-link" data-scroll-target="#συγχώνευση-πινάκων-δίπλα-δίπλα"><span class="header-section-number">3.2</span> Συγχώνευση πινάκων δίπλα-δίπλα</a></li>
-  <li><a href="#συγχώνευση-πινάκων-κάτω-κάτω" id="toc-συγχώνευση-πινάκων-κάτω-κάτω" class="nav-link" data-scroll-target="#συγχώνευση-πινάκων-κάτω-κάτω"><span class="header-section-number">3.3</span> Συγχώνευση πινάκων κάτω-κάτω</a></li>
-  </ul></li>
+  <li><a href="#προσθήκη-στοιχείων-σε-πίνακα" id="toc-προσθήκη-στοιχείων-σε-πίνακα" class="nav-link" data-scroll-target="#προσθήκη-στοιχείων-σε-πίνακα"><span class="header-section-number">3</span> Προσθήκη στοιχείων σε πίνακα</a></li>
   <li><a href="#αναδιαμόρφωση-πίνακα" id="toc-αναδιαμόρφωση-πίνακα" class="nav-link" data-scroll-target="#αναδιαμόρφωση-πίνακα"><span class="header-section-number">4</span> Αναδιαμόρφωση πίνακα</a></li>
   </ul>
 </nav>
@@ -648,7 +639,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 15, 2026</p>
+      <p class="date">February 17, 2026</p>
     </div>
   </div>
   
@@ -744,14 +735,16 @@ window.Quarto = {
 </section>
 <section id="κατασκευή-λίστας-ή-πίνακα-τιμών-στην-r" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="κατασκευή-λίστας-ή-πίνακα-τιμών-στην-r"><span class="header-section-number">1.2</span> Κατασκευή λίστας ή πίνακα τιμών στην R</h2>
-<section id="κατασκευή-λίστας" class="level3 tabset tabset-fade tabset-pills" data-number="1.2.1">
-<h3 class="tabset tabset-fade tabset-pills anchored" data-number="1.2.1" data-anchor-id="κατασκευή-λίστας"><span class="header-section-number">1.2.1</span> Κατασκευή λίστας</h3>
+<section id="κατασκευή-λίστας" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="κατασκευή-λίστας"><span class="header-section-number">1.2.1</span> Κατασκευή λίστας</h3>
 <p>Πριν προχωρήσουμε σε πιο συγκεκριμένες τοποθετήσεις, θα καθαρίσουμε τη μνήμη της R, μήπως έχουμε αποθηκεύσει κάτι προηγουμένως και επηρεάσει τη διαδικασία.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<section id="δημιουργία-εκ-του-μηδενός" class="level4" data-number="1.2.1.1">
-<h4 data-number="1.2.1.1" class="anchored" data-anchor-id="δημιουργία-εκ-του-μηδενός"><span class="header-section-number">1.2.1.1</span> Δημιουργία εκ του μηδενός</h4>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Δημιουργία εκ του μηδενός</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Δημιουργία από ήδη υπάρχουσες λίστες</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <p>Σε πολλές περιπτώσεις μπορεί να χρειαστεί να ορίσουμε μια λίστα με σύμβολα ή αριθμούς. Σε αυτή τη δουλειά θα χρειαστούμε τη συνάρτηση <code>c()</code>. Για παράδειγμα, μπορεί να θέλουμε τις περιοχές της Ελλάδας με μαθηματικά τμήματα εν έτει 2020. Συμβουλευόμενοι την σελίδα γράφουμε:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>poleisMath <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"ath"</span>,<span class="st">"thess"</span>,<span class="st">"ioan"</span>,<span class="st">"patra"</span>,<span class="st">"samos"</span>,<span class="st">"kriti"</span>,<span class="st">"kast"</span>,<span class="st">"lam"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1628,9 +1621,8 @@ window.Quarto = {
 <li><p>είτε μαρκάρουμε με το ποντίκι όλες τις επιθυμητές γραμμές κι ακολούθως πατάμε μία φορά το <strong>Run</strong>.</p></li>
 </ul>
 <p>Στο εξής θα παραλείπουμε να αναφέρουμε το και θα λέμε απλά «τρέχουμε τον κώδικα».</p>
-</section>
-<section id="δημιουργία-από-ήδη-υπάρχουσες-λίστες" class="level4" data-number="1.2.1.2">
-<h4 data-number="1.2.1.2" class="anchored" data-anchor-id="δημιουργία-από-ήδη-υπάρχουσες-λίστες"><span class="header-section-number">1.2.1.2</span> Δημιουργία από ήδη υπάρχουσες λίστες</h4>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <p>Μπορούμε να κάνουμε και πράξη πάνω σε αυτές τις τιμές. Πριν προχωρήσουμε, αξίζει να αναφερθεί ο συμβολισμός των πράξεων στην R.</p>
 <table class="caption-top table">
 <colgroup>
@@ -1715,7 +1707,9 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>poleisMoria <span class="ot">&lt;-</span> <span class="fu">paste</span>(poleisBathm,<span class="st">"moria"</span>, <span class="at">sep =</span> <span class="st">""</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>επισυνάπτουμε στην λίστα <code>poleisBathm</code> την λέξη «<code>moria</code>» δίπλα από το κάθε στοιχείο της.</p>
-</section>
+</div>
+</div>
+</div>
 </section>
 <section id="κατασκευή-πίνακα" class="level3" data-number="1.2.2">
 <h3 data-number="1.2.2" class="anchored" data-anchor-id="κατασκευή-πίνακα"><span class="header-section-number">1.2.2</span> Κατασκευή πίνακα</h3>
@@ -1841,10 +1835,12 @@ window.Quarto = {
 </div>
 </section>
 </section>
-<section id="εισαγωγή-αρχείων-από-άλλα-προγράμματα" class="level2 tabset tabset-fade tabset-pills" data-number="1.3">
-<h2 class="tabset tabset-fade tabset-pills anchored" data-number="1.3" data-anchor-id="εισαγωγή-αρχείων-από-άλλα-προγράμματα"><span class="header-section-number">1.3</span> Εισαγωγή αρχείων από άλλα προγράμματα</h2>
-<section id="αρχεία-excel-.xls-.xlsx" class="level3" data-number="1.3.1">
-<h3 data-number="1.3.1" class="anchored" data-anchor-id="αρχεία-excel-.xls-.xlsx"><span class="header-section-number">1.3.1</span> Αρχεία Excel (.xls, .xlsx)</h3>
+<section id="εισαγωγή-αρχείων-από-άλλα-προγράμματα" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="εισαγωγή-αρχείων-από-άλλα-προγράμματα"><span class="header-section-number">1.3</span> Εισαγωγή αρχείων από άλλα προγράμματα</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Αρχεία Excel (.xls, .xlsx)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Αρχεία .csv και .txt</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <p>Στην ενότητα αυτή, σαν παράδειγμα, θα χρησιμοποιήσουμε τα <a href="https://www.astynomia.gr/statistikes-epetirides/statistika-stoicheia-2/statistika-stoicheia-egklimatikotitas/">στατιστικά της ΕΛ.ΑΣ.</a> για την εγκληματικότητα στα έτη 2010-2019. Αυτά έχουν συγχωνευθεί σε ένα αρχείο Excel ονόματι <em>egklimatikotita0.xlsx</em>.</p>
 <p>Πρώτα, βέβαια, καθαρίζουμε τις μεταβλητές που έχουμε ορίσει σε προηγούμενη ενότητα:</p>
 <div class="cell">
@@ -6074,9 +6070,8 @@ window.Quarto = {
 6  2019 listeies_xrimatapostolon      8         2           8       18         9</code></pre>
 </div>
 </div>
-</section>
-<section id="αρχεία-.csv-και-.txt" class="level3" data-number="1.3.2">
-<h3 data-number="1.3.2" class="anchored" data-anchor-id="αρχεία-.csv-και-.txt"><span class="header-section-number">1.3.2</span> Αρχεία .csv και .txt</h3>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <p>Για να καταβάσουμε ένα αρχείο <em>.csv</em> ή <em>.txt</em> τα πράγματα είναι παρόμοια. στον RStudio επιλέγουμε <strong>Import Dataset</strong> και ακολούθως <strong>From Text (readr)</strong> ή <strong>From Text (base)</strong>.</p>
 <p>Οι πιο «παραδωσιακοί» τύποι μπορούν να χρησιμοποιήσουν την παρακάτω εντολή για να κατεβάσουν ένα αρχείο .csv:</p>
 <div class="cell">
@@ -6086,7 +6081,9 @@ window.Quarto = {
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>🄽🄰🄼🄴 <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">"🄽🄰🄼🄴.txt"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">","</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
+</div>
+</div>
+</div>
 </section>
 <section id="json" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="json"><span class="header-section-number">1.4</span> JSON</h2>
@@ -12172,10 +12169,12 @@ window.Quarto = {
 </div>
 </section>
 </section>
-<section id="προσθήκη-στοιχείων-σε-πίνακα" class="level1 tabset tabset-fade tabset-pills" data-number="3">
-<h1 class="tabset tabset-fade tabset-pills" data-number="3"><span class="header-section-number">3</span> Προσθήκη στοιχείων σε πίνακα</h1>
-<section id="προσθήκη-στήλης" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="προσθήκη-στήλης"><span class="header-section-number">3.1</span> Προσθήκη στήλης</h2>
+<section id="προσθήκη-στοιχείων-σε-πίνακα" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Προσθήκη στοιχείων σε πίνακα</h1>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Προσθήκη στήλης</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Συγχώνευση πινάκων δίπλα-δίπλα</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false" href="">Συγχώνευση πινάκων κάτω-κάτω</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <p>Μπορεί σε έναν πίνακα να χρειαστεί να προσθέσουμε κάποια στήλη με επιπλέον πληροφορίες. Στο παράδειγμά μας θα είχε ενδιαφέρον μια στήλη με το ποσοστό επιτυχίας της αστυνομίας. Αυτό, προφανώς, προκύπτει από τον τύπο:</p>
 <p><span class="math inline">\(100\cdot\dfrac{EXIXNIASEIS}{APOPEIRES+TEL\_NA}\)</span></p>
 <p>Μπορεί σε έναν πίνακα να χρειαστεί να προσθέσουμε κάποια στήλη με επιπλέον πληροφορίες. Στο παράδειγμά μας θα είχε ενδιαφέρον μια στήλη με το ποσοστό επιτυχίας της αστυνομίας και γι’ αυτό θα χρειαστούμε πάλι το αρχείο <em>egklimatikotita0.xlsx</em>.</p>
@@ -21012,9 +21011,8 @@ window.Quarto = {
 <span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>epitixies  <span class="ot">&lt;-</span> <span class="dv">100</span><span class="sc">*</span>egklimatikotita0<span class="sc">$</span>EXIXNIASEIS<span class="sc">/</span>(egklimatikotita0<span class="sc">$</span>APOPEIRES<span class="sc">+</span>egklimatikotita0<span class="sc">$</span>TEL_NA)</span>
 <span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>egklimatikotita0<span class="sc">$</span>EPITIX  <span class="ot">&lt;-</span>  epitixies</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="συγχώνευση-πινάκων-δίπλα-δίπλα" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="συγχώνευση-πινάκων-δίπλα-δίπλα"><span class="header-section-number">3.2</span> Συγχώνευση πινάκων δίπλα-δίπλα</h2>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <p>Στην παρούσα υποενότητα θα καταπιαστούμε με την μελέτη του πίνακα <code>mPinak</code> που εξετάσαμε στην υποενότητα <a href="#κατασκευή-πίνακα">Κατασκευή πίνακα</a>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Διαγραφή προηγούμενων δεδομένων</span></span>
@@ -21735,9 +21733,8 @@ window.Quarto = {
 <span id="cb70-19"><a href="#cb70-19" aria-hidden="true" tabindex="-1"></a>prosbMEIONmath  <span class="ot">&lt;-</span>  <span class="fu">merge</span>(<span class="at">x=</span>mPinak2,<span class="at">y=</span>prosPoleis,<span class="at">by=</span><span class="st">"POLI"</span>,<span class="at">all.x=</span><span class="cn">TRUE</span>)</span>
 <span id="cb70-20"><a href="#cb70-20" aria-hidden="true" tabindex="-1"></a>mathMEIONprosb  <span class="ot">&lt;-</span>  <span class="fu">merge</span>(<span class="at">x=</span>mPinak2,<span class="at">y=</span>prosPoleis,<span class="at">by=</span><span class="st">"POLI"</span>,<span class="at">all.y=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="συγχώνευση-πινάκων-κάτω-κάτω" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="συγχώνευση-πινάκων-κάτω-κάτω"><span class="header-section-number">3.3</span> Συγχώνευση πινάκων κάτω-κάτω</h2>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
 <p>Εδώ θα μελετήσουμε τις παραβιάσεις των Εθνικών Χωρικών Υδάτων και του Εθνικού Εναέριου Χώρου το 2019 από την Τουρκία. Οι πληροφορίες αντλήθηκαν από την σελίδα του ΓΕΕΘΑ (<a href="https://geetha.mil.gr/paravaseis-paraviaseis/thalassia-symvanta-archeio-paraviaseon/">εδώ</a> κι <a href="https://geetha.mil.gr/paravaseis-paraviaseis/enaerios-choros-archeio-paravaseon-paraviaseon/">εδώ</a>) και αφορούν τα έτη 2009-2020.</p>
 <p>Αρχικά όμως διαγράφουμε τα προηγούμενα.</p>
 <div class="cell">
@@ -23856,7 +23853,9 @@ window.Quarto = {
 <span id="cb80-13"><a href="#cb80-13" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb80-14"><a href="#cb80-14" aria-hidden="true" tabindex="-1"></a>parabiaseis19 <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(EXY_19, EEX_19)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
+</div>
+</div>
+</div>
 </section>
 <section id="αναδιαμόρφωση-πίνακα" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Αναδιαμόρφωση πίνακα</h1>

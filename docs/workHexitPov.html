@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Κώστας Κούδας">
-<meta name="dcterms.date" content="2026-02-15">
+<meta name="dcterms.date" content="2026-02-16">
 
 <title>Έξοδος από τη φτώχεια. – r-koudas</title>
 <style>
@@ -186,7 +186,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./bouleytesCor.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Πολιτικό προφίλ &amp; Βουλευτές</span></a>
+ <span class="menu-text">Το πολιτικό προφίλ των Ελλήνων εστιασμένο στ’ αριστερά</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -205,6 +205,12 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="./axiologisiDimon.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Αξιολόγηση Δημόσιων Υπηρεσιών</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./metanastes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Θέσεις αριστεράς για μεταναστευτικό</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -276,7 +282,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 15, 2026</p>
+      <p class="date">February 16, 2026</p>
     </div>
   </div>
   
@@ -290,6 +296,219 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="παρουσίαση-δεδομένων" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Παρουσίαση δεδομένων</h1>
+<p>Στον παρακάτω πίνακα παρουσιάζονται οι εβδομαδιαίες ώρες που χρειάζεται να εργαστεί μια οικογένεια που λαμβάνει το ελάχιστο εγγυημένο εισόδημα, ώστε να εξέλθει από τη φτώχεια (δείκτης <code>WORKEXPOV</code>), όπως αυτός αντλήθηκε από την αντίστοιχη σελίδα του <a href="https://data-explorer.oecd.org/vis?lc=en&amp;df%5Bds%5D=DisseminateArchiveDMZ&amp;df%5Bid%5D=DF_DP_LIVE&amp;df%5Bag%5D=OECD&amp;df%5Bvs%5D=&amp;av=true&amp;pd=%2C&amp;dq=.WORKEXPOV...A&amp;to%5BTIME_PERIOD%5D=false&amp;vw=tb&amp;ly%5Bcl%5D=TIME_PERIOD&amp;ly%5Brs%5D=SUBJECT%2CMEASURE&amp;ly%5Brw%5D=LOCATION">OECD</a>. Το όριο της φτώχειας στην προκειμένη περίπτωση υπολογίζεται ως το 50% του διάμεσου διαθέσιμου εισοδήματος στη χώρα.</p>
+<p>Τα δεδομένα αφορούν (<code>SUBJECT</code>):</p>
+<ul>
+<li><p>ζευγάρια χωρίς εργασία με 2 παιδιά (<code>UNEMP_COUPL2CHLD</code>),</p></li>
+<li><p>ζευγάρια χωρίς εργασία, που δεν έχουν 2 παιδιά (<code>UNEMP_COUPLNOCHLD</code>),</p></li>
+<li><p>ένα άτομο με δύο παιδιά (<code>SNGL2CHLD</code>),</p></li>
+<li><p>ένα άτομο χωρίς παιδιά (<code>SNGLNOCHLD</code>).</p></li>
+</ul>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped caption-top">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">STRUCTURE</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">STRUCTURE_ID</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">STRUCTURE_NAME</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">ACTION</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">LOCATION</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">Country</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">INDICATOR</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">Indicator</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">SUBJECT</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">Subject</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">MEASURE</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">Measure</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">FREQUENCY</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">Frequency</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">TIME_PERIOD</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">Time</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">OBS_VALUE</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">Observation.Value</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">OBS_STATUS</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">Observation.Status</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">UNIT_MEASURE</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">Unit.of.Measures</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">UNIT_MULT</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">Multiplier</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">BASE_PER</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">Base.reference.period</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">DATAFLOW</td>
+<td style="text-align: left;">OECD:DF_DP_LIVE(1.0)</td>
+<td style="text-align: left;">OECD Data Archive</td>
+<td style="text-align: left;">I</td>
+<td style="text-align: left;">AUS</td>
+<td style="text-align: left;">Australia</td>
+<td style="text-align: left;">WORKEXPOV</td>
+<td style="text-align: left;">Working hours needed to exit poverty</td>
+<td style="text-align: left;">UNEMP_COUPL2CHLD</td>
+<td style="text-align: left;">Jobless couple, 2 children</td>
+<td style="text-align: left;">HR_AVEWAGE</td>
+<td style="text-align: left;">Hours at average wage</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">Annual</td>
+<td style="text-align: right;">2004</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DATAFLOW</td>
+<td style="text-align: left;">OECD:DF_DP_LIVE(1.0)</td>
+<td style="text-align: left;">OECD Data Archive</td>
+<td style="text-align: left;">I</td>
+<td style="text-align: left;">POL</td>
+<td style="text-align: left;">Poland</td>
+<td style="text-align: left;">WORKEXPOV</td>
+<td style="text-align: left;">Working hours needed to exit poverty</td>
+<td style="text-align: left;">UNEMP_COUPLNOCHLD</td>
+<td style="text-align: left;">Jobless couple, no child</td>
+<td style="text-align: left;">HR_MINWAGE</td>
+<td style="text-align: left;">Hours at minimum wage</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">Annual</td>
+<td style="text-align: right;">2001</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DATAFLOW</td>
+<td style="text-align: left;">OECD:DF_DP_LIVE(1.0)</td>
+<td style="text-align: left;">OECD Data Archive</td>
+<td style="text-align: left;">I</td>
+<td style="text-align: left;">SVK</td>
+<td style="text-align: left;">Slovak Republic</td>
+<td style="text-align: left;">WORKEXPOV</td>
+<td style="text-align: left;">Working hours needed to exit poverty</td>
+<td style="text-align: left;">UNEMP_COUPLNOCHLD</td>
+<td style="text-align: left;">Jobless couple, no child</td>
+<td style="text-align: left;">HR_67PC_AVEWAGE</td>
+<td style="text-align: left;">Hours at 67% average wage</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">Annual</td>
+<td style="text-align: right;">2001</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DATAFLOW</td>
+<td style="text-align: left;">OECD:DF_DP_LIVE(1.0)</td>
+<td style="text-align: left;">OECD Data Archive</td>
+<td style="text-align: left;">I</td>
+<td style="text-align: left;">POL</td>
+<td style="text-align: left;">Poland</td>
+<td style="text-align: left;">WORKEXPOV</td>
+<td style="text-align: left;">Working hours needed to exit poverty</td>
+<td style="text-align: left;">UNEMP_COUPL2CHLD</td>
+<td style="text-align: left;">Jobless couple, 2 children</td>
+<td style="text-align: left;">HR_AVEWAGE</td>
+<td style="text-align: left;">Hours at average wage</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">Annual</td>
+<td style="text-align: right;">2001</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DATAFLOW</td>
+<td style="text-align: left;">OECD:DF_DP_LIVE(1.0)</td>
+<td style="text-align: left;">OECD Data Archive</td>
+<td style="text-align: left;">I</td>
+<td style="text-align: left;">DNK</td>
+<td style="text-align: left;">Denmark</td>
+<td style="text-align: left;">WORKEXPOV</td>
+<td style="text-align: left;">Working hours needed to exit poverty</td>
+<td style="text-align: left;">UNEMP_COUPLNOCHLD</td>
+<td style="text-align: left;">Jobless couple, no child</td>
+<td style="text-align: left;">HR_AVEWAGE</td>
+<td style="text-align: left;">Hours at average wage</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">Annual</td>
+<td style="text-align: right;">2001</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DATAFLOW</td>
+<td style="text-align: left;">OECD:DF_DP_LIVE(1.0)</td>
+<td style="text-align: left;">OECD Data Archive</td>
+<td style="text-align: left;">I</td>
+<td style="text-align: left;">DNK</td>
+<td style="text-align: left;">Denmark</td>
+<td style="text-align: left;">WORKEXPOV</td>
+<td style="text-align: left;">Working hours needed to exit poverty</td>
+<td style="text-align: left;">UNEMP_COUPLNOCHLD</td>
+<td style="text-align: left;">Jobless couple, no child</td>
+<td style="text-align: left;">HR_67PC_AVEWAGE</td>
+<td style="text-align: left;">Hours at 67% average wage</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">Annual</td>
+<td style="text-align: right;">2001</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Ακολουθεί μια συνοπτική παρουσίαση της κατάστασης στα χρόνια 2001-2023 που αφορά την κάθε χώρα ξεχωριστά, συμπεριλαμβανομένης και της Ελλάδας.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Ζευγάρι με 2 παιδιά</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Ζευγάρι χωρίς παιδιά</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Μόνος με 2 παιδιά</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href="">Μόνος χωρίς παιδιά</a></li></ul>
 <div class="tab-content">
@@ -342,6 +561,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="πορεία-στο-χρόνο" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Πορεία στο χρόνο</h1>
+<p>Σε πρώτη φάση θα ερευνήσουμε την εξέλιξη της κατάστασης στην πορεία του χρόνου. Πώς αλλάζει ο κόπος που καταβάλει κάποιος για να βγει από τη φτώχεια; Συγκεκριμένα, συμβαίνει κάτι διαφορετικό παγκοσμίως στο 2023;</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Ζευγάρι με 2 παιδιά</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Ζευγάρι χωρίς παιδί</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">Μόνος με 2 παιδιά</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false" href="">Μόνος χωρίς παιδιά</a></li></ul>
 <div class="tab-content">
@@ -651,6 +871,7 @@ alternative hypothesis: true location shift is not equal to 0</code></pre>
 </section>
 <section id="παίζει-ρόλο-το-να-είσαι-ζευγάρι-ή-μόνος" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Παίζει ρόλο το να είσαι ζευγάρι ή μόνος;</h1>
+<p>Σε τούτη την ενότητα θα εξετάσουμε αν επιδρά στη δυσκολία εξόδου από τη φτώχεια το να είσαι ζευγάρι ή μόνος.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Με 2 παιδιά</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Χωρίς παιδί</a></li></ul>
 <div class="tab-content">

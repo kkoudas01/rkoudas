@@ -82,7 +82,10 @@ library(kableExtra)
 
 ## Κατασκευή λίστας ή πίνακα τιμών στην R {#κατασκευή-λίστας-ή-πίνακα-τιμών-στην-r}
 
-### Κατασκευή λίστας {#κατασκευή-λίστας .tabset .tabset-fade .tabset-pills}
+### Κατασκευή λίστας 
+
+
+
 
 Πριν προχωρήσουμε σε πιο συγκεκριμένες τοποθετήσεις, θα καθαρίσουμε τη μνήμη της R, μήπως έχουμε αποθηκεύσει κάτι προηγουμένως και επηρεάσει τη διαδικασία.
 
@@ -90,6 +93,9 @@ library(kableExtra)
 rm(list = ls())
 
 ```
+
+
+::: {.panel-tabset}
 
 #### Δημιουργία εκ του μηδενός
 
@@ -258,6 +264,8 @@ poleisMoria <- paste(poleisBathm,"moria", sep = "")
 
 επισυνάπτουμε στην λίστα `poleisBathm` την λέξη «`moria`» δίπλα από το κάθε στοιχείο της.
 
+:::
+
 ### Κατασκευή πίνακα {#κατασκευή-πίνακα}
 
 Αυτά όλα θα ήταν χρήσιμο να παρασταθούν σε έναν πίνακα. Γι’ αυτόν τον σκοπό υπάρχει η συνάρτηση `data.frame()`. Γράφοντας επί παραδείγματι:
@@ -301,9 +309,11 @@ poleisMoria <- paste(poleisBathm,"moria", sep = "")
 mPinak <- data.frame(ETOS=etiEpan, TMHMA=pMEp, BATHMOS=math19_20)
 ```
 
-## Εισαγωγή αρχείων από άλλα προγράμματα {#εισαγωγή-αρχείων-από-άλλα-προγράμματα .tabset .tabset-fade .tabset-pills}
+## Εισαγωγή αρχείων από άλλα προγράμματα
 
-### Αρχεία Excel (.xls, .xlsx) {#αρχεία-excel-.xls-.xlsx}
+::: {.panel-tabset}
+
+### Αρχεία Excel (.xls, .xlsx)
 
 Στην ενότητα αυτή, σαν παράδειγμα, θα χρησιμοποιήσουμε τα [στατιστικά της ΕΛ.ΑΣ.](https://www.astynomia.gr/statistikes-epetirides/statistika-stoicheia-2/statistika-stoicheia-egklimatikotitas/) για την εγκληματικότητα στα έτη 2010-2019. Αυτά έχουν συγχωνευθεί σε ένα αρχείο Excel ονόματι *egklimatikotita0.xlsx*.
 
@@ -385,6 +395,8 @@ tail(egklimatikotita0)
 #| eval = F
 🄽🄰🄼🄴 <- read.delim("🄽🄰🄼🄴.txt", header = TRUE, sep = ",")
 ```
+
+:::
 
 ## JSON
 
@@ -779,7 +791,10 @@ titlEgkl  <-  colnames(egklimatikotita0)
 titlEgkl
 ```
 
-# Προσθήκη στοιχείων σε πίνακα {#προσθήκη-στοιχείων-σε-πίνακα .tabset .tabset-fade .tabset-pills}
+# Προσθήκη στοιχείων σε πίνακα 
+
+::: {.panel-tabset}
+
 
 ## Προσθήκη στήλης {#προσθήκη-στήλης}
 
@@ -1134,6 +1149,9 @@ if(!require(dplyr)){
 }
 parabiaseis19 <- bind_rows(EXY_19, EEX_19)
 ```
+
+:::
+
 
 # Αναδιαμόρφωση πίνακα {#αναδιαμόρφωση-πίνακα}
 
