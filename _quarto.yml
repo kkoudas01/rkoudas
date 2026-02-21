@@ -191,50 +191,36 @@ website:
               href: 1optikopoiisi.qmd
             - text: "Επεξεργασία δεδομένων με dplyr"
               href: 2metasxDedomDPLYR.qmd
-        - section: "Κατανομές"
-          contents:
-            - section: "Διακριτές κατανομές"
+            - section: "Κατανομές"
               contents:
-                - text: "Ομοιόμορφη διακριτή"
-                  href: uniformDiscr.qmd
-                - text: "Διωνυμική"
-                  href: binom.qmd
-                - text: "Υπεργεωμετρική"
-                  href: hyperGeom.qmd
-                - text: "Γεωμετρική"
-                  href: geom.qmd
-                - text: "Αρνητική διωνυμική"
-                  href: nBinom.qmd
-                - text: "Poisson"
-                  href: poisson.qmd
-            - section: "Συνεχείς κατανομές"
+                - section: "Διακριτές κατανομές"
+                  contents:
+                    - text: "Ομοιόμορφη διακριτή"
+                      href: uniformDiscr.qmd
+                    - text: "Διωνυμική"
+                      href: binom.qmd
+                    - text: "Υπεργεωμετρική"
+                      href: hyperGeom.qmd
+                    - text: "Γεωμετρική"
+                      href: geom.qmd
+                    - text: "Αρνητική διωνυμική"
+                      href: nBinom.qmd
+                    - text: "Poisson"
+                      href: poisson.qmd
+                - section: "Συνεχείς κατανομές"
+                  contents:
+                    - text: "Ομοιόμορφη συνεχής"
+                      href: uniformCont.qmd
+                    - text: "Εκθετική"
+                      href: expDist.qmd
+                    - text: "Γάμμα"
+                      href: gammaDist.qmd
+                    - text: "Κανονική"
+                      href: normalDist.qmd
+            - section: "Μηχανική Μάθηση"
               contents:
-                - text: "Ομοιόμορφη συνεχής"
-                  href: uniformCont.qmd
-                - text: "Εκθετική"
-                  href: expDist.qmd
-                - text: "Γάμμα"
-                  href: gammaDist.qmd
-                - text: "Κανονική"
-                  href: normalDist.qmd
-        - section: "Μηχανική Μάθηση"
-          contents:
-            - text: "Εργασία στη μηχανική μάθηση"
-              href: ergasiaKostasKoudas.qmd
-            - section: "Επιβλεπόμενη Μάθηση"
-              contents:
-                - text: "Δέντρα & Random Forests"
-                  href: randomForests.qmd
-                - text: "k-NN"
-                  href: knn.qmd
-                - text: "Νευρωνικά Δίκτυα"
-                  href: neuralNets.qmd
-            - section: "Μη Επιβλεπόμενη Μάθηση"
-              contents:
-                - text: "k-Means"
-                  href: kmeans.qmd
-                - text: "DBSCAN"
-                  href: dbscan.qmd
+                - text: "Εργασία στη μηχανική μάθηση"
+                  href: ergasiaKostasKoudas.qmd
         - section: "Mathematica"
           contents:
             - text: "Μετατροπή λίστας/πίνακα"
