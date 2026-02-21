@@ -1,0 +1,215 @@
+---
+title: "Επεξεργασία δεδομένων με το πακέτο `dplyr`"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+
+# Προαπαιτούμενα
+
+
+
+```{r}
+rm(list = ls())
+if(!require(tidyverse)){
+  install.packages("tidyverse")
+  library(tidyverse)
+}
+if(!require(nycflights13)){
+  install.packages("nycflights13")
+  library(nycflights13)
+}
+```
+
+```{r}
+flights
+```
+
+# Επιλογή γραμμών με βάση κάποια κριτήρια
+
+## Απλή
+
+
+8 Οκτωβρίου
+
+```{r}
+filter(flights, month==10, day==8)
+```
+
+Στις αρχές του έτους.
+
+```{r}
+filter(flights, month<=3)
+```
+
+
+```{r}
+filter(flights, origin == "EWR")
+```
+
+## Λογικοί τελεστές
+
+Καλοκαίρι
+
+```{r}
+filter(flights, month<=8 & month>=6)
+```
+
+Πάσχα
+
+```{r}
+filter(flights,(month == 4 & day >=29) | (month==5 & day<=12))
+```
+
+# Διάταξη
+
+
+## Διάταξη γραμμών
+
+Με βάση την καθυστέρηση σε αύξουσα σειρά.
+
+```{r}
+arrange(flights, dep_delay)
+```
+
+Με βάση την καθυστέρηση σε φθίνουσα σειρά.
+
+```{r}
+arrange(flights, desc(dep_delay))
+```
+
+## Διάταξη στηλών
+
+Βάζουμε τις στήλες των καθυστερήσεων πρώτες
+
+```{r}
+select(flights, dep_delay, arr_delay, everything())
+```
+
+# Επιλογή στηλών
+
+```{r}
+select(flights, year, month)
+```
+
+```{r}
+select(flights, origin, dep_delay)
+```
+
+
+Επιλογή στηλών από `dep_time` έως `arr_time`.
+
+```{r}
+select(flights, dep_time:arr_time)
+```
+
+
+Επιλογή στηλών εκτός από αυτές μεταξύ των `dep_time` έως `arr_time`.
+
+```{r}
+select(flights,-(dep_time:arr_time))
+```
+
+# Νέες μεταβλητές
+
+## Προσθήκη νέων μεταβλητών
+
+```{r}
+flightsShort <- select(flights, year:day, ends_with("delay"), distance, air_time)
+flightsShort
+```
+
+Προσθήκη αναμονής και ταχύτητας
+
+
+```{r}
+mutate(flightsShort, gain = arr_delay-dep_delay, speed = distance/air_time * 60)
+```
+
+
+## Πίνακας με μόνο νέες&επιλεγμένες μεταβλητές
+
+```{r}
+transmute(flights, origin, gain = arr_delay-dep_delay, speed = distance/air_time * 60)
+```
+
+# Ομαδοποίηση
+
+Οι πτήσεις χωρισμένες σε ομάδες πτήσεων Ιανουαρίου, Φεβρουαρίου κτλ, ανεξάρτητα από το έτος
+
+```{r}
+by_month <- group_by(flights, month)
+by_month
+```
+
+Οι πτήσεις χωρισμένες σε ομάδες πτήσεων Ιανουαρίου, Φεβρουαρίου κτλ στο έτος
+
+```{r}
+by_month2 <- group_by(flights, year, month)
+by_month2
+```
+
+Οι πτήσεις χωρισμένες σε ομάδες ανά ημέρα.
+
+
+```{r}
+by_day <- group_by(flights, year, month, day)
+by_day
+```
+
+# Σύνοψη
+
+```{r}
+summarise(by_month, delay = mean(dep_delay, na.rm=T))
+```
+
+```{r}
+summarise(by_day,delay = mean(dep_delay, na.rm=T))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -634,7 +634,7 @@ prediction2 <- predict(tree_part2, test_set, type = "class")
   
 
 
-## Με initial_split
+## Με `initial_split`
 
 Στην υποενότητα αυτή θα ακολουθήσουμε μια πιο αυτοματοποιημένη, αλλά και πιο στατιστικά αμερόληπτη μέθοδο. Συγκεκριμένα, προκειμένου να καταλήγουμε σε αντιπροσωπευτικό δείγμα (όχι bias), θα πρέπει οι αναλογίες των τιμών της `class` να είναι παρόμοιες σε κάθε δείγμα που θα διαλέξουμε. Προς τούτο θα ακολουθήσουμε τις οδηγίες του [Practical Machine Learning with R](https://www.routledge.com/Practical-Machine-Learning-with-R-Tutorials-and-Case-Studies/Lange/p/book/9781032434056) και θα χρησιμοποιήσουμε τη συνάρτηση `initial_split()` του πακέτου `tidymodels`.
 
@@ -679,7 +679,7 @@ predictionIS <- predict(treeIS, testIS, type = "class")
 
 
 
-## Με createDataPartition
+## Με `createDataPartition`
 
 Στα ίδια πλαίσια είναι και η συνάρτηση `createDataPartition()` του πακέτου `caret`. Ο γράφων βρήκε αυτή την προσέγγιση [εδώ](https://www.geeksforgeeks.org/r-language/decision-tree-in-r-programming/). Η άποψη LLM που ρώτησε (DeepSeek, Gemini και ChatGPT) είναι ότι η συνάρτηση `createDataPartition()` του πακέτου `caret` κάνει την ίδια δουλειά με τη συνάρτηση `initial_split()` του πακέτου `tidymodels`, την οποία χρησιμοποιήσαμε σε προηγούμενη ενότητα. Παραταύτα, για λόγους επαλήθευσης των λεγομένων τους, αλλά και μετέπειτα αξιοποίησης του πακέτου `caret` ο γράφων προχώρησε και στη μελέτη με την `createDataPartition()`.
 

@@ -5,7 +5,9 @@ $navbar-hl: #2b3e50;
 
 /*-- scss:rules --*/
 
-/* ΔΙΟΡΘΩΣΗ ΠΙΝΑΚΩΝ ΣΕ DARK THEME */
+/* -----------------------------------------
+   ΔΙΟΡΘΩΣΗ ΠΙΝΑΚΩΝ ΣΕ DARK THEME 
+   ----------------------------------------- */
 
 /* Στοχεύουμε τα κελιά επικεφαλίδων (th) μέσα στο head του πίνακα (thead) */
 .table thead th,
@@ -16,14 +18,28 @@ table thead th {
     /* 2. Βεβαιωνόμαστε ότι τα γράμματα παραμένουν λευκά */
     color: #ffffff !important;
 
-    /* 3. (Προαιρετικό) Προσθέτουμε μια πορτοκαλί γραμμή από κάτω για στυλ */
+    /* 3. Προσθέτουμε μια πορτοκαλί γραμμή από κάτω για στυλ */
     border-bottom: 2px solid #df691a !important;
 }
 
-/* (Προαιρετικό) Εξασφάλιση ότι και τα κελιά του σώματος (tbody) δεν θα κάνουν "κόλπα" */
+/* Εξασφάλιση ότι και τα κελιά του σώματος (tbody) δεν θα κάνουν "κόλπα" */
 .table tbody td, .table tbody th,
 table tbody td {
     background-color: #2b3e50 !important; /* Σκούρο φόντο */
     color: #ebebeb !important; /* Σχεδόν λευκά γράμματα για καλή ανάγνωση */
     border-top: 1px solid #4e5d6c !important; /* Διακριτικό χώρισμα γραμμών */
+}
+
+
+/* -----------------------------------------
+   ΔΙΟΡΘΩΣΗ ΓΙΑ INLINE CODE (π.χ. `ggplot2`)
+   ----------------------------------------- */
+
+/* Εφαρμόζεται σε inline code μέσα σε κείμενο και τίτλους (όχι σε code blocks) */
+:not(pre) > code, 
+h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
+    background-color: rgba(255, 255, 255, 0.1) !important; /* Ένα πολύ αχνό, ημιδιαφανές φόντο */
+    color: #df691a !important; /* Το πορτοκαλί του Superhero για αντίθεση */
+    padding: 2px 4px;
+    border-radius: 4px;
 }

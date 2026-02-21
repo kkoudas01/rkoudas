@@ -185,6 +185,12 @@ website:
       contents:
         - text: "ΕΝΤΟΣ ΕΚΤΟΣ & ΕΠΙ ΤΑ ΑΥΤΑ"
           href: entos_ektos.qmd # Η εισαγωγική σελίδα
+        - section: "εν περιληψει"
+          contents: 
+            - text: "Οπτικοποίηση με ggplot"
+              href: 1optikopoiisi.qmd
+            - text: "Επεξεργασία δεδομένων με dplyr"
+              href: 2metasxDedomDPLYR.qmd
         - section: "Κατανομές"
           contents:
             - section: "Διακριτές κατανομές"
