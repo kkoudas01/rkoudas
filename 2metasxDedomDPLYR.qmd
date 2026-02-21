@@ -165,13 +165,73 @@ by_day
 
 # Σύνοψη
 
+Μέση καθυστέρηση ανά μήνα.
+
 ```{r}
-summarise(by_month, delay = mean(dep_delay, na.rm=T))
+summarise(by_month, 
+          delay = mean(dep_delay, na.rm=T) 
+          )
 ```
+
+Μέση καθυσ΄τερηση ανά συγκεκριμένη ημέρα του έτους.
+
 
 ```{r}
 summarise(by_day,delay = mean(dep_delay, na.rm=T))
 ```
+
+
+# Αγωγός `%>%`
+
+Χωρίζουμε τις πτήσεις σε ομάδες ανά προορισμό.
+
+```{r}
+by_dest <- group_by(flights,dest)
+by_dest
+```
+
+
+
+```{r}
+delay <- summarise(by_dest,
+                   count = n(), # Μετρά τις πτήσεις στον κάθε προορισμό
+                   dist = mean(distance, na.rm=T), # Μέση απόσταση προς τον εκάστοτε προορισμό
+                   delay = mean(arr_delay, na.rm=T) # Μέση καθυστέρηση που αφορά τον εκάστοτε προορισμό
+                   )
+delay <- filter(delay, count>20, dest != "JFK") # Κρατάμε δημοφιλείς προορισμούς, εκτός του αεροδρομίου JFK
+delay
+```
+
+
+Ο αγωγός `%>%` σημαίνει `ακολούθως`.
+
+```{r}
+delayA <- flights %>%
+  group_by(dest) %>%
+  summarise(
+    count = n(),
+    dist = mean(distance, na.rm=T),
+    delay = mean(arr_delay, na.rm=T)
+  ) %>%
+  filter(count>20, dest != "JFK")
+
+delayA
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
