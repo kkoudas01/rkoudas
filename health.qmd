@@ -1,0 +1,307 @@
+---
+title: "Κοινωνικο-οικονομικές επιδράσεις στην υγεία"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+# Εισαγωγή
+
+
+
+
+
+# Δεδομένα
+
+
+## Maternal mortality ratio
+
+[MaternalMortalityRatio](https://ourworldindata.org/sdgs/good-health-wellbeing)
+
+
+
+Maternal mortality ratio
+Definition of the SDG indicator: Indicator 3.1.1 is the “maternal mortality ratio” in the UN SDG framework.
+
+The maternal mortality ratio refers to the number of women who die from pregnancy-related causes while pregnant or within 42 days of pregnancy termination per 100,000 live births.
+
+Data for this indicator is shown in the interactive visualization.
+
+Target: By 2030 “reduce the global maternal mortality ratio to less than 70 per 100,000 live births” per year.
+
+More research: The Our World in Data topic page on Maternal Mortality gives a long-run perspective over the last centuries and presents research on the causes and consequences of the deaths of mothers.
+
+## Under-5 mortality rate
+
+[Under5mortalityrate](https://ourworldindata.org/sdgs/good-health-wellbeing)
+
+
+Definition: Indicator 3.2.1 is the “under-5 mortality rate” in the UN SDG framework.
+
+The under-5 mortality rate measures the probability per 1,000 that a newborn baby will die before reaching age five, if subject to age-specific mortality rates of the specified year.
+
+Data for this indicator is shown in the interactive visualization.
+
+Target: By 2030, “end preventable deaths of newborns and children under 5 years of age, with all countries aiming to reduce neonatal mortality to at least as low as 12 per 1,000 live births and under-5 mortality to at least as low as 25 per 1,000 live births.”
+
+More research: Child mortality is covered more broadly, and with a longer-term perspective in the Our World in Data topic page on Child Mortality.
+
+## Neonatal mortality rate
+
+[NeonatalMortalityRate](https://ourworldindata.org/sdgs/good-health-wellbeing)
+
+
+Definition of the SDG indicator: Indicator 3.2.2 is the “neonatal mortality rate” in the UN SDG framework.
+
+The neonatal mortality rate is defined as the probability per 1,000 that a child born in a given year will die during the first 28 days of life, if subject to the age-specific mortality rates of that period.
+
+Data on this indicator is shown in the interactive visualization.
+
+Target: By 2030, “end preventable deaths of newborns and children under 5 years of age, with all countries aiming to reduce neonatal mortality to at least as low as 12 per 1,000 live births and under-5 mortality to at least as low as 25 per 1,000 live births.”
+
+More research: The Our World in Data topic page on Child Mortality includes a section on neonatal mortality.
+
+## Tuberculosis incidence
+
+[TuberculosisIncidence](https://ourworldindata.org/sdgs/good-health-wellbeing)
+
+
+Definition of the SDG indicator: Indicator 3.3.2 is “tuberculosis incidence per 100,000 population” in the UN SDG framework.
+
+Tuberculosis incidence is the number of new and relapse cases of tuberculosis (TB) per 100,000 people, including all forms of TB.
+
+Data for this indicator is shown in the interactive visualization.
+
+Target: The 2030 target is to “end the epidemic of tuberculosis” in all countries.1
+
+The World Health Organization's End TB Strategy defines this targeted level of reduction as a decrease in incidence of 80% over 2015 levels. This would imply a target of around 28 cases per 100,000 population globally.
+
+## Hepatitis B incidence
+
+[HepatitisBincidence](https://ourworldindata.org/sdgs/good-health-wellbeing)
+
+
+Definition of the SDG indicator: Indicator 3.3.4 is “Hepatitis B incidence per 100,000 population” in the UN SDG framework.
+
+Hepatitis B incidence is the number of new cases of hepatitis B in one year per 100,000 people in a given population. This is measured indirectly as the share of children under 5 years of age with an active Hepatitis B infection, as measured by an Hepatitis B surface antigen test.
+
+Data for this indicator is shown in the interactive visualization.
+
+Target: By 2030 “combat hepatitis” in all countries with a focus on hepatitis B.1 The targeted level of reduction, however, is not defined.
+
+## Mortality rate from non-communicable diseases
+
+[mortality-from-ncds-sdgs](https://ourworldindata.org/sdgs/good-health-wellbeing)
+
+
+Definition of the SDG indicator: Indicator 3.4.1 is the “mortality rate attributed to cardiovascular disease, cancer, diabetes or chronic respiratory disease” in the UN SDG framework.
+
+This is defined as the percent of 30-year-old-people who would die before their 70th birthday from cardiovascular disease, cancer, diabetes, or chronic respiratory disease, assuming that they would experience current mortality rates at every age and would not die from any other cause of death (e.g. injuries or HIV/AIDS).
+
+Data for this indicator is shown in the interactive visualization.
+
+Target: By 2030 “reduce by one third premature mortality from non-communicable diseases through prevention and treatment” in all countries.2
+
+## Suicide rate
+
+[SuicideRate](https://ourworldindata.org/sdgs/good-health-wellbeing)
+
+
+Definition of the SDG indicator: Indicator 3.4.2 is the “suicide mortality rate” in the UN SDG framework.
+
+The suicide mortality rate is the number of deaths from suicide measured per 100,000 people in a given population.
+
+Data for this indicator is shown in the interactive visualization.
+
+Target: By 2030 “promote mental health and wellbeing”.2 There is no defined target level of reduction for this indicator.
+
+More research: Further data and research on suicide, mental health and wellbeing can be found at the Our World in Data topic pages on Suicide, Mental Health and Happiness and Life Satisfaction.
+
+
+
+## Share of population that cannot afford a healthy diet, 2024
+
+[share-healthy-diet-unaffordable](https://ourworldindata.org/diet-affordability)
+
+The cost of a healthy diet is the lowest-cost set of foods available that would meet requirements in dietary guidelines from
+governments and public health agencies. A diet is defined as unaffordable when its cost, plus basic non-food needs like housing
+and transportation, exceeds daily income.
+
+## Death rate from cancer, 1950 to 2023
+
+[cancer-death-rate-who-mdb](https://ourworldindata.org/grapher/cancer-death-rate-who-mdb?country=USA~RUS~ZAF~HUN)
+
+
+The reported annual death rate from cancer per 100,000 people, based on the underlying cause listed on death certificates.
+Comparisons may be affected by differences in measurement.
+
+
+# Σελίδες
+
+
+
+
+
+https://ourworldindata.org/grapher/public-health-expenditure-share-gdp?country=SWE~FRA~DEU~JPN
+
+https://data-explorer.oecd.org/?tm=health&pg=0&snb=356
+
+https://www.statista.com/search/?q=health&p=1&tabGroup=statistic
+
+# Σύγκριση με:
+
+## Hours of work needed to escape poverty
+
+[HoursPoverty.csv](https://data-explorer.oecd.org/vis?fs[0]=Topic%2C1%7CEmployment%23JOB%23%7CBenefits%252C%20earnings%20and%20wages%23JOB_BW%23&pg=0&fc=Topic&bp=true&snb=21&df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_TAXBEN_HOURSPOV%40DF_HOURSPOV&df[ag]=OECD.ELS.JAI&df[vs]=1.0&dq=AUS%2BAUT%2BBEL%2BCAN%2BCHL%2BCZE%2BDNK%2BEST%2BFIN%2BFRA%2BDEU%2BGRC%2BHUN%2BISL%2BIRL%2BISR%2BITA%2BJPN%2BKOR%2BLVA%2BLTU%2BLUX%2BNLD%2BNZL%2BNOR%2BPOL%2BPRT%2BSVK%2BSVN%2BESP%2BSWE%2BCHE%2BTUR%2BGBR%2BUSA%2BEU28%2BOECD%2BWXOECD%2BBGR%2BHRV%2BCYP%2BMLT%2BROU%2BRUS...MINW%2BAW100%2BAW67.S_C0%2BS_C2%2BC_C0%2BC_C2..NO%2BYES.YES%2BNO.A&to[TIME_PERIOD]=false&vw=ov&pd=2001%2C2025)
+
+This indicator measures the working hours needed to escape poverty for a jobless family claiming minimum income benefits.
+Calculations for families with children assume 2 children aged 4 and 6 who do not use formal childcare.
+
+
+Measure: Working hours needed to escape poverty for a jobless family claiming minimum income benefitsUnit of measure: Hours per weekAge of children: 4 and 6 years
+Topic: Employment > Benefits, earnings and wages
+
+## Weekly working hours, 1870 to 2000
+
+[work-hours-per-week](https://ourworldindata.org/grapher/work-hours-per-week)
+
+Work hours of full-time production workers (male and female) in non-agricultural activities
+
+## Days off from work for vacations and holidays
+
+[days-of-vacation-and-holidays](https://ourworldindata.org/grapher/days-of-vacation-and-holidays)
+
+Number of days off from full-time work in a year for vacations and national holidays
+
+- ώρες εργασίας
+- ώρες εργασίας για έξοδος από φτώχεια
+- αεπ
+- διάμεσο εισόδημα
+- συντελεστή gini
+
+
+# Δέντρο απόφασης
+
+- Να ξεκινάει από οικονομικές παραμέτρους και να καταλήγει σε δείκτες υγείας
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

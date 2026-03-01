@@ -6,6 +6,11 @@ format:
     fig-cap: true
 ---
 
+
+```{r, echo=FALSE, results='asis'}
+cat(readLines("indeximage.svg"), sep="\n")
+```
+
 # {{< fa brands r-project >}}  Κούδας {.unnumbered}
 
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Κώστας Κούδας">
-<meta name="dcterms.date" content="2026-02-21">
+<meta name="dcterms.date" content="2026-02-22">
 
 <title>Επεξεργασία δεδομένων με το πακέτο dplyr – r-koudas</title>
 <style>
@@ -350,25 +350,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#προαπαιτούμενα" id="toc-προαπαιτούμενα" class="nav-link active" data-scroll-target="#προαπαιτούμενα"><span class="header-section-number">1</span> Προαπαιτούμενα</a></li>
-  <li><a href="#επιλογή-γραμμών-με-βάση-κάποια-κριτήρια" id="toc-επιλογή-γραμμών-με-βάση-κάποια-κριτήρια" class="nav-link" data-scroll-target="#επιλογή-γραμμών-με-βάση-κάποια-κριτήρια"><span class="header-section-number">2</span> Επιλογή γραμμών με βάση κάποια κριτήρια</a>
+  <li><a href="#επιλογή-γραμμών-με-βάση-κάποια-κριτήρια-filter" id="toc-επιλογή-γραμμών-με-βάση-κάποια-κριτήρια-filter" class="nav-link" data-scroll-target="#επιλογή-γραμμών-με-βάση-κάποια-κριτήρια-filter"><span class="header-section-number">2</span> Επιλογή γραμμών με βάση κάποια κριτήρια (<code>filter</code>)</a>
   <ul class="collapse">
   <li><a href="#απλή" id="toc-απλή" class="nav-link" data-scroll-target="#απλή"><span class="header-section-number">2.1</span> Απλή</a></li>
   <li><a href="#λογικοί-τελεστές" id="toc-λογικοί-τελεστές" class="nav-link" data-scroll-target="#λογικοί-τελεστές"><span class="header-section-number">2.2</span> Λογικοί τελεστές</a></li>
   </ul></li>
   <li><a href="#διάταξη" id="toc-διάταξη" class="nav-link" data-scroll-target="#διάταξη"><span class="header-section-number">3</span> Διάταξη</a>
   <ul class="collapse">
-  <li><a href="#διάταξη-γραμμών" id="toc-διάταξη-γραμμών" class="nav-link" data-scroll-target="#διάταξη-γραμμών"><span class="header-section-number">3.1</span> Διάταξη γραμμών</a></li>
-  <li><a href="#διάταξη-στηλών" id="toc-διάταξη-στηλών" class="nav-link" data-scroll-target="#διάταξη-στηλών"><span class="header-section-number">3.2</span> Διάταξη στηλών</a></li>
+  <li><a href="#διάταξη-γραμμών-arrange" id="toc-διάταξη-γραμμών-arrange" class="nav-link" data-scroll-target="#διάταξη-γραμμών-arrange"><span class="header-section-number">3.1</span> Διάταξη γραμμών (<code>arrange</code>)</a></li>
+  <li><a href="#διάταξη-στηλών-select" id="toc-διάταξη-στηλών-select" class="nav-link" data-scroll-target="#διάταξη-στηλών-select"><span class="header-section-number">3.2</span> Διάταξη στηλών (<code>select</code>)</a></li>
   </ul></li>
-  <li><a href="#επιλογή-στηλών" id="toc-επιλογή-στηλών" class="nav-link" data-scroll-target="#επιλογή-στηλών"><span class="header-section-number">4</span> Επιλογή στηλών</a></li>
+  <li><a href="#επιλογή-στηλών-select" id="toc-επιλογή-στηλών-select" class="nav-link" data-scroll-target="#επιλογή-στηλών-select"><span class="header-section-number">4</span> Επιλογή στηλών (<code>select</code>)</a></li>
   <li><a href="#νέες-μεταβλητές" id="toc-νέες-μεταβλητές" class="nav-link" data-scroll-target="#νέες-μεταβλητές"><span class="header-section-number">5</span> Νέες μεταβλητές</a>
   <ul class="collapse">
-  <li><a href="#προσθήκη-νέων-μεταβλητών" id="toc-προσθήκη-νέων-μεταβλητών" class="nav-link" data-scroll-target="#προσθήκη-νέων-μεταβλητών"><span class="header-section-number">5.1</span> Προσθήκη νέων μεταβλητών</a></li>
-  <li><a href="#πίνακας-με-μόνο-νέεςεπιλεγμένες-μεταβλητές" id="toc-πίνακας-με-μόνο-νέεςεπιλεγμένες-μεταβλητές" class="nav-link" data-scroll-target="#πίνακας-με-μόνο-νέεςεπιλεγμένες-μεταβλητές"><span class="header-section-number">5.2</span> Πίνακας με μόνο νέες&amp;επιλεγμένες μεταβλητές</a></li>
+  <li><a href="#προσθήκη-νέων-μεταβλητών-mutate" id="toc-προσθήκη-νέων-μεταβλητών-mutate" class="nav-link" data-scroll-target="#προσθήκη-νέων-μεταβλητών-mutate"><span class="header-section-number">5.1</span> Προσθήκη νέων μεταβλητών (<code>mutate</code>)</a></li>
+  <li><a href="#πίνακας-με-μόνο-νέεςεπιλεγμένες-μεταβλητές-transmute" id="toc-πίνακας-με-μόνο-νέεςεπιλεγμένες-μεταβλητές-transmute" class="nav-link" data-scroll-target="#πίνακας-με-μόνο-νέεςεπιλεγμένες-μεταβλητές-transmute"><span class="header-section-number">5.2</span> Πίνακας με μόνο νέες&amp;επιλεγμένες μεταβλητές (<code>transmute</code>)</a></li>
   </ul></li>
-  <li><a href="#ομαδοποίηση" id="toc-ομαδοποίηση" class="nav-link" data-scroll-target="#ομαδοποίηση"><span class="header-section-number">6</span> Ομαδοποίηση</a></li>
-  <li><a href="#σύνοψη" id="toc-σύνοψη" class="nav-link" data-scroll-target="#σύνοψη"><span class="header-section-number">7</span> Σύνοψη</a></li>
-  <li><a href="#αγωγός" id="toc-αγωγός" class="nav-link" data-scroll-target="#αγωγός"><span class="header-section-number">8</span> Αγωγός <code>%&gt;%</code></a></li>
+  <li><a href="#ομαδοποίηση-group_by" id="toc-ομαδοποίηση-group_by" class="nav-link" data-scroll-target="#ομαδοποίηση-group_by"><span class="header-section-number">6</span> Ομαδοποίηση (<code>group_by</code>)</a></li>
+  <li><a href="#σύνοψη-summarise" id="toc-σύνοψη-summarise" class="nav-link" data-scroll-target="#σύνοψη-summarise"><span class="header-section-number">7</span> Σύνοψη (<code>summarise</code>)</a></li>
+  <li><a href="#αγωγός" id="toc-αγωγός" class="nav-link" data-scroll-target="#αγωγός"><span class="header-section-number">8</span> Αγωγός (<code>%&gt;%</code>)</a></li>
   </ul>
 </nav>
     </div>
@@ -394,7 +394,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 21, 2026</p>
+      <p class="date">February 22, 2026</p>
     </div>
   </div>
   
@@ -460,8 +460,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="επιλογή-γραμμών-με-βάση-κάποια-κριτήρια" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Επιλογή γραμμών με βάση κάποια κριτήρια</h1>
+<section id="επιλογή-γραμμών-με-βάση-κάποια-κριτήρια-filter" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Επιλογή γραμμών με βάση κάποια κριτήρια (<code>filter</code>)</h1>
 <section id="απλή" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="απλή"><span class="header-section-number">2.1</span> Απλή</h2>
 <p>8 Οκτωβρίου</p>
@@ -585,8 +585,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="διάταξη" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Διάταξη</h1>
-<section id="διάταξη-γραμμών" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="διάταξη-γραμμών"><span class="header-section-number">3.1</span> Διάταξη γραμμών</h2>
+<section id="διάταξη-γραμμών-arrange" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="διάταξη-γραμμών-arrange"><span class="header-section-number">3.1</span> Διάταξη γραμμών (<code>arrange</code>)</h2>
 <p>Με βάση την καθυστέρηση σε αύξουσα σειρά.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">arrange</span>(flights, dep_delay)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -634,8 +634,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="διάταξη-στηλών" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="διάταξη-στηλών"><span class="header-section-number">3.2</span> Διάταξη στηλών</h2>
+<section id="διάταξη-στηλών-select" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="διάταξη-στηλών-select"><span class="header-section-number">3.2</span> Διάταξη στηλών (<code>select</code>)</h2>
 <p>Βάζουμε τις στήλες των καθυστερήσεων πρώτες</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">select</span>(flights, dep_delay, arr_delay, <span class="fu">everything</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -661,8 +661,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 </section>
-<section id="επιλογή-στηλών" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Επιλογή στηλών</h1>
+<section id="επιλογή-στηλών-select" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Επιλογή στηλών (<code>select</code>)</h1>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">select</span>(flights, year, month)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -746,8 +746,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="νέες-μεταβλητές" class="level1" data-number="5">
 <h1 data-number="5"><span class="header-section-number">5</span> Νέες μεταβλητές</h1>
-<section id="προσθήκη-νέων-μεταβλητών" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="προσθήκη-νέων-μεταβλητών"><span class="header-section-number">5.1</span> Προσθήκη νέων μεταβλητών</h2>
+<section id="προσθήκη-νέων-μεταβλητών-mutate" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="προσθήκη-νέων-μεταβλητών-mutate"><span class="header-section-number">5.1</span> Προσθήκη νέων μεταβλητών (<code>mutate</code>)</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>flightsShort <span class="ot">&lt;-</span> <span class="fu">select</span>(flights, year<span class="sc">:</span>day, <span class="fu">ends_with</span>(<span class="st">"delay"</span>), distance, air_time)</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>flightsShort</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -789,8 +789,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="πίνακας-με-μόνο-νέεςεπιλεγμένες-μεταβλητές" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="πίνακας-με-μόνο-νέεςεπιλεγμένες-μεταβλητές"><span class="header-section-number">5.2</span> Πίνακας με μόνο νέες&amp;επιλεγμένες μεταβλητές</h2>
+<section id="πίνακας-με-μόνο-νέεςεπιλεγμένες-μεταβλητές-transmute" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="πίνακας-με-μόνο-νέεςεπιλεγμένες-μεταβλητές-transmute"><span class="header-section-number">5.2</span> Πίνακας με μόνο νέες&amp;επιλεγμένες μεταβλητές (<code>transmute</code>)</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">transmute</span>(flights, origin, <span class="at">gain =</span> arr_delay<span class="sc">-</span>dep_delay, <span class="at">speed =</span> distance<span class="sc">/</span>air_time <span class="sc">*</span> <span class="dv">60</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -812,8 +812,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 </section>
-<section id="ομαδοποίηση" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Ομαδοποίηση</h1>
+<section id="ομαδοποίηση-group_by" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Ομαδοποίηση (<code>group_by</code>)</h1>
 <p>Οι πτήσεις χωρισμένες σε ομάδες πτήσεων Ιανουαρίου, Φεβρουαρίου κτλ, ανεξάρτητα από το έτος</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>by_month <span class="ot">&lt;-</span> <span class="fu">group_by</span>(flights, month)</span>
@@ -890,8 +890,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="σύνοψη" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Σύνοψη</h1>
+<section id="σύνοψη-summarise" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Σύνοψη (<code>summarise</code>)</h1>
 <p>Μέση καθυστέρηση ανά μήνα.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summarise</span>(by_month, </span>
@@ -942,7 +942,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="αγωγός" class="level1" data-number="8">
-<h1 data-number="8"><span class="header-section-number">8</span> Αγωγός <code>%&gt;%</code></h1>
+<h1 data-number="8"><span class="header-section-number">8</span> Αγωγός (<code>%&gt;%</code>)</h1>
 <p>Χωρίζουμε τις πτήσεις σε ομάδες ανά προορισμό.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>by_dest <span class="ot">&lt;-</span> <span class="fu">group_by</span>(flights,dest)</span>
@@ -993,16 +993,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 # ℹ 87 more rows</code></pre>
 </div>
 </div>
-<p>Ο αγωγός <code>%&gt;%</code> σημαίνει <code>ακολούθως</code>.</p>
+<p>Ο αγωγός <code>%&gt;%</code> σημαίνει <code>ακολούθως</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>delayA <span class="ot">&lt;-</span> flights <span class="sc">%&gt;%</span></span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(dest) <span class="sc">%&gt;%</span></span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>delayA <span class="ot">&lt;-</span> flights <span class="sc">%&gt;%</span> <span class="co"># πτήσεις ΑΚΟΛΟΥΘΩΣ</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(dest) <span class="sc">%&gt;%</span> <span class="co"># ομαδοποίησε βάσει προορισμού ΑΚΟΛΟΥΘΩΣ</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>( <span class="co"># συνόψισε</span></span>
 <span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">count =</span> <span class="fu">n</span>(),</span>
 <span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">dist =</span> <span class="fu">mean</span>(distance, <span class="at">na.rm=</span>T),</span>
 <span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">delay =</span> <span class="fu">mean</span>(arr_delay, <span class="at">na.rm=</span>T)</span>
-<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(count<span class="sc">&gt;</span><span class="dv">20</span>, dest <span class="sc">!=</span> <span class="st">"JFK"</span>)</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="co"># ΑΚΟΛΟΥΘΩΣ</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(count<span class="sc">&gt;</span><span class="dv">20</span>, dest <span class="sc">!=</span> <span class="st">"JFK"</span>) <span class="co"># φιλτράρισε</span></span>
 <span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>delayA</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1020,6 +1020,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  9 BHM     297  866. 16.9 
 10 BNA    6333  758. 11.8 
 # ℹ 87 more rows</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>flights <span class="sc">%&gt;%</span> <span class="co"># πάρε τις πτήσεις ΑΚΟΛΟΥΘΩΣ</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(dep_delay), <span class="sc">!</span><span class="fu">is.na</span>(arr_delay)) <span class="sc">%&gt;%</span> <span class="co"># διώξε τις ακυρώσεις ΑΚΟΛΟΥΘΩΣ</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(tailnum) <span class="sc">%&gt;%</span> <span class="co"># ομαδοποίησε βάσει αριθμού πτήσης ΑΚΟΛΟΥΘΩΣ</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>( <span class="co"># συνόψισε</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">delay =</span> <span class="fu">mean</span>(arr_delay, <span class="at">na.rm=</span>T),</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>()</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="co"># ΑΚΟΛΟΥΘΩΣ</span></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>n, <span class="at">y=</span>delay))<span class="sc">+</span><span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">10</span>) <span class="co"># κάνε διάγραμμα διασποράς</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2metasxDedomDPLYR_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 

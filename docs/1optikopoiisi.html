@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Κώστας Κούδας">
-<meta name="dcterms.date" content="2026-02-21">
+<meta name="dcterms.date" content="2026-02-22">
 
 <title>Οπτικοποίηση δεδομένων με το πακέτο ggplot2 – r-koudas</title>
 <style>
@@ -350,33 +350,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#προαπαιτούμενα" id="toc-προαπαιτούμενα" class="nav-link active" data-scroll-target="#προαπαιτούμενα"><span class="header-section-number">1</span> Προαπαιτούμενα</a></li>
-  <li><a href="#γράφημα-διασποράς" id="toc-γράφημα-διασποράς" class="nav-link" data-scroll-target="#γράφημα-διασποράς"><span class="header-section-number">2</span> Γράφημα διασποράς</a>
+  <li><a href="#γράφημα-διασποράς-geom_point" id="toc-γράφημα-διασποράς-geom_point" class="nav-link" data-scroll-target="#γράφημα-διασποράς-geom_point"><span class="header-section-number">2</span> Γράφημα διασποράς (<code>geom_point</code>)</a>
   <ul class="collapse">
   <li><a href="#απλό" id="toc-απλό" class="nav-link" data-scroll-target="#απλό"><span class="header-section-number">2.1</span> Απλό</a></li>
   <li><a href="#αισθητικές-παρεμβάσεις" id="toc-αισθητικές-παρεμβάσεις" class="nav-link" data-scroll-target="#αισθητικές-παρεμβάσεις"><span class="header-section-number">2.2</span> Αισθητικές παρεμβάσεις</a></li>
   <li><a href="#όψεις" id="toc-όψεις" class="nav-link" data-scroll-target="#όψεις"><span class="header-section-number">2.3</span> Όψεις</a></li>
   </ul></li>
-  <li><a href="#καμπύλη-παλινδρόμησης" id="toc-καμπύλη-παλινδρόμησης" class="nav-link" data-scroll-target="#καμπύλη-παλινδρόμησης"><span class="header-section-number">3</span> Καμπύλη παλινδρόμησης</a>
+  <li><a href="#καμπύλη-παλινδρόμησης-geom_smooth" id="toc-καμπύλη-παλινδρόμησης-geom_smooth" class="nav-link" data-scroll-target="#καμπύλη-παλινδρόμησης-geom_smooth"><span class="header-section-number">3</span> Καμπύλη παλινδρόμησης (<code>geom_smooth</code>)</a>
   <ul class="collapse">
   <li><a href="#μεμονομένη" id="toc-μεμονομένη" class="nav-link" data-scroll-target="#μεμονομένη"><span class="header-section-number">3.1</span> Μεμονομένη</a></li>
   <li><a href="#με-συνδυασμούς" id="toc-με-συνδυασμούς" class="nav-link" data-scroll-target="#με-συνδυασμούς"><span class="header-section-number">3.2</span> Με συνδυασμούς</a></li>
   <li><a href="#φιλτράρισμα" id="toc-φιλτράρισμα" class="nav-link" data-scroll-target="#φιλτράρισμα"><span class="header-section-number">3.3</span> Φιλτράρισμα</a></li>
   </ul></li>
-  <li><a href="#ραβδόγραμμα" id="toc-ραβδόγραμμα" class="nav-link" data-scroll-target="#ραβδόγραμμα"><span class="header-section-number">4</span> Ραβδόγραμμα</a>
+  <li><a href="#ραβδόγραμμα-geom_bar" id="toc-ραβδόγραμμα-geom_bar" class="nav-link" data-scroll-target="#ραβδόγραμμα-geom_bar"><span class="header-section-number">4</span> Ραβδόγραμμα (<code>geom_bar</code>)</a>
   <ul class="collapse">
   <li><a href="#απόλυτων-συχνοτήτων" id="toc-απόλυτων-συχνοτήτων" class="nav-link" data-scroll-target="#απόλυτων-συχνοτήτων"><span class="header-section-number">4.1</span> Απόλυτων συχνοτήτων</a></li>
   <li><a href="#σχετικών-συχνοτήτων" id="toc-σχετικών-συχνοτήτων" class="nav-link" data-scroll-target="#σχετικών-συχνοτήτων"><span class="header-section-number">4.2</span> Σχετικών συχνοτήτων</a></li>
   <li><a href="#χρωματισμοί" id="toc-χρωματισμοί" class="nav-link" data-scroll-target="#χρωματισμοί"><span class="header-section-number">4.3</span> Χρωματισμοί</a></li>
   <li><a href="#απεικόνιση-ομάδων" id="toc-απεικόνιση-ομάδων" class="nav-link" data-scroll-target="#απεικόνιση-ομάδων"><span class="header-section-number">4.4</span> Απεικόνιση ομάδων</a></li>
   </ul></li>
-  <li><a href="#jitter" id="toc-jitter" class="nav-link" data-scroll-target="#jitter"><span class="header-section-number">5</span> Jitter</a></li>
-  <li><a href="#θηκόγραμμα" id="toc-θηκόγραμμα" class="nav-link" data-scroll-target="#θηκόγραμμα"><span class="header-section-number">6</span> Θηκόγραμμα</a>
+  <li><a href="#jitter-geom_jitter" id="toc-jitter-geom_jitter" class="nav-link" data-scroll-target="#jitter-geom_jitter"><span class="header-section-number">5</span> Jitter (<code>geom_jitter</code>)</a></li>
+  <li><a href="#θηκόγραμμα-geom_boxplot" id="toc-θηκόγραμμα-geom_boxplot" class="nav-link" data-scroll-target="#θηκόγραμμα-geom_boxplot"><span class="header-section-number">6</span> Θηκόγραμμα (<code>geom_boxplot</code>)</a>
   <ul class="collapse">
   <li><a href="#απλό-1" id="toc-απλό-1" class="nav-link" data-scroll-target="#απλό-1"><span class="header-section-number">6.1</span> Απλό</a></li>
   <li><a href="#αντιστροφή-συντεταγμένων" id="toc-αντιστροφή-συντεταγμένων" class="nav-link" data-scroll-target="#αντιστροφή-συντεταγμένων"><span class="header-section-number">6.2</span> Αντιστροφή συντεταγμένων</a></li>
   <li><a href="#με-jitter" id="toc-με-jitter" class="nav-link" data-scroll-target="#με-jitter"><span class="header-section-number">6.3</span> Με jitter</a></li>
   </ul></li>
-  <li><a href="#πολικές-συσντεταγμένες" id="toc-πολικές-συσντεταγμένες" class="nav-link" data-scroll-target="#πολικές-συσντεταγμένες"><span class="header-section-number">7</span> Πολικές συσντεταγμένες</a></li>
+  <li><a href="#πολικές-συσντεταγμένες-coord_polar" id="toc-πολικές-συσντεταγμένες-coord_polar" class="nav-link" data-scroll-target="#πολικές-συσντεταγμένες-coord_polar"><span class="header-section-number">7</span> Πολικές συσντεταγμένες (<code>coord_polar</code>)</a></li>
   </ul>
 </nav>
     </div>
@@ -402,7 +402,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 21, 2026</p>
+      <p class="date">February 22, 2026</p>
     </div>
   </div>
   
@@ -443,8 +443,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="γράφημα-διασποράς" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Γράφημα διασποράς</h1>
+<section id="γράφημα-διασποράς-geom_point" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Γράφημα διασποράς (<code>geom_point</code>)</h1>
 <section id="απλό" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="απλό"><span class="header-section-number">2.1</span> Απλό</h2>
 <div class="cell">
@@ -545,8 +545,8 @@ than 6 becomes difficult to discriminate
 </div>
 </section>
 </section>
-<section id="καμπύλη-παλινδρόμησης" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Καμπύλη παλινδρόμησης</h1>
+<section id="καμπύλη-παλινδρόμησης-geom_smooth" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Καμπύλη παλινδρόμησης (<code>geom_smooth</code>)</h1>
 <section id="μεμονομένη" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="μεμονομένη"><span class="header-section-number">3.1</span> Μεμονομένη</h2>
 <div class="cell">
@@ -609,8 +609,8 @@ than 6 becomes difficult to discriminate
 </div>
 </section>
 </section>
-<section id="ραβδόγραμμα" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Ραβδόγραμμα</h1>
+<section id="ραβδόγραμμα-geom_bar" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Ραβδόγραμμα (<code>geom_bar</code>)</h1>
 <section id="απόλυτων-συχνοτήτων" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="απόλυτων-συχνοτήτων"><span class="header-section-number">4.1</span> Απόλυτων συχνοτήτων</h2>
 <div class="cell">
@@ -764,8 +764,8 @@ than 6 becomes difficult to discriminate
 </div>
 </section>
 </section>
-<section id="jitter" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Jitter</h1>
+<section id="jitter-geom_jitter" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Jitter (<code>geom_jitter</code>)</h1>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> mpg) <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>displ, <span class="at">y=</span>hwy), <span class="at">position =</span> <span class="st">"jitter"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
@@ -787,8 +787,8 @@ than 6 becomes difficult to discriminate
 </div>
 </div>
 </section>
-<section id="θηκόγραμμα" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Θηκόγραμμα</h1>
+<section id="θηκόγραμμα-geom_boxplot" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Θηκόγραμμα (<code>geom_boxplot</code>)</h1>
 <section id="απλό-1" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="απλό-1"><span class="header-section-number">6.1</span> Απλό</h2>
 <div class="cell">
@@ -829,8 +829,8 @@ than 6 becomes difficult to discriminate
 </div>
 </section>
 </section>
-<section id="πολικές-συσντεταγμένες" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Πολικές συσντεταγμένες</h1>
+<section id="πολικές-συσντεταγμένες-coord_polar" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Πολικές συσντεταγμένες (<code>coord_polar</code>)</h1>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> diamonds, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>cut, <span class="at">fill=</span>cut)) <span class="sc">+</span> <span class="fu">geom_bar</span>() <span class="sc">+</span> <span class="fu">coord_polar</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">

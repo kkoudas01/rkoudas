@@ -28,7 +28,7 @@ if(!require(tidyverse)){
 mpg
 ```
 
-# Γράφημα διασποράς
+# Γράφημα διασποράς (`geom_point`)
 
 ## Απλό 
 
@@ -71,7 +71,7 @@ ggplot(data = mpg) + geom_point(mapping = aes(x=displ, y = hwy)) + facet_grid(dr
 ggplot(data = mpg) + geom_point(mapping = aes(x=displ, y=hwy)) + facet_grid(.~ cyl)
 ```
 
-# Καμπύλη παλινδρόμησης
+# Καμπύλη παλινδρόμησης (`geom_smooth`)
 
 ## Μεμονομένη
 
@@ -95,7 +95,7 @@ ggplot(data = mpg, mapping = aes(x=displ, y=hwy)) + geom_point(aes(color=class))
 ggplot(data = mpg, mapping = aes(x=displ, y=hwy)) + geom_point(aes(colour = class)) + geom_smooth(data = filter(mpg, class=="subcompact"), se = F)
 ```
 
-# Ραβδόγραμμα
+# Ραβδόγραμμα (`geom_bar`)
 
 ## Απόλυτων συχνοτήτων
 
@@ -161,7 +161,7 @@ ggplot(data = diamonds, mapping = aes(x=cut, fill = clarity)) + geom_bar(positio
 ggplot(data = diamonds) + geom_bar(mapping = aes(x=cut, fill = clarity), position = "dodge")
 ```
 
-# Jitter
+# Jitter (`geom_jitter`)
 
 ```{r}
 ggplot(data = mpg) + geom_point(mapping = aes(x=displ, y=hwy), position = "jitter")
@@ -171,7 +171,7 @@ ggplot(data = mpg) + geom_point(mapping = aes(x=displ, y=hwy), position = "jitte
 ggplot(data = mpg) + geom_jitter(mapping = aes(x=displ, y=hwy))
 ```
 
-# Θηκόγραμμα
+# Θηκόγραμμα (`geom_boxplot`)
 
 ## Απλό
 
@@ -193,7 +193,7 @@ ggplot(data = mpg, mapping = aes(x=class, y=hwy)) + geom_boxplot(outliers=F) + g
 ```
 
 
-# Πολικές συσντεταγμένες
+# Πολικές συσντεταγμένες (`coord_polar`)
 
 
 ```{r}

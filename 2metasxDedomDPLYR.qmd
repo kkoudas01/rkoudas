@@ -31,7 +31,7 @@ if(!require(nycflights13)){
 flights
 ```
 
-# Επιλογή γραμμών με βάση κάποια κριτήρια
+# Επιλογή γραμμών με βάση κάποια κριτήρια (`filter`)
 
 ## Απλή
 
@@ -70,7 +70,7 @@ filter(flights,(month == 4 & day >=29) | (month==5 & day<=12))
 # Διάταξη
 
 
-## Διάταξη γραμμών
+## Διάταξη γραμμών (`arrange`)
 
 Με βάση την καθυστέρηση σε αύξουσα σειρά.
 
@@ -84,7 +84,7 @@ arrange(flights, dep_delay)
 arrange(flights, desc(dep_delay))
 ```
 
-## Διάταξη στηλών
+## Διάταξη στηλών (`select`)
 
 Βάζουμε τις στήλες των καθυστερήσεων πρώτες
 
@@ -92,7 +92,7 @@ arrange(flights, desc(dep_delay))
 select(flights, dep_delay, arr_delay, everything())
 ```
 
-# Επιλογή στηλών
+# Επιλογή στηλών (`select`)
 
 ```{r}
 select(flights, year, month)
@@ -118,7 +118,7 @@ select(flights,-(dep_time:arr_time))
 
 # Νέες μεταβλητές
 
-## Προσθήκη νέων μεταβλητών
+## Προσθήκη νέων μεταβλητών (`mutate`)
 
 ```{r}
 flightsShort <- select(flights, year:day, ends_with("delay"), distance, air_time)
@@ -133,13 +133,13 @@ mutate(flightsShort, gain = arr_delay-dep_delay, speed = distance/air_time * 60)
 ```
 
 
-## Πίνακας με μόνο νέες&επιλεγμένες μεταβλητές
+## Πίνακας με μόνο νέες&επιλεγμένες μεταβλητές (`transmute`)
 
 ```{r}
 transmute(flights, origin, gain = arr_delay-dep_delay, speed = distance/air_time * 60)
 ```
 
-# Ομαδοποίηση
+# Ομαδοποίηση (`group_by`)
 
 Οι πτήσεις χωρισμένες σε ομάδες πτήσεων Ιανουαρίου, Φεβρουαρίου κτλ, ανεξάρτητα από το έτος
 
@@ -163,7 +163,7 @@ by_day <- group_by(flights, year, month, day)
 by_day
 ```
 
-# Σύνοψη
+# Σύνοψη (`summarise`)
 
 Μέση καθυστέρηση ανά μήνα.
 
@@ -181,7 +181,7 @@ summarise(by_day,delay = mean(dep_delay, na.rm=T))
 ```
 
 
-# Αγωγός `%>%`
+# Αγωγός (`%>%`)
 
 Χωρίζουμε τις πτήσεις σε ομάδες ανά προορισμό.
 
@@ -203,23 +203,34 @@ delay
 ```
 
 
-Ο αγωγός `%>%` σημαίνει `ακολούθως`.
+Ο αγωγός `%>%` σημαίνει `ακολούθως`:
+
+
 
 ```{r}
-delayA <- flights %>%
-  group_by(dest) %>%
-  summarise(
+delayA <- flights %>% # πτήσεις ΑΚΟΛΟΥΘΩΣ
+  group_by(dest) %>% # ομαδοποίησε βάσει προορισμού ΑΚΟΛΟΥΘΩΣ
+  summarise( # συνόψισε
     count = n(),
     dist = mean(distance, na.rm=T),
     delay = mean(arr_delay, na.rm=T)
-  ) %>%
-  filter(count>20, dest != "JFK")
+  ) %>% # ΑΚΟΛΟΥΘΩΣ
+  filter(count>20, dest != "JFK") # φιλτράρισε
 
 delayA
 ```
 
 
-
+```{r}
+flights %>% # πάρε τις πτήσεις ΑΚΟΛΟΥΘΩΣ
+  filter(!is.na(dep_delay), !is.na(arr_delay)) %>% # διώξε τις ακυρώσεις ΑΚΟΛΟΥΘΩΣ
+  group_by(tailnum) %>% # ομαδοποίησε βάσει αριθμού πτήσης ΑΚΟΛΟΥΘΩΣ
+  summarise( # συνόψισε
+    delay = mean(arr_delay, na.rm=T),
+    n = n()
+  ) %>% # ΑΚΟΛΟΥΘΩΣ
+  ggplot(mapping = aes(x=n, y=delay))+geom_point(alpha = 1/10) # κάνε διάγραμμα διασποράς
+```
 
 
 
