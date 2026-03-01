@@ -8,7 +8,7 @@ format:
 
 
 ```{r, echo=FALSE, results='asis'}
-cat(readLines("indeximage.svg"), sep="\n")
+cat(readLines("indeximage2.svg"), sep="\n")
 ```
 
 ::: {.callout-tip}
