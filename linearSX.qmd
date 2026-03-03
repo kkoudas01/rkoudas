@@ -17,13 +17,10 @@ knitr::opts_chunk$set(echo = TRUE)
 library(kableExtra)
 ```
 
-
-
 ```{r}
 #| echo = F
 rm(list = ls())
 ```
-
 
 <div class="alert-danger">⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️</div>
 
@@ -35,7 +32,6 @@ xx <- rnorm(1000, mean =4, sd=1)
 myDatax <- data.frame(xx= xx)
 ```
 
-
 ```{r}
 #| echo = F,
 #| results = "asis",
@@ -45,7 +41,6 @@ kable_styling("striped", full_width = F) %>%
 scroll_box(width = "max-content", height = "200px")
 ```
 
-
 ```{r}
 #| echo = FALSE
 if(!require(ggplot2)){
@@ -54,14 +49,14 @@ if(!require(ggplot2)){
 }
 ```
 
-
 ```{r}
 #| echo = FALSE
 dataPlot <- ggplot(myDatax, aes(x="", y=xx))
-dataPlot + geom_boxplot() + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
+dataPlot +  geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
 ```
 
 ```{r}
+#| echo = FALSE
 dataPloth <- ggplot(myDatax, aes(x=xx))
 dataPloth +
   geom_histogram(aes(y = after_stat(density))) +
@@ -78,8 +73,8 @@ dataPloth +
 #| echo = FALSE
 xSYN3 <- xx+3
 myDataxSYN3 <- data.frame(x= xx, xSYN3=xSYN3)
+myDataxSYN3w <- stack(myDataxSYN3, select=c("x", "xSYN3"))
 ```
-
 
 ```{r}
 #| echo = F,
@@ -90,7 +85,20 @@ kable_styling("striped", full_width = F) %>%
 scroll_box(width = "max-content", height = "200px")
 ```
 
+```{r}
+#| echo = FALSE
+dataPlot <- ggplot(myDataxSYN3w, aes(x=ind, y=values, color=ind))
+dataPlot + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
+```
 
+```{r}
+#| echo = FALSE,
+#| message= FALSE
+dataPloth <- ggplot(myDataxSYN3w, aes(x=values, fill=ind))
+dataPloth +
+  geom_histogram(aes(y = after_stat(density)), position = "identity", alpha = 0.6) +
+  geom_density(linewidth = 1, position = "identity", alpha = 0)
+```
 
 ## Αφαιρέσεις
 
@@ -98,8 +106,8 @@ scroll_box(width = "max-content", height = "200px")
 #| echo = FALSE
 xPLIN1 <- xx-1
 myDataxPLIN1 <- data.frame(x= xx, xPLIN1=xPLIN1)
+myDataxPLIN1w <- stack(myDataxPLIN1, select=c("x", "xPLIN1"))
 ```
-
 
 ```{r}
 #| echo = F,
@@ -110,10 +118,24 @@ kable_styling("striped", full_width = F) %>%
 scroll_box(width = "max-content", height = "200px")
 ```
 
+```{r}
+#| echo = FALSE
+dataPlot <- ggplot(myDataxPLIN1w, aes(x=ind, y=values, color=ind))
+dataPlot + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
+```
+
+```{r}
+#| echo = FALSE,
+#| message= FALSE
+dataPloth <- ggplot(myDataxPLIN1w, aes(x=values, fill=ind))
+dataPloth +
+  geom_histogram(aes(y = after_stat(density)), position = "identity", alpha = 0.6) +
+  geom_density(linewidth = 1, position = "identity", alpha = 0)
+```
+
 :::
 
-
-# Πολλαπλασιασμοί - διαιρέσεις 
+# Πολλαπλασιασμοί - διαιρέσεις
 
 ::: {.panel-tabset}
 
@@ -123,8 +145,8 @@ scroll_box(width = "max-content", height = "200px")
 #| echo = FALSE
 xEPI2 <- 2*xx
 myDataxEPI2 <- data.frame(x= xx, xEPI2=xEPI2)
+myDataxEPI2w <- stack(myDataxEPI2, select=c("x", "xEPI2"))
 ```
-
 
 ```{r}
 #| echo = F,
@@ -135,7 +157,20 @@ kable_styling("striped", full_width = F) %>%
 scroll_box(width = "max-content", height = "200px")
 ```
 
+```{r}
+#| echo = FALSE
+dataPlot <- ggplot(myDataxEPI2w, aes(x=ind, y=values, color=ind))
+dataPlot + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
+```
 
+```{r}
+#| echo = FALSE,
+#| message= FALSE
+dataPloth <- ggplot(myDataxEPI2w, aes(x=values, fill=ind))
+dataPloth +
+  geom_histogram(aes(y = after_stat(density)), position = "identity", alpha = 0.6) +
+  geom_density(linewidth = 1, position = "identity", alpha = 0)
+```
 
 ## Διαίρεση με θετικό
 
@@ -143,8 +178,8 @@ scroll_box(width = "max-content", height = "200px")
 #| echo = FALSE
 xDIA3 <- xx/3
 myDataxDIA3 <- data.frame(x= xx, xDIA3=xDIA3)
+myDataxDIA3w <- stack(myDataxDIA3, select=c("x", "xDIA3"))
 ```
-
 
 ```{r}
 #| echo = F,
@@ -155,16 +190,29 @@ kable_styling("striped", full_width = F) %>%
 scroll_box(width = "max-content", height = "200px")
 ```
 
+```{r}
+#| echo = FALSE
+dataPlot <- ggplot(myDataxDIA3w, aes(x=ind, y=values, color=ind))
+dataPlot + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
+```
+
+```{r}
+#| echo = FALSE,
+#| message= FALSE
+dataPloth <- ggplot(myDataxDIA3w, aes(x=values, fill=ind))
+dataPloth +
+  geom_histogram(aes(y = after_stat(density)), position = "identity", alpha = 0.6) +
+  geom_density(linewidth = 1, position = "identity", alpha = 0)
+```
 
 ## Πολλαπλασιασμός με αρνητικό
-
 
 ```{r}
 #| echo = FALSE
 xEPIplin2 <- -2*xx
 myDataxEPIplin2 <- data.frame(x= xx, xEPIplin2=xEPIplin2)
+myDataxEPIplin2w <- stack(myDataxEPIplin2, select=c("x", "xEPIplin2"))
 ```
-
 
 ```{r}
 #| echo = F,
@@ -175,8 +223,19 @@ kable_styling("striped", full_width = F) %>%
 scroll_box(width = "max-content", height = "200px")
 ```
 
+```{r}
+#| echo = FALSE
+dataPlot <- ggplot(myDataxEPIplin2w, aes(x=ind, y=values, color=ind))
+dataPlot + geom_boxplot(outlier.shape = NA) + geom_jitter(shape=16, size=1,position=position_jitter(0.2))
+```
 
+```{r}
+#| echo = FALSE,
+#| message= FALSE
+dataPloth <- ggplot(myDataxEPIplin2w, aes(x=values, fill=ind))
+dataPloth +
+  geom_histogram(aes(y = after_stat(density)), position = "identity", alpha = 0.6) +
+  geom_density(linewidth = 1, position = "identity", alpha = 0)
+```
 
 :::
-
-

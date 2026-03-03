@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: docs
+  resources:
+    - google123456789.html
   # Πρόσθεσε τις παρακάτω γραμμές:
   render: 
     - "*.qmd"           # Κάνε render μόνο τα qmd του αρχικού φακέλου
