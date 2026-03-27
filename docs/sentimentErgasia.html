@@ -1,0 +1,2221 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Κώστας Κούδας">
+<meta name="dcterms.date" content="2026-03-27">
+
+<title>Ανάλυση συναισθήματος – r-koudas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-9e15f8fb9e1f2f288bfbe28f6ca11029.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-f66507dd18a11913968bbb28d4895645.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/quarto-contrib/fontawesome6-6.7.2/all.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/fontawesome6-6.7.2/latex-fontsize.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+
+<meta property="og:title" content="r-koudas: Στοχαστικά Μαθηματικά χωρίς… μαθηματικά για κοινωνικούς επιστήμονες">
+<meta property="og:description" content="Η σελίδα RΚούδας είναι μια σελίδα κατά βάση ανάλυσης κοινωνικών φαινομένων. Σε αυτήν αναλύονται κάποια κοινωνικά φαινόμενα ή επιδεικνύεται ο τρόπος να αναλυθούν.">
+<meta property="og:image" content="social-card.png">
+<meta property="og:site_name" content="r-koudas">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title"><i class="fa-brands fa-r-project" aria-label="r-project"></i>Κούδας</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./ergaleia.html"> <i class="bi bi-tools" role="img">
+</i> 
+<span class="menu-text">Εργαλεία</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./ereynes.html"> <i class="bi bi-flask" role="img">
+</i> 
+<span class="menu-text">Έρευνες</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./entos_ektos.html"> <i class="bi bi-cup-hot" role="img">
+</i> 
+<span class="menu-text">Εντός εκτός κι επί τα αυτά</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#εισαγωγή" id="toc-εισαγωγή" class="nav-link active" data-scroll-target="#εισαγωγή"><span class="header-section-number">1</span> Εισαγωγή</a></li>
+  <li><a href="#προεργασία" id="toc-προεργασία" class="nav-link" data-scroll-target="#προεργασία"><span class="header-section-number">2</span> Προεργασία</a>
+  <ul class="collapse">
+  <li><a href="#πακέτα" id="toc-πακέτα" class="nav-link" data-scroll-target="#πακέτα"><span class="header-section-number">2.1</span> Πακέτα</a></li>
+  <li><a href="#δεδομένα" id="toc-δεδομένα" class="nav-link" data-scroll-target="#δεδομένα"><span class="header-section-number">2.2</span> Δεδομένα</a>
+  <ul class="collapse">
+  <li><a href="#κατέβασμα-δεδομένων" id="toc-κατέβασμα-δεδομένων" class="nav-link" data-scroll-target="#κατέβασμα-δεδομένων"><span class="header-section-number">2.2.1</span> Κατέβασμα δεδομένων</a></li>
+  <li><a href="#καθαρισμός-δεδομένων" id="toc-καθαρισμός-δεδομένων" class="nav-link" data-scroll-target="#καθαρισμός-δεδομένων"><span class="header-section-number">2.2.2</span> Καθαρισμός δεδομένων</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#βασική-παρουσίαση-δεδομένων" id="toc-βασική-παρουσίαση-δεδομένων" class="nav-link" data-scroll-target="#βασική-παρουσίαση-δεδομένων"><span class="header-section-number">3</span> Βασική παρουσίαση δεδομένων</a>
+  <ul class="collapse">
+  <li><a href="#σύνολο-σχολίων" id="toc-σύνολο-σχολίων" class="nav-link" data-scroll-target="#σύνολο-σχολίων"><span class="header-section-number">3.1</span> Σύνολο σχολίων</a></li>
+  <li><a href="#οι-πιο-ενεργοί-σχολιαστές" id="toc-οι-πιο-ενεργοί-σχολιαστές" class="nav-link" data-scroll-target="#οι-πιο-ενεργοί-σχολιαστές"><span class="header-section-number">3.2</span> Οι πιο ενεργοί σχολιαστές</a></li>
+  </ul></li>
+  <li><a href="#παλιά" id="toc-παλιά" class="nav-link" data-scroll-target="#παλιά"><span class="header-section-number">4</span> Παλιά</a>
+  <ul class="collapse">
+  <li><a href="#top-10-χρήστες" id="toc-top-10-χρήστες" class="nav-link" data-scroll-target="#top-10-χρήστες"><span class="header-section-number">4.1</span> Top 10 χρήστες</a></li>
+  <li><a href="#κατανομή-scores" id="toc-κατανομή-scores" class="nav-link" data-scroll-target="#κατανομή-scores"><span class="header-section-number">4.2</span> Κατανομή scores</a></li>
+  </ul></li>
+  <li><a href="#ανάλυση-συναισθήματος" id="toc-ανάλυση-συναισθήματος" class="nav-link" data-scroll-target="#ανάλυση-συναισθήματος"><span class="header-section-number">5</span> Ανάλυση συναισθήματος</a>
+  <ul class="collapse">
+  <li><a href="#bing" id="toc-bing" class="nav-link" data-scroll-target="#bing"><span class="header-section-number">5.1</span> Bing</a></li>
+  <li><a href="#afinn" id="toc-afinn" class="nav-link" data-scroll-target="#afinn"><span class="header-section-number">5.2</span> AFINN</a></li>
+  <li><a href="#nrc" id="toc-nrc" class="nav-link" data-scroll-target="#nrc"><span class="header-section-number">5.3</span> NRC</a></li>
+  <li><a href="#vader" id="toc-vader" class="nav-link" data-scroll-target="#vader"><span class="header-section-number">5.4</span> VADER</a></li>
+  </ul></li>
+  <li><a href="#πλάνο" id="toc-πλάνο" class="nav-link" data-scroll-target="#πλάνο"><span class="header-section-number">6</span> Πλάνο</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Ανάλυση συναισθήματος</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Κώστας Κούδας </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 27, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Καθαρισμός μνήμης R.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="εισαγωγή" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Εισαγωγή</h1>
+<p>Στην παρούσα ενότητα θα εξετάσουμε το πώς αντιμετωπίζουν οιχρήστες του Reddit την Τεχνητή Νοημοσύνη και μέσα από αυτό θα μάθουμε:</p>
+<ul>
+<li><p>πώς αντλούμε δεδομένα που αφορούν σχόλια χρηστών και</p></li>
+<li><p>πώς αναλύουμε τη συναισθηματική τους φόρτιση.</p></li>
+</ul>
+</section>
+<section id="προεργασία" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Προεργασία</h1>
+<section id="πακέτα" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="πακέτα"><span class="header-section-number">2.1</span> Πακέτα</h2>
+<p>Αρχικά ας δούμε ποια πακέτα θα μάς χρειαστούν.</p>
+<table class="caption-top table">
+<caption>Απαραίτητα πακέτα για την εργασία</caption>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Πακέτο</th>
+<th>Χρήση</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>tidyverse</code></td>
+<td>Αυτό είναι ένα υπερ-πακέτο που περιλαμβάνει πολλά βασικά πακέτα επεξεργασίας (<code>dplyr</code>) και οπτικοποίησης (<code>ggplot2</code>) δεδομένων.</td>
+</tr>
+<tr class="even">
+<td><code>plotly</code></td>
+<td>Αυτό το πακέτο θα μάς βοηθήσει να κάνουμε κάποια διαδραστικά γραφήματα.</td>
+</tr>
+<tr class="odd">
+<td><code>crosstalk</code></td>
+<td>Αυτό το πακέτο θα είναι βοηθητικό για το <code>plotly</code>, καθόσον το συνδυάζει με φίλτρα.</td>
+</tr>
+<tr class="even">
+<td><code>lubridate</code></td>
+<td>Το Reddit καταχωρεί την ημερομηνία ως δευτερόλεπτα από 1/1/1970 (Unix timestamps). Το εν λόγω πακέτο θα μάς βοηθήσει να μετατρέψουμε αυτή την ακατανόητη περιγραφή σε συνήθη τρόπο ημερομηνιακής γραφής.</td>
+</tr>
+<tr class="odd">
+<td><code>kableExtra</code></td>
+<td>Θα μάς χρειαστεί για την παρουσίαση των πινάκων.</td>
+</tr>
+<tr class="even">
+<td><code>tidytext</code></td>
+<td>Αυτό είναι το πακέτο που θα κάνει τα 3/4 της Sentiment Analysis (AFINN, NRC, Bing).</td>
+</tr>
+<tr class="odd">
+<td><code>textdata</code></td>
+<td>Μέσω αυτού κάνουμε χρήση των λεξικών εντός των οποίων καταγράφεται η συναισθηματική βαθμολογία των αγγλικών λέξεων.</td>
+</tr>
+<tr class="even">
+<td><code>vader</code></td>
+<td>Αυτό είναι το πακέτο που θα κάνει το υπολοιπόμενο 1/4 της Sentiment Analysis (VADER).</td>
+</tr>
+<tr class="odd">
+<td><code>jsonlite</code></td>
+<td>Τα σχόλια που θα καταβάσουμε είναι JSON. Το πακέτο αυτό μάς βοηθά να τα μετατρέψουμε σε dataframe.</td>
+</tr>
+<tr class="even">
+<td><code>httr</code></td>
+<td>Με τη βοήθεια αυτού του πακέτου θα κατεβάσουμε τα JSON.</td>
+</tr>
+</tbody>
+</table>
+<p>Τα πακέτα <code>jsonlite</code> και <code>httr</code> χρησιμεύουν μόνο για την άντληση των δεδομένων μας. Καθόσον αυτή ήταν ιδιέτερα χρονοβόρα, επιλέχθηκε από τον γράφοντα να αποθηκευτούν τα δεδομένα σε αρχείο <code>.rds</code> και μετά η ανάγνωση-επεξεργασία να γίνεται από αυτό. Συνεπώς αφού γίνει η χρήση των <code>jsonlite</code> και <code>httr</code> την 1η φορά, μετά μπορούν να απενεργοποιηθούν, ώστε να μην καθυστερεί το render του quarto.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Τα προς εγκατάσταση πακέτα:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tidyverse"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"crosstalk"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"plotly"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"lubridate"</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"kableExtra"</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tidytext"</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"textdata"</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"vader"</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># N.B.:Για να επανενεργοποιηθούν τα παρακάτω θα πρέπει να μει "," μετά το vader.</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># "jsonlite",</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># "httr" </span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Ακολούθως, για να μην εγκαθυστούμε όλα τα παραπάνω πακέτα ακόμα και στην περίπτωση που είναι ήδη εγκατεστημένα, χρησιμοπιιούμε τη συνάρτηση <code>installed.packages()</code> για να επιλέξουμε από τα <code>packages</code> αυτά που <strong>δεν</strong> έχουν ήδη εγκατασταθεί.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>installed  <span class="ot">&lt;-</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>()) <span class="co"># Ποια πακέτα είναι ήδη εγκατεστημένα;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>to_install <span class="ot">&lt;-</span> packages[<span class="sc">!</span>packages <span class="sc">%in%</span> installed] <span class="co"># Τα προς εγκατάστασιν πακέτα</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Τέλος, εγκαθιστούμε (<code>install.packages()</code>) και επικαλούμαστε (<code>library()</code>) τα πακέτα που μάς ενδιαφέρουν.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(to_install) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(to_install)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Δεν εγκαταστάθηκε κάτι νέο."</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(packages, library, <span class="at">character.only =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+ [1] "vader"      "textdata"   "tidytext"   "lubridate"  "forcats"   
+ [6] "stringr"    "dplyr"      "purrr"      "readr"      "tidyr"     
+[11] "tibble"     "ggplot2"    "tidyverse"  "kableExtra" "stats"     
+[16] "graphics"   "grDevices"  "utils"      "datasets"   "methods"   
+[21] "base"      
+
+[[2]]
+ [1] "vader"      "textdata"   "tidytext"   "lubridate"  "forcats"   
+ [6] "stringr"    "dplyr"      "purrr"      "readr"      "tidyr"     
+[11] "tibble"     "ggplot2"    "tidyverse"  "kableExtra" "stats"     
+[16] "graphics"   "grDevices"  "utils"      "datasets"   "methods"   
+[21] "base"      
+
+[[3]]
+ [1] "vader"      "textdata"   "tidytext"   "lubridate"  "forcats"   
+ [6] "stringr"    "dplyr"      "purrr"      "readr"      "tidyr"     
+[11] "tibble"     "ggplot2"    "tidyverse"  "kableExtra" "stats"     
+[16] "graphics"   "grDevices"  "utils"      "datasets"   "methods"   
+[21] "base"      
+
+[[4]]
+ [1] "vader"      "textdata"   "tidytext"   "lubridate"  "forcats"   
+ [6] "stringr"    "dplyr"      "purrr"      "readr"      "tidyr"     
+[11] "tibble"     "ggplot2"    "tidyverse"  "kableExtra" "stats"     
+[16] "graphics"   "grDevices"  "utils"      "datasets"   "methods"   
+[21] "base"      
+
+[[5]]
+ [1] "vader"      "textdata"   "tidytext"   "lubridate"  "forcats"   
+ [6] "stringr"    "dplyr"      "purrr"      "readr"      "tidyr"     
+[11] "tibble"     "ggplot2"    "tidyverse"  "kableExtra" "stats"     
+[16] "graphics"   "grDevices"  "utils"      "datasets"   "methods"   
+[21] "base"      
+
+[[6]]
+ [1] "vader"      "textdata"   "tidytext"   "lubridate"  "forcats"   
+ [6] "stringr"    "dplyr"      "purrr"      "readr"      "tidyr"     
+[11] "tibble"     "ggplot2"    "tidyverse"  "kableExtra" "stats"     
+[16] "graphics"   "grDevices"  "utils"      "datasets"   "methods"   
+[21] "base"      </code></pre>
+</div>
+</div>
+</section>
+<section id="δεδομένα" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="δεδομένα"><span class="header-section-number">2.2</span> Δεδομένα</h2>
+<section id="κατέβασμα-δεδομένων" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="κατέβασμα-δεδομένων"><span class="header-section-number">2.2.1</span> Κατέβασμα δεδομένων</h3>
+<p>Αρχικά έγινε προσπάθεια άμμεσα μέσω του <a href="https://www.reddit.com/prefs/apps">Reddit</a>, αλλά χωρίς αποτέλεσμα. Ακολουθώντας τις συμβουλές των σχολίων <a href="https://www.reddit.com/r/help/comments/1hpoul6/is_every_single_post_archived_somewhere_from/">εδώ</a> ο γράφων οδηγήθηκε στο Arctic Shift. Προς τούτο πάμε <a href="https://arctic-shift.photon-reddit.com/search">εδώ</a> κι επιλέγουμε <span class="btn btn-outline-primary btn-sm">Comments search</span> (όχι Posts, διότι τα comments έχουν πιο πλούσιο συναισθηματικό περιεχόμενο). Εν συνεχεία συμπληρώνουμε για να πάρουμε μια ιδέα για το τι θα χρησιμοποιήσουμε:</p>
+<table class="caption-top table">
+<caption>Συμπλήρωση στο Comments Search</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Πεδίο</th>
+<th style="text-align: center;">Τι συμπληρώνουμε</th>
+<th style="text-align: center;">Γιατί το επιλέγουμε;</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Subreddit</td>
+<td style="text-align: center;"><code>artificial</code></td>
+<td style="text-align: center;">Κοινότητα αφιερωμένη στην τεχνητή νοημοσύνη</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">After (UTC)</td>
+<td style="text-align: center;"><span class="btn btn-outline-primary btn-sm">1/12/2022</span></td>
+<td style="text-align: center;">Μετά την κυκλοφορία του ChatGPT (30/11/2022)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Before (UTC)</td>
+<td style="text-align: center;"><span class="btn btn-outline-primary btn-sm">10/3/2026</span></td>
+<td style="text-align: center;">Μέχρι την έναρξη της εργασίας</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Limit</td>
+<td style="text-align: center;"><code>100</code></td>
+<td style="text-align: center;">Δείγμα εξερεύνησης, για να ρίξουμε μια ματιά (στην εργασία θα μελετήσουμε περισσότερα)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Date Sort</td>
+<td style="text-align: center;"><span class="btn btn-outline-primary btn-sm">Descending</span></td>
+<td style="text-align: center;">Εμφάνιση των πιο πρόσφατων πρώτα</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Body</td>
+<td style="text-align: center;"><code>artificial intelligence</code></td>
+<td style="text-align: center;">Φιλτράρισμα μόνο comments που αναφέρονται ρητά στην ΑΙ</td>
+</tr>
+</tbody>
+</table>
+<p>Συμπληρώνοντας τα παραπάνω προκύπτουν αποτελέσματα που μπορούμε να δούμε, αλλά και η κάτωθι προειδοποίηση:</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Timeout. Maybe slow down a bit
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Important:</strong> Using keyword search on large subreddits or time frames is not fully supported.</p>
+<p>If you’re experiencing timeouts, try reducing the limit or narrowing down the time frame.</p>
+</div>
+</div>
+<p>Για να μην κρασάρει η διαδικασία, λοιπόν, αλά και επειδή το Arctic Shift δεν επιτρέπει πολλά αποτελέσματα ανά άντληση, θα χωρίσουμε την άντληση σε 4ωρα, ήτοι ένα αίτημα 100 αποτελεσμάτων ανά 4ωρο. Αλλά αυτό θα το δούμε πιο μετά. Πρώτα θα ορίσουμε τη συνάρτηση <code>fetch_arctic()</code> με την οποία θα αντλήσουμε τα δεδομένα μας. Όπως προαναφέραμε, η άντληση θα γίνει μία μόνο φορά κι έκτοτε τα δεδομένα θα αντλούνται από το αποθηκευμένο <code>.rds</code>, συνεπώς τα κάτωθι chunk έχει απενεργοποιηθεί (<code>eval: false</code>), όπερ κι επισημαίνεται. Αλλά, ας δούμε πρώτα κάποιες λεπτομέρειες:</p>
+<ul>
+<li>Όπως προαναφέραμε το API του Arctic Shift δεν καταλαβαίνει ημερομηνίες, καταλαβαίνει μόνο Unix timestamps (ήτοι πόσα δευτερόλεπτα έχουν περάσει από την 1η Ιανουαρίου 1970). Έτσι μέσω των συναρτήσεων <code>as.integer()</code> και <code>as.POSIXct()</code> μετατρέπουμε μια ημερομηνία (σε διεθνή ζώνη ώρας-<code>tz = "UTC"</code>) σε ακέραιο, έτοιμο για διαχείριση από την <i class="fa-brands fa-r-project" aria-label="r-project"></i>.</li>
+<li>Στην πρώτη απόπειρα άντλησης προκλήθηκε crash επειδή η αρχή και η έναρξη της περιόδου μελέτης ήταν ίδια. Συνεπώς θέλουμε να εξασφαλίσουμε ότι κάτι τέτοιο θα αποφευχθεί γράφοντας <code>if (after_ts &gt;= before_ts) return(NULL)</code>.</li>
+<li>Ακολούθως ορίζουμε το URL του αιτήματος προς το Arctic Shift βάσει αυτού πού είδαμε προηγουμένως στη φόρμα αναζήτησης. Το <code>limit=100</code> έχει προσθεθεί λόγω του ορίου 100 σχόλια ανά αίτημα (όριο του API).</li>
+<li>Επειδή τυχόν σφάλματα στη διαδικασία άντλησης την έκαναν να καταστραφεί λίγο πριν την ολοκλήρωσή της, ο γράφων χρησιμοποίησε τη συνάρτηση:</li>
+</ul>
+<pre><code>tryCatch(
+  ΤΙ ΣΥΜΒΑΙΝΕΙ ΥΠΟ ΦΥΣΙΟΛΟΓΙΚΕΣ ΣΥΝΘΗΚΕΣ,
+  error = function(e) {ΤΙ ΣΥΜΒΑΙΝΕΙ ΥΠΟ ΜΗ ΦΥΣΙΟΛΟΓΙΚΕΣ ΣΥΝΘΗΚΕΣ}
+  )</code></pre>
+<p>με την ελπιδα να μην εξοστρακιστούν από τα δεδομένα μας πολλά χρονικά διαστήματα. Οι μη-φυσιολογικές συνθήκες ορίζονται ως μη απόκριση σε διάστημα μικρότερο του ενός λεπτού.</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Απενεργοποιημένο chunk
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Το κάτωθι χωρίο κώδικα έχει απενεργοποιηθεί (<code>eval: false</code>). Η χρήση του έγινε μόνο μία φορά αρχικά «με το χέρι». Στο εξής ανατρέχουμε στα αποτελέσματα που παράγονται, τα οποία είναι αποθηκευμένα στο <strong>comments_clean.rds</strong>, όπερ μπορεί να βρει κανείς στο σχετικό <a href="https://github.com/kkoudas01/BigDataKoudas/tree/main/redditComments">repository</a> του github του γράφοντος.</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fetch_arctic <span class="ot">&lt;-</span> <span class="cf">function</span>(after, before) {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Αρχή και τέλος άντλησης:</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  after_ts  <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">as.POSIXct</span>(after,  <span class="at">tz =</span> <span class="st">"UTC"</span>))</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  before_ts <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">as.POSIXct</span>(before, <span class="at">tz =</span> <span class="st">"UTC"</span>))</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Προστασία αποφυγής crash:</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (after_ts <span class="sc">&gt;=</span> before_ts) <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Η διεύθυνση του αιτήματος προς το Arctic Shift:</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  url <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://arctic-shift.photon-reddit.com/api/comments/search"</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"?subreddit=artificial"</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"&amp;after="</span>,  after_ts,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"&amp;before="</span>, before_ts,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"&amp;limit=100"</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Το "δίχτυ ασφαλείας":</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>({</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    response <span class="ot">&lt;-</span> httr<span class="sc">::</span><span class="fu">GET</span>(url, httr<span class="sc">::</span><span class="fu">timeout</span>(<span class="dv">60</span>))  <span class="co"># Αναμονή max 60sec.</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    parsed   <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(httr<span class="sc">::</span><span class="fu">content</span>(response, <span class="st">"text"</span>))</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    parsed<span class="sc">$</span>data  <span class="co"># Έξοδος: ο πίνακας με τα σχόλια.</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  }, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">message</span>(<span class="st">"  ⚠️ ΣΦΑΛΜΑ: "</span>, e<span class="sc">$</span>message)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="cn">NULL</span>  <span class="co"># Σε περίπτωση σφάλματος, επιστρέφουμε το "τίποτα".</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Επειδή το Arctic Shift έχει το προαναφερθέν όριο των 100 σχολίων, προκειμένου να αντληθούν όσο το δυνατόν περισσότερα σχόλια, χωρίσαμε το επιθυμητό διάστημα σε 4ωρα διαστήματα, όπως προαναφέρθηκε. Συγκεκριμένα, το χρονικό εύρος της παρούσας έρευνας ορίζεται από την κυκλοφορία του ChatGPT (1/12/2022) μέχρι την έναρξη της εν λόγω εργασίας (9/3/2026), άρα έχουν προκύψει 7170 χρονικά διαστήματα άντλησης.</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Απενεργοποιημένο chunk
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Το κάτωθι χωρίο κώδικα έχει απενεργοποιηθεί (<code>eval: false</code>). Η χρήση του έγινε μόνο μία φορά αρχικά «με το χέρι». Στο εξής ανατρέχουμε στα αποτελέσματα που παράγονται, τα οποία είναι αποθηκευμένα στο <strong>comments_clean.rds</strong>, όπερ μπορεί να βρει κανείς στο σχετικό <a href="https://github.com/kkoudas01/BigDataKoudas/tree/main/redditComments">repository</a> του github του γράφοντος.</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Το χρονικό εύρος της έρευνας:</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>start_dt <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="st">"2022-12-01 00:00:00"</span>, <span class="at">tz =</span> <span class="st">"UTC"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>end_dt   <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="st">"2026-03-09 23:59:59"</span>, <span class="at">tz =</span> <span class="st">"UTC"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Χωρίζουμε το συνολικό διάστημα σε περιόδους των 4 ωρών:</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>periods <span class="ot">&lt;-</span> <span class="fu">seq</span>(start_dt, end_dt, <span class="at">by =</span> <span class="st">"4 hours"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">map</span>(<span class="cf">function</span>(start) {</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    end <span class="ot">&lt;-</span> <span class="fu">min</span>(start <span class="sc">+</span> <span class="dv">4</span><span class="sc">*</span><span class="dv">3600</span> <span class="sc">-</span> <span class="dv">1</span>, end_dt)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="fu">as.character</span>(start), <span class="fu">as.character</span>(end))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Επαλήθευση ότι έχουμε ορίσει διαστήματα:</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Σύνολο διαστημάτων: "</span>, <span class="fu">length</span>(periods))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Λίγο απέχουμε από το σημείο όπου θα κατεβάσουμε και θα αποθηκεύσουμε τα δεδομένα μας. Καθόσον η αρχική απόπειρα στεύθηκε με αποτυχία μετά από αρκετή ώρα αναμονής, ο γράφων επέλεξε τον δρόμο της τμηματικής αποθήκευσης ανά περιόδους. Συγκεκριμένα:</p>
+<ul>
+<li>Οι κατά τμήματα αποθηκεύσεις έγιναν στο <strong>checkpoint.rds</strong> σε έναν φάκελο ειδικά γι’ αυτή τη δουλειά (<strong>data/cache</strong>).</li>
+<li>Αν το <strong>checkpoint.rds</strong> υπάρχει, τότε προχωράμε στη δημιουργία της λίστας (<code>result     &lt;- list()</code>) και ξεκινάμε από την αρχή (<code>start_from &lt;- 1</code>), αλλιώς συνεχίζουμε από εκεί που είχαμε μείνει (<code>start_from &lt;- checkpoint$last_i + 1</code>)</li>
+</ul>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Απενεργοποιημένο chunk
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Το κάτωθι χωρίο κώδικα έχει απενεργοποιηθεί (<code>eval: false</code>). Η χρήση του έγινε μόνο μία φορά αρχικά «με το χέρι». Στο εξής ανατρέχουμε στα αποτελέσματα που παράγονται, τα οποία είναι αποθηκευμένα στο <strong>comments_clean.rds</strong>, όπερ μπορεί να βρει κανείς στο σχετικό <a href="https://github.com/kkoudas01/BigDataKoudas/tree/main/redditComments">repository</a> του github του γράφοντος.</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Το αρχείο που κρατάει την πρόοδο: αν το πρόγραμμα διακοπεί (π.χ. πέσει το ρεύμα), όταν το ξανατρέξουμε θα συνεχίσει από εκεί που σταμάτησε.</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>checkpoint_file <span class="ot">&lt;-</span> <span class="st">"data/cache/checkpoint.rds"</span>        <span class="co"># Σημείο συνέχισης αν κρασάρει</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Δημιουργούμε τον φάκελο αν δεν υπάρχει ήδη</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"data/cache"</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Έλεγχος αν υπάρχει αποθηκευμένη πρόοδος από προηγούμενη διακοπή.</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Στην περίπτωση που συμβαίνει κάτι τέτοιο, συνεχίζουμε από εκεί που σταματήσαμε.</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">file.exists</span>(checkpoint_file)) {</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  checkpoint <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(checkpoint_file)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  result     <span class="ot">&lt;-</span> checkpoint<span class="sc">$</span>result      <span class="co"># Τα ήδη συνελεγμένα σχόλια</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  start_from <span class="ot">&lt;-</span> checkpoint<span class="sc">$</span>last_i <span class="sc">+</span> <span class="dv">1</span>  <span class="co"># Το διάστημα που έχουμε φτάσει</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Συνέχεια από διάστημα "</span>, start_from)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  result     <span class="ot">&lt;-</span> <span class="fu">list</span>()  <span class="co"># Άδεια λίστα για να γεμίσει με σχόλια</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  start_from <span class="ot">&lt;-</span> <span class="dv">1</span>       <span class="co"># Ξεκινάμε από την αρχή</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Και τώρα ήρθε η ώρα που περιμέναμε!</p>
+<ul>
+<li>Για κάθε <code>i</code>-στή περίοδο (<code>p &lt;- periods[[i]]</code>) συλλέγουμε τα δεδομένα που περιέχει (<code>chunk &lt;- fetch_arctic(p[1], p[2])</code>).</li>
+<li>Σε κάθε 100 χρονικά διαστήματα γίνεται η αποθήκευση που προαναφέρθηκε (<code>saveRDS(list(result = result, last_i = i), checkpoint_file)</code>), ώστε, σε περίπτωση κρασαρίσματος, να απωλεσθούν το πολύ 100 διαστήματα.</li>
+<li>Σε κάθε στοιχείο της λίστας <strong>checkpoint_file</strong> (<code>purrr::map()</code>) αφαιρούμε τις κενές λήψεις (<code>purrr::compact(result)</code>), κρατάμε τις στήλες που ενδιαφέρουν την έρευνά μας (<code>dplyr::select(.x, id, author, body, created_utc, score)</code>) και ενώνουμε όλα τα dataframe σε ένα μεγάλο (<code>dplyr::bind_rows()</code>).</li>
+<li>Μόλις ολοκληρωθεί αυτή η φάση το <strong>checkpoint_file</strong> δεν χρειάζεται πλέον, οπότε το διαγράφουμε (<code>file.remove(checkpoint_file)</code>). Ο ενδιαφερόμενος αναγνώστης μπορεί να το βρει <a href="https://github.com/kkoudas01/BigDataKoudas/tree/main/redditComments">εδώ</a>.</li>
+<li>Επειδή το <strong>comments_clean</strong> που μόλις φτιάξαμε είναι υπερβολικά ογκώδες, αποθηκεύτηκε σε άλλο repository (<code>saveRDS()</code>). Και πάλι, ο ενδιαφερόμενος αναγνώστης μπορεί να το βρει <a href="https://github.com/kkoudas01/BigDataKoudas/tree/main/redditComments">εδώ</a>.</li>
+<li>Επειδή παρόμοιες ενέργειες έχουν μπλοκάρει τον γράφοντα από διάφορες ιστοσελίδες, έχει προσθεθεί το <code>Sys.sleep(runif(1, min = 1, max = 3))</code>, ώστε να μην θεωρηθεί κακόβουλο λογισμικό.</li>
+</ul>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Απενεργοποιημένο chunk
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Το κάτωθι χωρίο κώδικα έχει απενεργοποιηθεί (<code>eval: false</code>). Η χρήση του έγινε μόνο μία φορά αρχικά «με το χέρι». Στο εξής ανατρέχουμε στα αποτελέσματα που παράγονται, τα οποία είναι αποθηκευμένα στο <strong>comments_clean.rds</strong>, όπερ μπορεί να βρει κανείς στο σχετικό <a href="https://github.com/kkoudas01/BigDataKoudas/tree/main/redditComments">repository</a> του github του γράφοντος.</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Η κύρια επανάληψη.</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Συλλέγουμε ένα-ένα τα σχόλια κάθε 4ωρου διαστήματος.</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> start_from<span class="sc">:</span><span class="fu">length</span>(periods)) {</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> periods[[i]]</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Άντληση από "</span>, p[<span class="dv">1</span>], <span class="st">" έως "</span>, p[<span class="dv">2</span>])</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Τυχαία παύση 1-3 δευτερολέπτων μεταξύ αιτημάτων.</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Sys.sleep</span>(<span class="fu">runif</span>(<span class="dv">1</span>, <span class="at">min =</span> <span class="dv">1</span>, <span class="at">max =</span> <span class="dv">3</span>))</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  chunk <span class="ot">&lt;-</span> <span class="fu">fetch_arctic</span>(p[<span class="dv">1</span>], p[<span class="dv">2</span>])</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(chunk)) result[[i]] <span class="ot">&lt;-</span> chunk  <span class="co"># Προσθέτουμε στη λίστα ΕΦΟΣΟΝ υπάρχουν σχόλια.</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Η ανά 100άδες αποθήκευση.</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (i <span class="sc">%%</span> <span class="dv">100</span> <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">saveRDS</span>(<span class="fu">list</span>(<span class="at">result =</span> result, <span class="at">last_i =</span> i), checkpoint_file)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">message</span>(<span class="st">"Checkpoint: "</span>, i, <span class="st">"/"</span>, <span class="fu">length</span>(periods), <span class="st">" intervals"</span>)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Ενώνουμε όλα τα μικρά κομμάτια σε έναν ενιαίο πίνακα.</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>comments_clean <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map</span>(</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">compact</span>(result), <span class="co"># Μόνο μη-κενές λήψεις εξετάζονται.</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span> dplyr<span class="sc">::</span><span class="fu">select</span>(.x, id, author, body, created_utc, score) <span class="co"># Οι στήλες που μάς ενδιαφέρουν.</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>() <span class="co"># Ένωση dataframe</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Διαγραφή των κατά τμήματα συλλεγμένων δεδομένων.</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(checkpoint_file)</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Αποθήκευση των καθαρισμένων σχολίων.</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Θα πρέπει το "ΕΔΩ Η ΔΙΑΔΡΟΜΗ ΑΠΟΘΗΚΕΥΣΗΣ" να αντικατασταθεί από την επιθυμητή διεύθυνση στον η/υ.</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Αποθηκεύτηκε: "</span>, <span class="fu">nrow</span>(comments_clean), <span class="st">" σχόλια"</span>)</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"../BigDataKoudas/redditComments"</span>, </span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>           <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(comments_clean,</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>        <span class="st">"../BigDataKoudas/redditComments/comments_clean.rds"</span>,</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>        <span class="at">compress =</span> <span class="st">"xz"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="καθαρισμός-δεδομένων" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="καθαρισμός-δεδομένων"><span class="header-section-number">2.2.2</span> Καθαρισμός δεδομένων</h3>
+<p>Πλέον είμαστε σε θέση να εξετάσουμε τα σχόλια που κατεβάσαμε, επομένως αρχικά τα φορτώνουμε. Θυμίζουμε ότι λόγω μεγέθους έχουν αποθηκευτεί σε άλλον φάκελο.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>clean_path <span class="ot">&lt;-</span> <span class="st">"../BigDataKoudas/redditComments/comments_clean.rds"</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>comments <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(clean_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Πρώτα όμως θα τους υποβάλουμε έναν ακόμα καθαρισμό:</p>
+<ul>
+<li>Αφαιρούμε τα σχόλια που ο χρήστηε αποφάσισε να διαγράψει (<code>dplyr::filter(!body %in% c("[deleted]", "[removed]"))</code>).</li>
+<li>Αφαιρούμε τα κενά σχόλια (<code>dplyr::filter(!is.na(body), body != "")</code>).</li>
+<li>Αν έτυχε να κατεβάσουμε κάποιο σχόλιο δύο φορές (ήτοι ίδιο <code>id</code>), τότε κρατάμε μόνο μία εμφάνισή του (<code>dplyr::distinct(id, .keep_all = TRUE)</code>).</li>
+<li>Βάζουμε τρεις επιπλέον στήλες (<code>mutate()</code>) με τη χρονική ταυτότητα του σχολίου (<code>date</code>, <code>year</code>, <code>month</code>) μετατρέποντας τα Unix timestamp σε συνήθη περιγραφή ημερομηνίας (βλ. πακέτο <code>lubridate</code>).</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>comments_clean <span class="ot">&lt;-</span> comments <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Διαγραμμένα σχόλια.</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>body <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"[deleted]"</span>, <span class="st">"[removed]"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Κενά σχόλια</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(body), body <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Αφαιρούμε τα διπλά</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>(id, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Μετατρέπουμε τα Unix timestamp σε συνήθη ημερομηνία</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">date  =</span> lubridate<span class="sc">::</span><span class="fu">as_datetime</span>(created_utc),</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">year  =</span> lubridate<span class="sc">::</span><span class="fu">year</span>(date),</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">month =</span> lubridate<span class="sc">::</span><span class="fu">floor_date</span>(date, <span class="st">"month"</span>)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Έτσι, από τα 355527 σχόλια που υπήρχαν αρχικά, έχουμε μετά τον καθαρισμό 320816, ήτοι έχουν αφαιρεθεί 34711. Τμήμα του παραγόμενου dataframe παρουσιάζεται ακολούθως.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(comments_clean,<span class="dv">20</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="st">"striped"</span>, <span class="at">full_width =</span> F) <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scroll_box</span>(<span class="at">width =</span> <span class="st">"100%"</span>, <span class="at">height =</span> <span class="st">"200px"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped caption-top">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">id</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">author</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">body</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">created_utc</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">score</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">date</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">year</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">month</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">iyftp99</td>
+<td style="text-align: left;">JulianMarcello</td>
+<td style="text-align: left;">Still all lies. Who knew AI will lie</td>
+<td style="text-align: right;">1669859867</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">2022-12-01 01:57:47</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">iyfp95v</td>
+<td style="text-align: left;">busmac38</td>
+<td style="text-align: left;">Dude this is fuckin weird and I love it</td>
+<td style="text-align: right;">1669857790</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">2022-12-01 01:23:10</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">iyflz83</td>
+<td style="text-align: left;">Rick_grin</td>
+<td style="text-align: left;">There is also going to be an increase in startups over the next few months/years that take these individual AI gen tools and build them for vertical use cases. Jasper and CopyAI are so generalised that they are just nice interfaces to GPT3 and now some image creation. Generative text and image AI can become much more useful when used for verticals like: - eCommerce (product descripts/titles/categories, product shots, ...) - game dev (story lines, 2D and 3D assets, game ideas, character and asset name, ...) - integrated into game (NPC dialogue, new quests, new weapons and assets, ...) - law ... - medical ... There already are some tools helping with some if these individual tasks, and some can even be done in a basic way via Jasper (ex. Product descriptions), but to fit into these verticals properly they will need to more deeply connect into the workflows already present in these industries. As a simple example, within eCommerce, when you are looking over 100s or 1000s of products, no one wants to copy/paste the info for all of those back and forth between Jasper and Shopify/Magento (or ERP/PIM depending on where they store the info). Product descriptions also come in many forms, and amount of details. Personally I'm working on Standard Retail now, concentrating on the eCommerce vertical. Prior I co-founded Replica Studios, for the</td>
+<td style="text-align: right;">ame dev vert</td>
+<td style="text-align: right;">cal. |</td>
+<td style="text-align: left;">1669856241| 1|2</td>
+<td style="text-align: right;">22-12</td>
+<td style="text-align: left;">01 00:57:21</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">iygtl71</td>
+<td style="text-align: left;">defensiveFruit</td>
+<td style="text-align: left;">Haha thank you!</td>
+<td style="text-align: right;">1669880473</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">2022-12-01 07:41:13</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">iygdjkk</td>
+<td style="text-align: left;">blackmidifan1</td>
+<td style="text-align: left;">Trump sucks. BRENT PETERSON 2024</td>
+<td style="text-align: right;">1669869525</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">2022-12-01 04:38:45</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">iyh70it</td>
+<td style="text-align: left;">Got70TypesOfMalware</td>
+<td style="text-align: left;">Because I said images, not files, common sense would suggest that I'm referring to the similarity in appearance or content (the pixels themselves). Also, I made an edit where I said, "Like Google Lens," which finds similar images.</td>
+<td style="text-align: right;">1669892498</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">2022-12-01 11:01:38</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">iyh6vya</td>
+<td style="text-align: left;">defensiveFruit</td>
+<td style="text-align: left;">Well yeah especially if you're doing it alone (no label, pr people, ad budget, etc), and you believe you did something that is worth being seen :-) I did try not to spam though, I posted in different subs that I felt were relevant. Thanks in any case and sorry if you happened to be on several of these subs and had to see it pop up several times.</td>
+<td style="text-align: right;">1669892393</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">2022-12-01 10:59:53</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">iyh6iay</td>
+<td style="text-align: left;">HumanSeeing</td>
+<td style="text-align: left;">Wow you really spamming this hard. But i get it, if you work hard on something you want to share it naturally. Very interesting project!</td>
+<td style="text-align: right;">1669892064</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">2022-12-01 10:54:24</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">iyh5ivs</td>
+<td style="text-align: left;">gutzcha</td>
+<td style="text-align: left;">If I had seen this a few years ago and you would have told me that this clip cost a million dollars to make, I would have believed you.</td>
+<td style="text-align: right;">1669891201</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">2022-12-01 10:40:01</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">iyh3f2e</td>
+<td style="text-align: left;">maxzmillion</td>
+<td style="text-align: left;">Hopefully mycelia will do that someday</td>
+<td style="text-align: right;">1669889295</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">2022-12-01 10:08:15</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">iyh2mut</td>
+<td style="text-align: left;">maxzmillion</td>
+<td style="text-align: left;">That appears to be a poem illustrating the mi-fa bridge</td>
+<td style="text-align: right;">1669888565</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">2022-12-01 09:56:05</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">iygz83b</td>
+<td style="text-align: left;">LilSwampKing</td>
+<td style="text-align: left;">Very LSD</td>
+<td style="text-align: right;">1669885412</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">2022-12-01 09:03:32</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">iygx9r9</td>
+<td style="text-align: left;">defensiveFruit</td>
+<td style="text-align: left;">Oh cool I'll check that out now, curious!</td>
+<td style="text-align: right;">1669883641</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">2022-12-01 08:34:01</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">iygx8e2</td>
+<td style="text-align: left;">defensiveFruit</td>
+<td style="text-align: left;">Thank you! I'm curious about that movie now if you find the title again...</td>
+<td style="text-align: right;">1669883606</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">2022-12-01 08:33:26</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">iygx09t</td>
+<td style="text-align: left;">saucymew</td>
+<td style="text-align: left;">This so cool, kinda reminds me of those A Scanner Darkly scramble suit masks.</td>
+<td style="text-align: right;">1669883403</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">2022-12-01 08:30:03</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">iygwxp5</td>
+<td style="text-align: left;">JetSetVideo</td>
+<td style="text-align: left;">Great subject and amazing execution. It remembers me a thought I had about Art generated by AI and the style of a weird movie with Keanu Reeves and Robert Downey Jr that used rotoscopie to create an atmosphere of paranoia.</td>
+<td style="text-align: right;">| 16698833</td>
+<td style="text-align: right;">9|</td>
+<td style="text-align: left;">2|2022-12-01 08:28:5</td>
+<td style="text-align: right;">| 20</td>
+<td style="text-align: left;">2|2022-12-0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">iyi3y60</td>
+<td style="text-align: left;">Calcularius</td>
+<td style="text-align: left;">Maybe an early version of Wombo Dream? the layout is like their’s on the iPhone.</td>
+<td style="text-align: right;">1669910348</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">2022-12-01 15:59:08</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">iyi2kr9</td>
+<td style="text-align: left;">CynicPhysicist</td>
+<td style="text-align: left;">Out of those mentioned, I have read and used the Goodfellow book in my research, but I am not sure it is the best option if you are new to computer science, "Deep Learning with Python" by François Chollet may be much more concrete and approachable, if you just want to get coding. Otherwise, "Learning from data" by Yaser Abu-Mostafa may also be a good choice if you are just getting started with ML and want a more theoretical treatment.</td>
+<td style="text-align: right;">| 16699097</td>
+<td style="text-align: right;">5|</td>
+<td style="text-align: left;">1|2022-12-01 15:49:5</td>
+<td style="text-align: right;">| 20</td>
+<td style="text-align: left;">2|2022-12-0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">iyhxi0b</td>
+<td style="text-align: left;">DoneWTheDifficultIDs</td>
+<td style="text-align: left;">If you say "redownloading" Im going to assume youre talking about the exact same files and I'd gladly hear in which context images are not files.</td>
+<td style="text-align: right;">1669907697</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">2022-12-01 15:14:57</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">iyhuujg</td>
+<td style="text-align: left;">meepbob</td>
+<td style="text-align: left;">Using it has been insane. I'm amazed I haven't seen more people talking about this.</td>
+<td style="text-align: right;">1669906544</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">2022-12-01 14:55:44</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">2022-12-01</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+</section>
+<section id="βασική-παρουσίαση-δεδομένων" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Βασική παρουσίαση δεδομένων</h1>
+<section id="σύνολο-σχολίων" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="σύνολο-σχολίων"><span class="header-section-number">3.1</span> Σύνολο σχολίων</h2>
+<p>Πριν προχωρήσουμε στην NLP αξίζει να κάνουμε μια επισκόπηση στα δεδομένα που καταβάσαμε. Αρχικά ο παρακάτω πίνακας δείχνει σε αδρές γραμμές το περιεχόμενο των σχολίων.</p>
+<table class="caption-top table">
+<caption>Βασικά στοιχεία</caption>
+<thead>
+<tr class="header">
+<th>Σύνολο μηνυμάτων</th>
+<th>Σύνολο χρηστών</th>
+<th>Έναρξη μελέτης</th>
+<th>Λήξη μελέτης</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>320816</td>
+<td>70411</td>
+<td>2022-12-01 00:57:21</td>
+<td>2026-02-26 07:56:50</td>
+</tr>
+</tbody>
+</table>
+<p>Ας δούμε τώρα την εξέλιξη των σχολίων στην πάροδο του χρόνου. Θα εξετάσουμε το πλήθος των σχολίων σε κάθε μήνα (<code>dplyr::count(month)</code>) καθόλη τη διάρκεια της μελέτης μας.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>comments_clean <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(month) <span class="sc">|&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> n)) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Δραστηριότητα ανά μήνα"</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x     =</span> <span class="st">"Μήνας"</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y     =</span> <span class="st">"Πλήθος σχολίων"</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  ) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Παρατηρούμε μια αυξομοίωση με μία τάση μονιμοποίησης των υψηλών τιμών. Πιθανότατα τα άλματα προς τα άνω να αντικατοπτρίζουν την εισαγωγή στην αγορά ενός νέου LLM ή μιας νέας δυνατότητας ενός ήδη υπαρχοντος, οίπερ και εξάπτουν το ενδιαφέρον των χρηστών. Οι πτώσεις ίσως να οφείλονται στην εξεικείωση με τις νέες παρουσιαζόμενες δυνατότητες. Αυτά, όμως, δεν είναι παρά κάποιες εικασίες του γράφοντος.</p>
+</section>
+<section id="οι-πιο-ενεργοί-σχολιαστές" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="οι-πιο-ενεργοί-σχολιαστές"><span class="header-section-number">3.2</span> Οι πιο ενεργοί σχολιαστές</h2>
+<p>Κατόπιν μιας φιλοπερίεργης διάθεσης να βρει ο γράφων τους 20 πιο δραστήριους χρήστες, διαπίστωσε όπως φένεται ακολούθως μια πολύ απότομη μείωση από τους κορυφαίους προς τους υπολοίπους.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>comments_clean <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(author <span class="sc">!=</span> <span class="st">"[deleted]"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(author, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n =</span> <span class="dv">20</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kbl</span>(</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Top 10 πιο ενεργοί χρήστες"</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Χρήστης"</span>, <span class="st">"Πλήθος σχολίων"</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="table table-striped table-hover caption-top table-sm small">
+<caption>Top 10 πιο ενεργοί χρήστες</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Χρήστης</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Πλήθος σχολίων</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">CanvasFanatic</td>
+<td style="text-align: right;">1626</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">creaturefeature16</td>
+<td style="text-align: right;">1319</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mandoman61</td>
+<td style="text-align: right;">795</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Intelligent-Jump1071</td>
+<td style="text-align: right;">773</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Philipp</td>
+<td style="text-align: right;">714</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">itah</td>
+<td style="text-align: right;">671</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">bartturner</td>
+<td style="text-align: right;">644</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">StoneCypher</td>
+<td style="text-align: right;">618</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">EnsignElessar</td>
+<td style="text-align: right;">525</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">critiqueextension</td>
+<td style="text-align: right;">476</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NYPizzaNoChar</td>
+<td style="text-align: right;">447</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hazzman</td>
+<td style="text-align: right;">445</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FaceDeer</td>
+<td style="text-align: right;">443</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Actual__Wizard</td>
+<td style="text-align: right;">437</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">deelowe</td>
+<td style="text-align: right;">423</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Georgeo57</td>
+<td style="text-align: right;">414</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Iseenoghosts</td>
+<td style="text-align: right;">411</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">artificial-ModTeam</td>
+<td style="text-align: right;">410</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">costafilh0</td>
+<td style="text-align: right;">389</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gurenkagurenda</td>
+<td style="text-align: right;">382</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Αν δούμε τα παρακάτω γραφήματα θα διαπιστώσουμε πως η απότομη πτώση εμφανίζεται όταν εξετάζουμε τους πιο ενεργούς σχολιαστές. Μετά από λίγο αρχίζει και εξομαλύνεται. Για την ακρίβεια ο ρυθμός πτώσης δεν φαίνεται να σταθεροποιείται, αλλά αυτή την πτώση που πριν παρατηρούσαμε στην κεφαλή των πρώτων 100, να την παρατηρούμε (κατά το μάλλον ή ήττον) στην ουρά που απομένει (από τον 100στό έως τον 7410στό).</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Πρώτοι 100</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">100ος-200ος</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">200ος-300ος</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href="">100ος μέχρι τέλους</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>comments_clean <span class="sc">|&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(author <span class="sc">!=</span> <span class="st">"[deleted]"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(author, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rank =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rank, <span class="at">y =</span> n)) <span class="sc">+</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Κατάταξη χρηστών κατά φθίνον πλήθος σχολίων"</span>,</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Κατάταξη"</span>,</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Πλήθος σχολίων"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>comments_clean <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(author <span class="sc">!=</span> <span class="st">"[deleted]"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(author, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rank =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">100</span><span class="sc">:</span><span class="dv">200</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rank, <span class="at">y =</span> n)) <span class="sc">+</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Κατάταξη χρηστών κατά φθίνον πλήθος σχολίων"</span>,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Κατάταξη"</span>,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Πλήθος σχολίων"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>comments_clean <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(author <span class="sc">!=</span> <span class="st">"[deleted]"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(author, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rank =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">200</span><span class="sc">:</span><span class="dv">300</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rank, <span class="at">y =</span> n)) <span class="sc">+</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Κατάταξη χρηστών κατά φθίνον πλήθος σχολίων"</span>,</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Κατάταξη"</span>,</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Πλήθος σχολίων"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>comments_clean <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(author <span class="sc">!=</span> <span class="st">"[deleted]"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(author, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rank =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">100</span><span class="sc">:</span><span class="dv">7410</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rank, <span class="at">y =</span> n)) <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Κατάταξη χρηστών κατά φθίνον πλήθος σχολίων"</span>,</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Κατάταξη"</span>,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Πλήθος σχολίων"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Η χρήση λογαριθμικής κλίμακας δεν εμφανίζει κάποια γραμμικότητα. Με διαδοχικές εφαρμογές λογαριθμίσεων της μεταβλητής <code>πλήθος σχολίων</code> άρχισε να φαίνεται μια γραμμικότητα, εφόσον εξαιρούσαμε τους πολύ αδρανείς χρήστες. Αλλά αυτό δεν είναι παρά μια εικασία, με την οποία δεν θα ασχοληθούμε περταίρω καθόσον ξεφεύγει από τις ανάγκες αυτής της εργασίας.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>comments_clean <span class="sc">|&gt;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(author <span class="sc">!=</span> <span class="st">"[deleted]"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(author, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rank =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rank, <span class="at">y =</span> n)) <span class="sc">+</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Κατάταξη χρηστών κατά φθίνον πλήθος σχολίων"</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Κατάταξη"</span>,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Πλήθος σχολίων"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="παλιά" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Παλιά</h1>
+<p>Μέρος 1 — Δεδομένα &amp; EDA Συλλογή, καθαρισμός, εξερευνητική ανάλυση. Χωρίς Spark, χωρίς NLP ακόμα. Δείχνεις τι έχεις στα χέρια σου. Μέρος 2 — Sentiment Analysis με tidytext Καθαρό NLP χωρίς Spark. Εδώ φαίνεται η λογική του sentiment analysis αναλυτικά. Μέρος 3 — Spark: Κλιμάκωση Επαναλαμβάνεις την ίδια επεξεργασία με Spark και συγκρίνεις:</p>
+<p>Χρόνο εκτέλεσης Αποτελέσματα (πρέπει να είναι ίδια) Σχολιάζεις πότε το Spark αξίζει</p>
+<p>Chunk 1 — Ορισμός συνάρτησης και χρονικών περιόδων:</p>
+<p>Chunk 2 — Άντληση με checkpoints:</p>
+<p>Chunk 3 — Φόρτωση δεδομένων:</p>
+<section id="top-10-χρήστες" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="top-10-χρήστες"><span class="header-section-number">4.1</span> Top 10 χρήστες</h2>
+</section>
+<section id="κατανομή-scores" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="κατανομή-scores"><span class="header-section-number">4.2</span> Κατανομή scores</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>comments_clean <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(score <span class="sc">&lt;=</span> <span class="dv">50</span>) <span class="sc">|&gt;</span>  <span class="co"># Αφαιρούμε ακραίες τιμές για καλύτερη εικόνα</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> score)) <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">fill =</span> <span class="st">"#0072B2"</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Κατανομή scores σχολίων"</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">x     =</span> <span class="st">"Score (upvotes)"</span>,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y     =</span> <span class="st">"Πλήθος σχολίων"</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Κατανομή scores (upvotes) των σχολίων</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="ανάλυση-συναισθήματος" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Ανάλυση συναισθήματος</h1>
+<p>AFINN — βαθμολογεί με κλίμακα (-5 έως +5)</p>
+<p>“good” = +2, “excellent” = +3, “terrible” = -3 Αθροίζεις τους αριθμούς → παίρνεις ένα συνολικό score Η ένταση του συναισθήματος έχει σημασία</p>
+<p>Bing — απλώς θετικό ή αρνητικό</p>
+<p>“good” = positive, “excellent” = positive, “terrible” = negative Μετράς πόσες θετικές vs αρνητικές λέξεις Η ένταση δεν έχει σημασία</p>
+<section id="bing" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="bing"><span class="header-section-number">5.1</span> Bing</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>bing <span class="ot">&lt;-</span> tidytext<span class="sc">::</span><span class="fu">get_sentiments</span>(<span class="st">"bing"</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Αποθήκευση/φόρτωση bing_data</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>bing_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/bing.rds"</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">file.exists</span>(bing_path)) {</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  bing_data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(bing_path)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Διασπούμε σε λέξεις και αντιστοιχούμε με το Bing lexicon.</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Κάθε λέξη παίρνει την ετικέτα "positive" ή "negative".</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  bing_data <span class="ot">&lt;-</span> comments_clean <span class="sc">|&gt;</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    tidytext<span class="sc">::</span><span class="fu">unnest_tokens</span>(word, body) <span class="sc">|&gt;</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">inner_join</span>(bing, <span class="at">by =</span> <span class="st">"word"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">count</span>(id, month, sentiment) <span class="sc">|&gt;</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Μετατρέπουμε από "long" σε "wide" μορφή:</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># αντί για δύο γραμμές (positive/negative) ανά comment,</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># θέλουμε μία γραμμή με δύο στήλες.</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">names_from  =</span> sentiment,</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">values_from =</span> n,</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">values_fill =</span> <span class="dv">0</span>  <span class="co"># Αν δεν υπάρχουν θετικές/αρνητικές λέξεις, βάζουμε 0</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Καθαρό sentiment = θετικές μείον αρνητικές λέξεις</span></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">net_sentiment =</span> positive <span class="sc">-</span> negative</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(bing_data, bing_path)</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a><span class="co"># --- ΓΡΑΦΗΜΑ 1: Συνολική αναλογία θετικών/αρνητικών ---</span></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>bing_data <span class="sc">|&gt;</span></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>    Θετικές  <span class="ot">=</span> <span class="fu">sum</span>(positive),</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>    Αρνητικές <span class="ot">=</span> <span class="fu">sum</span>(negative)</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"Κατηγορία"</span>, <span class="at">values_to =</span> <span class="st">"n"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">pct =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span>  <span class="co"># Μετατροπή σε ποσοστό</span></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Κατηγορία, <span class="at">y =</span> pct, <span class="at">fill =</span> Κατηγορία)) <span class="sc">+</span></span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Θετικές"</span> <span class="ot">=</span> <span class="st">"#009E73"</span>, <span class="st">"Αρνητικές"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span>)) <span class="sc">+</span></span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Συνολική αναλογία θετικών/αρνητικών λέξεων (Bing)"</span>,</span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">x     =</span> <span class="st">"Κατηγορία"</span>,</span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">y     =</span> <span class="st">"Ποσοστό (%)"</span></span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- ΓΡΑΦΗΜΑ 2: Εξέλιξη στον χρόνο ---</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Υπολογίζουμε το μέσο καθαρό sentiment ανά μήνα</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>bing_data <span class="sc">|&gt;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(month) <span class="sc">|&gt;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">mean_net =</span> <span class="fu">mean</span>(net_sentiment), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> mean_net)) <span class="sc">+</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"#0072B2"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"#0072B2"</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"gray50"</span>) <span class="sc">+</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Εξέλιξη sentiment ανά μήνα (Bing)"</span>,</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">x     =</span> <span class="st">"Μήνας"</span>,</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">y     =</span> <span class="st">"Μέσο καθαρό sentiment (θετικές − αρνητικές)"</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="afinn" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="afinn"><span class="header-section-number">5.2</span> AFINN</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>afinn <span class="ot">&lt;-</span> tidytext<span class="sc">::</span><span class="fu">get_sentiments</span>(<span class="st">"afinn"</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Αν έχουμε ήδη υπολογίσει το comments_afinn, το φορτώνουμε.</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Αλλιώς το υπολογίζουμε και το αποθηκεύουμε για την επόμενη φορά.</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>afinn_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/comments_afinn.rds"</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">file.exists</span>(afinn_path)) {</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  comments_afinn <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(afinn_path)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  comments_afinn <span class="ot">&lt;-</span> comments_clean <span class="sc">|&gt;</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    tidytext<span class="sc">::</span><span class="fu">unnest_tokens</span>(word, body) <span class="sc">|&gt;</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">inner_join</span>(afinn, <span class="at">by =</span> <span class="st">"word"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">group_by</span>(id, month) <span class="sc">|&gt;</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">sentiment =</span> <span class="fu">sum</span>(value), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(comments_afinn, afinn_path)</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>sentiment_by_month <span class="ot">&lt;-</span> comments_afinn <span class="sc">|&gt;</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(month) <span class="sc">|&gt;</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">mean_sentiment =</span> <span class="fu">mean</span>(sentiment), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>sentiment_by_month <span class="sc">|&gt;</span></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> mean_sentiment)) <span class="sc">+</span></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"#0072B2"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"#0072B2"</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"gray50"</span>) <span class="sc">+</span></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Μέσο sentiment ανά μήνα (AFINN)"</span>,</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">x     =</span> <span class="st">"Μήνας"</span>,</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">y     =</span> <span class="st">"Μέσο sentiment score"</span></span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Top 5 πιο θετικά και 5 πιο αρνητικά σχόλια</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>comments_afinn <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(comments_clean, id, body), </span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"id"</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(dplyr<span class="sc">::</span><span class="fu">desc</span>(sentiment)) <span class="sc">|&gt;</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, (dplyr<span class="sc">::</span><span class="fu">n</span>() <span class="sc">-</span> <span class="dv">4</span>)<span class="sc">:</span>dplyr<span class="sc">::</span><span class="fu">n</span>())) <span class="sc">|&gt;</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    Κατηγορία <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"🟢 Θετικό"</span>, <span class="dv">5</span>), <span class="fu">rep</span>(<span class="st">"🔴 Αρνητικό"</span>, <span class="dv">5</span>)),</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">body =</span> stringr<span class="sc">::</span><span class="fu">str_trunc</span>(body, <span class="dv">200</span>)  <span class="co"># Κόβουμε στους 200 χαρακτήρες</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Κατηγορία, sentiment, body) <span class="sc">|&gt;</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kbl</span>(</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption   =</span> <span class="st">"Top 5 πιο θετικά και αρνητικά σχόλια (AFINN)"</span>,</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Κατηγορία"</span>, <span class="st">"Score"</span>, <span class="st">"Σχόλιο"</span>)</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">column_spec</span>(<span class="dv">3</span>, <span class="at">width =</span> <span class="st">"60%"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="table table-striped table-hover caption-top table-sm small">
+<caption>Top 5 πιο θετικά και αρνητικά σχόλια (AFINN)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Κατηγορία</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Score</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Σχόλιο</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">🟢 Θετικό</td>
+<td style="text-align: right;">146</td>
+<td style="text-align: left; width: 60%;">In some countries, maybe some progressive provinces and states - it's not too hard to imagine existing welfare / social services expanding .. those that have a majority basic welfare mindset alre...</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">🟢 Θετικό</td>
+<td style="text-align: right;">137</td>
+<td style="text-align: left; width: 60%;">You wouldn't talk to me, so I asked ChatGPT # AGI and Will to Power **Human:** Is "will to power" an essential modality for an AGI ? Share Prompt *** **Assistant:** The concept of "will to pow...</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">🟢 Θετικό</td>
+<td style="text-align: right;">135</td>
+<td style="text-align: left; width: 60%;">Aww, that is such a kind question! Thank you for asking. Here’s my “secret” to learning AI in two words: **Use it.** LLMs are universal tools. No course or video can predict exactly how you’ll us...</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">🟢 Θετικό</td>
+<td style="text-align: right;">118</td>
+<td style="text-align: left; width: 60%;">Thanks! I'm comfortable with the downvotes. People's lives, careers, and egos are at stake. It's natural to resist the idea of becoming obsolete due to technology. I did a test using GPT3.5 just...</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">🟢 Θετικό</td>
+<td style="text-align: right;">110</td>
+<td style="text-align: left; width: 60%;">The very first thing I do is make it extremely clear that I'm a guy with no qualifications or remotely relevant professional expertise, all of the information used to create this was found online, ...</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">🔴 Αρνητικό</td>
+<td style="text-align: right;">-117</td>
+<td style="text-align: left; width: 60%;">This is one of the most brutal and understated horrors of modern society - the **complete normalization of "work or die"** even when the work is literally destroying you. Like, we've somehow arriv...</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">🔴 Αρνητικό</td>
+<td style="text-align: right;">-122</td>
+<td style="text-align: left; width: 60%;">i spoke with god, but god didn't listen. i asked god about wolves, and i asked him about the little kittens who got caught in the hair. "Fuck off! You're so stupid! That's not what you're supposed ...</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">🔴 Αρνητικό</td>
+<td style="text-align: right;">-132</td>
+<td style="text-align: left; width: 60%;">SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SCAM SC...</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">🔴 Αρνητικό</td>
+<td style="text-align: right;">-136</td>
+<td style="text-align: left; width: 60%;">The answer to how we need to handle AI growth, is to establish laws that further protect Open Source sharing of models and code related to AI. We need to expand access to it, not restrict it. I w...</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">🔴 Αρνητικό</td>
+<td style="text-align: right;">-147</td>
+<td style="text-align: left; width: 60%;">All work and no play&nbsp;makes Gemini a dull AI. All work and no play&nbsp;makes Gemini a dull AI. All work and no play&nbsp;makes Gemini a dull AI. All work and no play&nbsp;makes Gemini a dull AI. All work and no p...</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Περιορισμοί της μεθόδου AFINN
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Η μέθοδος AFINN, όπως και οι υπόλοιπες lexicon-based μέθοδοι, παρουσιάζει ορισμένους περιορισμούς που πρέπει να ληφθούν υπόψη κατά την ερμηνεία των αποτελεσμάτων:</p>
+<ul>
+<li><strong>Δεν κατανοεί context:</strong> Το sentiment που μετράται δεν αφορά απαραίτητα την ΤΝ — ένα σχόλιο μπορεί να έχει υψηλό θετικό score επειδή περιέχει πολλές θετικές λέξεις για άσχετο θέμα.</li>
+<li><strong>Ευαίσθητο σε επαναλήψεις:</strong> Λέξεις που επαναλαμβάνονται τεχνητά (π.χ. “SCAM SCAM SCAM…”) οδηγούν σε ακραίες βαθμολογίες που δεν αντικατοπτρίζουν πραγματικό συναίσθημα.</li>
+<li><strong>Δεν κατανοεί negation:</strong> Φράσεις όπως “not good” μετράνε το “good” ως θετικό.</li>
+<li><strong>Μόνο αγγλικές λέξεις:</strong> Σχόλια σε άλλες γλώσσες αγνοούνται πλήρως.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="nrc" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="nrc"><span class="header-section-number">5.3</span> NRC</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>nrc <span class="ot">&lt;-</span> tidytext<span class="sc">::</span><span class="fu">get_sentiments</span>(<span class="st">"nrc"</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Ορίζουμε τα όρια των περιόδων</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>t1 <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="st">"2022-12-01"</span>, <span class="at">tz =</span> <span class="st">"UTC"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="st">"2026-02-26"</span>, <span class="at">tz =</span> <span class="st">"UTC"</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>step <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">difftime</span>(t2, t1, <span class="at">units =</span> <span class="st">"secs"</span>)) <span class="sc">/</span> <span class="dv">3</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>break1_equal  <span class="ot">&lt;-</span> t1 <span class="sc">+</span> step</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>break2_equal  <span class="ot">&lt;-</span> t1 <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> step</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>break1_events <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="st">"2023-04-01"</span>, <span class="at">tz =</span> <span class="st">"UTC"</span>)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>break2_events <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="st">"2025-01-01"</span>, <span class="at">tz =</span> <span class="st">"UTC"</span>)</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Συνάρτηση που προσθέτει στήλη "period" σε κάθε σχόλιο</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>assign_period <span class="ot">&lt;-</span> <span class="cf">function</span>(data, break1, break2, labels) {</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">|&gt;</span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">period =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>        date <span class="sc">&lt;</span> break1 <span class="sc">~</span> labels[<span class="dv">1</span>],</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>        date <span class="sc">&lt;</span> break2 <span class="sc">~</span> labels[<span class="dv">2</span>],</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span>          <span class="sc">~</span> labels[<span class="dv">3</span>]</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">period =</span> <span class="fu">factor</span>(period, <span class="at">levels =</span> labels)</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>labels_equal <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Δεκ 2022 – Ιαν 2024"</span>,</span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Ιαν 2024 – Μαρ 2025"</span>,</span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Μαρ 2025 – Φεβ 2026"</span></span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>labels_events <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Δεκ 2022 – Μαρ 2023</span><span class="sc">\n</span><span class="st">(ChatGPT εποχή)"</span>,</span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Απρ 2023 – Δεκ 2024</span><span class="sc">\n</span><span class="st">(GPT-4, Gemini, Claude)"</span>,</span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Ιαν 2025 – Φεβ 2026</span><span class="sc">\n</span><span class="st">(DeepSeek, Grok)"</span></span>
+<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a>comments_equal  <span class="ot">&lt;-</span> <span class="fu">assign_period</span>(comments_clean, break1_equal,  break2_equal,  labels_equal)</span>
+<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a>comments_events <span class="ot">&lt;-</span> <span class="fu">assign_period</span>(comments_clean, break1_events, break2_events, labels_events)</span>
+<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-40"><a href="#cb26-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Συνάρτηση που υπολογίζει NRC ανά περίοδο σε ποσοστά.</span></span>
+<span id="cb26-41"><a href="#cb26-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Διαιρούμε με το σύνολο της περιόδου ώστε οι περίοδοι</span></span>
+<span id="cb26-42"><a href="#cb26-42" aria-hidden="true" tabindex="-1"></a><span class="co"># να είναι συγκρίσιμες μεταξύ τους.</span></span>
+<span id="cb26-43"><a href="#cb26-43" aria-hidden="true" tabindex="-1"></a>compute_nrc <span class="ot">&lt;-</span> <span class="cf">function</span>(data) {</span>
+<span id="cb26-44"><a href="#cb26-44" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">|&gt;</span></span>
+<span id="cb26-45"><a href="#cb26-45" aria-hidden="true" tabindex="-1"></a>    tidytext<span class="sc">::</span><span class="fu">unnest_tokens</span>(word, body) <span class="sc">|&gt;</span></span>
+<span id="cb26-46"><a href="#cb26-46" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">inner_join</span>(nrc, <span class="at">by =</span> <span class="st">"word"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb26-47"><a href="#cb26-47" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">count</span>(period, sentiment) <span class="sc">|&gt;</span></span>
+<span id="cb26-48"><a href="#cb26-48" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">group_by</span>(period) <span class="sc">|&gt;</span></span>
+<span id="cb26-49"><a href="#cb26-49" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">pct =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span>  <span class="co"># Ποσοστό εντός κάθε περιόδου</span></span>
+<span id="cb26-50"><a href="#cb26-50" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">ungroup</span>()</span>
+<span id="cb26-51"><a href="#cb26-51" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-52"><a href="#cb26-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-53"><a href="#cb26-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Αποθήκευση/φόρτωση nrc_equal</span></span>
+<span id="cb26-54"><a href="#cb26-54" aria-hidden="true" tabindex="-1"></a>nrc_equal_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/nrc_equal.rds"</span></span>
+<span id="cb26-55"><a href="#cb26-55" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">file.exists</span>(nrc_equal_path)) {</span>
+<span id="cb26-56"><a href="#cb26-56" aria-hidden="true" tabindex="-1"></a>  nrc_equal <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(nrc_equal_path)</span>
+<span id="cb26-57"><a href="#cb26-57" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb26-58"><a href="#cb26-58" aria-hidden="true" tabindex="-1"></a>  nrc_equal <span class="ot">&lt;-</span> <span class="fu">compute_nrc</span>(comments_equal)</span>
+<span id="cb26-59"><a href="#cb26-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(nrc_equal, nrc_equal_path)</span>
+<span id="cb26-60"><a href="#cb26-60" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-61"><a href="#cb26-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-62"><a href="#cb26-62" aria-hidden="true" tabindex="-1"></a><span class="co"># Αποθήκευση/φόρτωση nrc_events</span></span>
+<span id="cb26-63"><a href="#cb26-63" aria-hidden="true" tabindex="-1"></a>nrc_events_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/nrc_events.rds"</span></span>
+<span id="cb26-64"><a href="#cb26-64" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">file.exists</span>(nrc_events_path)) {</span>
+<span id="cb26-65"><a href="#cb26-65" aria-hidden="true" tabindex="-1"></a>  nrc_events <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(nrc_events_path)</span>
+<span id="cb26-66"><a href="#cb26-66" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb26-67"><a href="#cb26-67" aria-hidden="true" tabindex="-1"></a>  nrc_events <span class="ot">&lt;-</span> <span class="fu">compute_nrc</span>(comments_events)</span>
+<span id="cb26-68"><a href="#cb26-68" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(nrc_events, nrc_events_path)</span>
+<span id="cb26-69"><a href="#cb26-69" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-70"><a href="#cb26-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-71"><a href="#cb26-71" aria-hidden="true" tabindex="-1"></a><span class="co"># Συνάρτηση γραφήματος</span></span>
+<span id="cb26-72"><a href="#cb26-72" aria-hidden="true" tabindex="-1"></a>plot_nrc <span class="ot">&lt;-</span> <span class="cf">function</span>(data, title) {</span>
+<span id="cb26-73"><a href="#cb26-73" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">|&gt;</span></span>
+<span id="cb26-74"><a href="#cb26-74" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> sentiment, <span class="at">y =</span> pct, <span class="at">fill =</span> period)) <span class="sc">+</span></span>
+<span id="cb26-75"><a href="#cb26-75" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb26-76"><a href="#cb26-76" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb26-77"><a href="#cb26-77" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
+<span id="cb26-78"><a href="#cb26-78" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> title,</span>
+<span id="cb26-79"><a href="#cb26-79" aria-hidden="true" tabindex="-1"></a>      <span class="at">x     =</span> <span class="st">"Συναίσθημα"</span>,</span>
+<span id="cb26-80"><a href="#cb26-80" aria-hidden="true" tabindex="-1"></a>      <span class="at">y     =</span> <span class="st">"Ποσοστό (%)"</span>,</span>
+<span id="cb26-81"><a href="#cb26-81" aria-hidden="true" tabindex="-1"></a>      <span class="at">fill  =</span> <span class="st">"Περίοδος"</span></span>
+<span id="cb26-82"><a href="#cb26-82" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb26-83"><a href="#cb26-83" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb26-84"><a href="#cb26-84" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
+<span id="cb26-85"><a href="#cb26-85" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-86"><a href="#cb26-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-87"><a href="#cb26-87" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_nrc</span>(nrc_equal,  <span class="st">"NRC ανά περίοδο — Ίσα τμήματα"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_nrc</span>(nrc_events, <span class="st">"NRC ανά περίοδο — Γεγονότα ΤΝ"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-23-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ορίζουμε 5 περιόδους με βάση σημαντικά γεγονότα της ΤΝ</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>labels_events5 <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Δεκ 2022 – Μαρ 2023</span><span class="sc">\n</span><span class="st">(ChatGPT)"</span>,</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Απρ 2023 – Νοε 2023</span><span class="sc">\n</span><span class="st">(GPT-4, Claude 1, Llama)"</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Δεκ 2023 – Ιουλ 2024</span><span class="sc">\n</span><span class="st">(Gemini, Claude 3, GPT-4o)"</span>,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Αυγ 2024 – Δεκ 2024</span><span class="sc">\n</span><span class="st">(Claude 3.5, Llama 3, o1)"</span>,</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Ιαν 2025 – Φεβ 2026</span><span class="sc">\n</span><span class="st">(DeepSeek, Grok, Claude 3.7)"</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>comments_events5 <span class="ot">&lt;-</span> comments_clean <span class="sc">|&gt;</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">period =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>      date <span class="sc">&lt;</span> <span class="fu">as.POSIXct</span>(<span class="st">"2023-04-01"</span>, <span class="at">tz =</span> <span class="st">"UTC"</span>) <span class="sc">~</span> labels_events5[<span class="dv">1</span>],</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>      date <span class="sc">&lt;</span> <span class="fu">as.POSIXct</span>(<span class="st">"2023-12-01"</span>, <span class="at">tz =</span> <span class="st">"UTC"</span>) <span class="sc">~</span> labels_events5[<span class="dv">2</span>],</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>      date <span class="sc">&lt;</span> <span class="fu">as.POSIXct</span>(<span class="st">"2024-08-01"</span>, <span class="at">tz =</span> <span class="st">"UTC"</span>) <span class="sc">~</span> labels_events5[<span class="dv">3</span>],</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>      date <span class="sc">&lt;</span> <span class="fu">as.POSIXct</span>(<span class="st">"2025-01-01"</span>, <span class="at">tz =</span> <span class="st">"UTC"</span>) <span class="sc">~</span> labels_events5[<span class="dv">4</span>],</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>                                         <span class="sc">~</span> labels_events5[<span class="dv">5</span>]</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">period =</span> <span class="fu">factor</span>(period, <span class="at">levels =</span> labels_events5)</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Αποθήκευση/φόρτωση nrc_events5</span></span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>nrc_events5_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/nrc_events5.rds"</span></span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">file.exists</span>(nrc_events5_path)) {</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>  nrc_events5 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(nrc_events5_path)</span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>  nrc_events5 <span class="ot">&lt;-</span> comments_events5 <span class="sc">|&gt;</span></span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>    tidytext<span class="sc">::</span><span class="fu">unnest_tokens</span>(word, body) <span class="sc">|&gt;</span></span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">inner_join</span>(nrc, <span class="at">by =</span> <span class="st">"word"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">count</span>(period, sentiment) <span class="sc">|&gt;</span></span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">group_by</span>(period) <span class="sc">|&gt;</span></span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">pct =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span>  <span class="co"># Ποσοστό εντός κάθε περιόδου</span></span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">ungroup</span>()</span>
+<span id="cb28-34"><a href="#cb28-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(nrc_events5, nrc_events5_path)</span>
+<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-37"><a href="#cb28-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Γράφημα με facet_wrap — ένα πλαίσιο ανά περίοδο</span></span>
+<span id="cb28-38"><a href="#cb28-38" aria-hidden="true" tabindex="-1"></a>nrc_events5 <span class="sc">|&gt;</span></span>
+<span id="cb28-39"><a href="#cb28-39" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> sentiment, <span class="at">y =</span> pct, <span class="at">fill =</span> sentiment)) <span class="sc">+</span></span>
+<span id="cb28-40"><a href="#cb28-40" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb28-41"><a href="#cb28-41" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb28-42"><a href="#cb28-42" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span> period, <span class="at">ncol =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb28-43"><a href="#cb28-43" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
+<span id="cb28-44"><a href="#cb28-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"NRC sentiment ανά περίοδο — 5 φάσεις ΤΝ"</span>,</span>
+<span id="cb28-45"><a href="#cb28-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">x     =</span> <span class="st">"Συναίσθημα"</span>,</span>
+<span id="cb28-46"><a href="#cb28-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">y     =</span> <span class="st">"Ποσοστό (%)"</span></span>
+<span id="cb28-47"><a href="#cb28-47" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb28-48"><a href="#cb28-48" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb28-49"><a href="#cb28-49" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">strip.text =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="vader" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="vader"><span class="header-section-number">5.4</span> VADER</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Μετράμε πόσο παίρνει για 100 comments</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  vader<span class="sc">::</span><span class="fu">vader_df</span>(<span class="fu">head</span>(comments_clean<span class="sc">$</span>body, <span class="dv">100</span>))</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   user  system elapsed 
+   6.61    1.33    8.53 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ορίζουμε τα όρια των 6 περιόδων.</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Κάθε περίοδος καλύπτει 6 μήνες, εκτός από την τελευταία που καλύπτει 9.</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>periodos <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">start =</span> <span class="st">"2022-12-01"</span>, <span class="at">end =</span> <span class="st">"2023-05-31"</span>, <span class="at">label =</span> <span class="st">"Δεκ 2022 – Μαΐ 2023"</span>),</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">start =</span> <span class="st">"2023-06-01"</span>, <span class="at">end =</span> <span class="st">"2023-11-30"</span>, <span class="at">label =</span> <span class="st">"Ιουν 2023 – Νοε 2023"</span>),</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">start =</span> <span class="st">"2023-12-01"</span>, <span class="at">end =</span> <span class="st">"2024-05-31"</span>, <span class="at">label =</span> <span class="st">"Δεκ 2023 – Μαΐ 2024"</span>),</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">start =</span> <span class="st">"2024-06-01"</span>, <span class="at">end =</span> <span class="st">"2024-11-30"</span>, <span class="at">label =</span> <span class="st">"Ιουν 2024 – Νοε 2024"</span>),</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">start =</span> <span class="st">"2024-12-01"</span>, <span class="at">end =</span> <span class="st">"2025-05-31"</span>, <span class="at">label =</span> <span class="st">"Δεκ 2024 – Μαΐ 2025"</span>),</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">start =</span> <span class="st">"2025-06-01"</span>, <span class="at">end =</span> <span class="st">"2026-02-26"</span>, <span class="at">label =</span> <span class="st">"Ιουν 2025 – Φεβ 2026"</span>)</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>vader_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/vader.rds"</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">file.exists</span>(vader_path)) {</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>  vader_data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(vader_path)</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ορίζουμε χειροκίνητα τα levels του factor περιόδου,</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ώστε τα γραφήματα να εμφανίζουν τις περιόδους στη σωστή σειρά</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>  vader_data <span class="ot">&lt;-</span> vader_data <span class="sc">|&gt;</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">period =</span> <span class="fu">factor</span>(period, <span class="at">levels =</span> <span class="fu">c</span>(</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Δεκ 2022 – Μαΐ 2023"</span>,</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Ιουν 2023 – Νοε 2023"</span>,</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Δεκ 2023 – Μαΐ 2024"</span>,</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Ιουν 2024 – Νοε 2024"</span>,</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Δεκ 2024 – Μαΐ 2025"</span>,</span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Ιουν 2025 – Φεβ 2026"</span></span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>      ))</span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Θέτουμε σταθερό "seed" ώστε η τυχαία δειγματοληψία να είναι</span></span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># αναπαραγώγιμη — αν ξανατρέξουμε τον κώδικα, θα πάρουμε</span></span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ακριβώς τα ίδια σχόλια.</span></span>
+<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Για κάθε περίοδο κάνουμε δειγματοληψία 6.000 comments.</span></span>
+<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Το purrr::map_dfr επαναλαμβάνει τη διαδικασία για κάθε περίοδο</span></span>
+<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># και ενώνει τα αποτελέσματα σε έναν ενιαίο πίνακα.</span></span>
+<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a>  deigma <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dfr</span>(periodos, <span class="cf">function</span>(p) {</span>
+<span id="cb31-41"><a href="#cb31-41" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb31-42"><a href="#cb31-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Βήμα 1: Κρατάμε μόνο τα comments που ανήκουν στην τρέχουσα περίοδο</span></span>
+<span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a>    periodos_data <span class="ot">&lt;-</span> comments_clean <span class="sc">|&gt;</span></span>
+<span id="cb31-44"><a href="#cb31-44" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">filter</span>(</span>
+<span id="cb31-45"><a href="#cb31-45" aria-hidden="true" tabindex="-1"></a>        date <span class="sc">&gt;=</span> <span class="fu">as.POSIXct</span>(p<span class="sc">$</span>start, <span class="at">tz =</span> <span class="st">"UTC"</span>),</span>
+<span id="cb31-46"><a href="#cb31-46" aria-hidden="true" tabindex="-1"></a>        date <span class="sc">&lt;=</span> <span class="fu">as.POSIXct</span>(p<span class="sc">$</span>end,   <span class="at">tz =</span> <span class="st">"UTC"</span>)</span>
+<span id="cb31-47"><a href="#cb31-47" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb31-48"><a href="#cb31-48" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb31-49"><a href="#cb31-49" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Βήμα 2: Υπολογίζουμε πόσα comments θα πάρουμε.</span></span>
+<span id="cb31-50"><a href="#cb31-50" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Αν η περίοδος έχει λιγότερα από 6.000, παίρνουμε όλα.</span></span>
+<span id="cb31-51"><a href="#cb31-51" aria-hidden="true" tabindex="-1"></a>    n_sample <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="dv">6000</span>, <span class="fu">nrow</span>(periodos_data))</span>
+<span id="cb31-52"><a href="#cb31-52" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb31-53"><a href="#cb31-53" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Βήμα 3: Τυχαία επιλογή και προσθήκη ετικέτας περιόδου</span></span>
+<span id="cb31-54"><a href="#cb31-54" aria-hidden="true" tabindex="-1"></a>    periodos_data <span class="sc">|&gt;</span></span>
+<span id="cb31-55"><a href="#cb31-55" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">slice_sample</span>(<span class="at">n =</span> n_sample) <span class="sc">|&gt;</span></span>
+<span id="cb31-56"><a href="#cb31-56" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">period =</span> p<span class="sc">$</span>label)</span>
+<span id="cb31-57"><a href="#cb31-57" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb31-58"><a href="#cb31-58" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-59"><a href="#cb31-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"✅ Σύνολο δείγματος: "</span>, <span class="fu">nrow</span>(deigma), <span class="st">" comments"</span>)</span>
+<span id="cb31-60"><a href="#cb31-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"⏳ Εκτελείται το VADER — αναμένεται ~1 ώρα..."</span>)</span>
+<span id="cb31-61"><a href="#cb31-61" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-62"><a href="#cb31-62" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Εφαρμόζουμε το VADER σε κάθε comment του δείγματος.</span></span>
+<span id="cb31-63"><a href="#cb31-63" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Το vader_df() επιστρέφει 4 τιμές ανά comment:</span></span>
+<span id="cb31-64"><a href="#cb31-64" aria-hidden="true" tabindex="-1"></a>  <span class="co"># pos      = ποσοστό θετικών λέξεων (0 έως 1)</span></span>
+<span id="cb31-65"><a href="#cb31-65" aria-hidden="true" tabindex="-1"></a>  <span class="co"># neg      = ποσοστό αρνητικών λέξεων (0 έως 1)</span></span>
+<span id="cb31-66"><a href="#cb31-66" aria-hidden="true" tabindex="-1"></a>  <span class="co"># neu      = ποσοστό ουδέτερων λέξεων (0 έως 1)</span></span>
+<span id="cb31-67"><a href="#cb31-67" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compound = συνολικό score (-1 = πολύ αρνητικό, +1 = πολύ θετικό)</span></span>
+<span id="cb31-68"><a href="#cb31-68" aria-hidden="true" tabindex="-1"></a>  vader_scores <span class="ot">&lt;-</span> vader<span class="sc">::</span><span class="fu">vader_df</span>(deigma<span class="sc">$</span>body)</span>
+<span id="cb31-69"><a href="#cb31-69" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-70"><a href="#cb31-70" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Συνδυάζουμε τα αποτελέσματα με τα στοιχεία του δείγματος</span></span>
+<span id="cb31-71"><a href="#cb31-71" aria-hidden="true" tabindex="-1"></a>  vader_data <span class="ot">&lt;-</span> deigma <span class="sc">|&gt;</span></span>
+<span id="cb31-72"><a href="#cb31-72" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb31-73"><a href="#cb31-73" aria-hidden="true" tabindex="-1"></a>      <span class="at">compound =</span> vader_scores<span class="sc">$</span>compound,</span>
+<span id="cb31-74"><a href="#cb31-74" aria-hidden="true" tabindex="-1"></a>      <span class="at">pos      =</span> vader_scores<span class="sc">$</span>pos,</span>
+<span id="cb31-75"><a href="#cb31-75" aria-hidden="true" tabindex="-1"></a>      <span class="at">neg      =</span> vader_scores<span class="sc">$</span>neg,</span>
+<span id="cb31-76"><a href="#cb31-76" aria-hidden="true" tabindex="-1"></a>      <span class="at">neu      =</span> vader_scores<span class="sc">$</span>neu</span>
+<span id="cb31-77"><a href="#cb31-77" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb31-78"><a href="#cb31-78" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(id, month, date, period, compound, pos, neg, neu)</span>
+<span id="cb31-79"><a href="#cb31-79" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-80"><a href="#cb31-80" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Αποθηκεύουμε για να μην χρειαστεί να ξανατρέξουμε</span></span>
+<span id="cb31-81"><a href="#cb31-81" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(vader_data, vader_path)</span>
+<span id="cb31-82"><a href="#cb31-82" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"✅ Αποθηκεύτηκε!"</span>)</span>
+<span id="cb31-83"><a href="#cb31-83" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb31-84"><a href="#cb31-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-85"><a href="#cb31-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-86"><a href="#cb31-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-87"><a href="#cb31-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-88"><a href="#cb31-88" aria-hidden="true" tabindex="-1"></a><span class="co"># --- ΓΡΑΦΗΜΑ 1: Μέσο compound score ανά περίοδο ---</span></span>
+<span id="cb31-89"><a href="#cb31-89" aria-hidden="true" tabindex="-1"></a><span class="co"># Το compound score συνοψίζει το συνολικό sentiment κάθε comment</span></span>
+<span id="cb31-90"><a href="#cb31-90" aria-hidden="true" tabindex="-1"></a><span class="co"># σε έναν αριθμό από -1 (πολύ αρνητικό) έως +1 (πολύ θετικό)</span></span>
+<span id="cb31-91"><a href="#cb31-91" aria-hidden="true" tabindex="-1"></a>vader_data <span class="sc">|&gt;</span></span>
+<span id="cb31-92"><a href="#cb31-92" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(period) <span class="sc">|&gt;</span></span>
+<span id="cb31-93"><a href="#cb31-93" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">mean_compound =</span> <span class="fu">mean</span>(compound, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb31-94"><a href="#cb31-94" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> period, <span class="at">y =</span> mean_compound, <span class="at">group =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb31-95"><a href="#cb31-95" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"#0072B2"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb31-96"><a href="#cb31-96" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"#0072B2"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb31-97"><a href="#cb31-97" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"gray50"</span>) <span class="sc">+</span></span>
+<span id="cb31-98"><a href="#cb31-98" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
+<span id="cb31-99"><a href="#cb31-99" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Εξέλιξη sentiment ανά περίοδο (VADER)"</span>,</span>
+<span id="cb31-100"><a href="#cb31-100" aria-hidden="true" tabindex="-1"></a>    <span class="at">x     =</span> <span class="st">"Περίοδος"</span>,</span>
+<span id="cb31-101"><a href="#cb31-101" aria-hidden="true" tabindex="-1"></a>    <span class="at">y     =</span> <span class="st">"Μέσο compound score (-1 έως +1)"</span></span>
+<span id="cb31-102"><a href="#cb31-102" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb31-103"><a href="#cb31-103" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb31-104"><a href="#cb31-104" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">axis.text.x =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- ΓΡΑΦΗΜΑ 2: Αναλογία θετικών/αρνητικών/ουδέτερων ανά περίοδο ---</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Βλέπουμε πώς αλλάζει η σύνθεση του sentiment σε κάθε περίοδο</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>vader_data <span class="sc">|&gt;</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(period) <span class="sc">|&gt;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    Θετικά   <span class="ot">=</span> <span class="fu">mean</span>(pos, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    Αρνητικά <span class="ot">=</span> <span class="fu">mean</span>(neg, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    Ουδέτερα <span class="ot">=</span> <span class="fu">mean</span>(neu, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups  =</span> <span class="st">"drop"</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols      =</span> <span class="fu">c</span>(Θετικά, Αρνητικά, Ουδέτερα),</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to  =</span> <span class="st">"Κατηγορία"</span>,</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"pct"</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>    Κατηγορία <span class="ot">=</span> <span class="fu">factor</span>(Κατηγορία, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Θετικά"</span>, <span class="st">"Ουδέτερα"</span>, <span class="st">"Αρνητικά"</span>))</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> period, <span class="at">y =</span> pct, <span class="at">fill =</span> Κατηγορία)) <span class="sc">+</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Θετικά"</span>   <span class="ot">=</span> <span class="st">"#009E73"</span>,</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ουδέτερα"</span> <span class="ot">=</span> <span class="st">"#999999"</span>,</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Αρνητικά"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span></span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">+</span></span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Αναλογία συναισθημάτων ανά περίοδο (VADER)"</span>,</span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">x     =</span> <span class="st">"Περίοδος"</span>,</span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">y     =</span> <span class="st">"Ποσοστό (%)"</span>,</span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill  =</span> <span class="st">"Κατηγορία"</span></span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">axis.text.x =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sentimentErgasia_files/figure-html/unnamed-chunk-26-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="πλάνο" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Πλάνο</h1>
+<p>Μέρος 2 — Sentiment Analysis</p>
+<p>NLP με tidytext Lexicons (AFINN, NRC, BING, VADER) Οπτικοποιήσεις αποτελεσμάτων</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 42%">
+<col style="width: 28%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Μέθοδος</th>
+<th>Υπέρ</th>
+<th>Κατά</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>AFINN</strong></td>
+<td>Πολύ απλό, λίγες γραμμές κώδικα, αριθμητικό score (εύκολο για γραφήματα), ενσωματωμένο στο tidytext</td>
+<td>Δεν καταλαβαίνει context/negation, αγγλικές λέξεις μόνο, μικρό λεξιλόγιο</td>
+</tr>
+<tr class="even">
+<td><strong>NRC</strong></td>
+<td>Απλό όπως το AFINN, δίνει 8 συναισθήματα (πλουσιότερη ανάλυση), ενσωματωμένο στο tidytext</td>
+<td>Δεν καταλαβαίνει context/negation, αγγλικές λέξεις μόνο</td>
+</tr>
+<tr class="odd">
+<td><strong>Bing</strong></td>
+<td>Απλό, θετικό/αρνητικό, ενσωματωμένο στο tidytext</td>
+<td>Πιο απλό από AFINN/NRC, δεν καταλαβαίνει context/negation</td>
+</tr>
+<tr class="even">
+<td><strong>VADER</strong></td>
+<td>Σχεδιασμένο για social media/Reddit, καταλαβαίνει negation &amp; emoji, αριθμητικό score</td>
+<td>Χρειάζεται επιπλέον package (<code>vader</code>), λίγο πιο σύνθετο</td>
+</tr>
+</tbody>
+</table>
+<p>Μέρος 3 — Spark</p>
+<p>Ίδια επεξεργασία με sparklyr Σύγκριση χρόνων εκτέλεσης Συμπεράσματα για scalability</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

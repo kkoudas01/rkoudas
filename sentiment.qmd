@@ -1,0 +1,905 @@
+---
+title: "Ανάλυση συναισθήματος"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+
+
+
+Μέρος 1 — Δεδομένα & EDA
+Συλλογή, καθαρισμός, εξερευνητική ανάλυση. Χωρίς Spark, χωρίς NLP ακόμα. Δείχνεις τι έχεις στα χέρια σου.
+Μέρος 2 — Sentiment Analysis με tidytext
+Καθαρό NLP χωρίς Spark. Εδώ φαίνεται η λογική του sentiment analysis αναλυτικά.
+Μέρος 3 — Spark: Κλιμάκωση
+Επαναλαμβάνεις την ίδια επεξεργασία με Spark και συγκρίνεις:
+
+Χρόνο εκτέλεσης
+Αποτελέσματα (πρέπει να είναι ίδια)
+Σχολιάζεις πότε το Spark αξίζει
+
+
+# Εισαγωγή
+
+Στην παρούσα ενότητα θα εξετάσουμε το πώς αντιμετωπίζουν οιχρήστες του Reddit την Τεχνητή Νοημοσύνη και μέσααπό αυτό θα μάθουμε:
+
+- πώς αντλούμε δεδομένα που αφορούν σχόλια χρηστών,
+
+- πώς αναλύουμε τη συναισθηματική τους φόρτιση και
+
+- πώς χρησιμοποιούμε το Spark για την περίπτωση που έχουμε μεγάλο όγκο δεδομένων.
+
+
+
+# Δεδομένα
+
+## Εισαγωγή δεδομένων
+
+Αρχικά εγκαθιστούμε τα απαραίτητα πακέτα.
+
+
+```{r}
+#| message: false
+#| warning: false
+
+packages <- c(
+  "tidyverse",   # dplyr, ggplot2, κλπ — βασική εργαλειοθήκη
+  "lubridate",   # Διαχείριση ημερομηνιών (created_utc → ημερομηνία)
+  "kableExtra",  # Μορφοποίηση πινάκων στο Quarto
+  "tidytext",   # Sentiment analysis
+  "textdata",    # Για να κατεβάσει τα lexicons (AFINN, NRC, Bing)
+  "vader"     # Sentiment analysis για social media
+  # Τα παρακάτω χρησιμοποιήθηκαν μόνο για την άντληση δεδομένων.
+  # Εφόσον τα δεδομένα έχουν αποθηκευτεί στο cache, δεν χρειάζονται πλέον.
+  # "jsonlite",  # Parsing JSON από το Arctic Shift API
+  # "httr"       # HTTP αιτήματα προς το API
+)
+
+installed  <- rownames(installed.packages())
+to_install <- packages[!packages %in% installed]
+
+if (length(to_install) > 0) {
+  install.packages(to_install)
+} else {
+  message("✅ Όλα τα packages είναι ήδη εγκατεστημένα!")
+}
+
+lapply(packages, library, character.only = TRUE)
+```
+
+
+Αρχικά έγινε προσπάθεια άμμεσα μέσω του [Reddit](https://www.reddit.com/prefs/apps), αλλά χωρίς αποτέλεσμα. Ακολουθώντας τις συμβουλές των σχολίων [εδώ](https://www.reddit.com/r/help/comments/1hpoul6/is_every_single_post_archived_somewhere_from/) ο γράφων οδηγήθηκε στο Arctic Shift. Προς τούτο πάμε [εδώ](https://arctic-shift.photon-reddit.com/search) κι επιλέγουμε [Comments search]{.btn .btn-outline-primary .btn-sm}  (όχι Posts, διότι τα comments έχουν πιο πλούσιο συναισθηματικό περιεχόμενο). Εν συνεχεία συμπληρώνουμε για να πάρουμε μια ιδέα για το τι θα χρησιμοποιήσουμε:
+
+| Πεδίο | Τι συμπληρώνουμε | Γιατί το επιλέγουμε; |
+|:------:|:----------------:|:-----:|
+| Subreddit | `artificial` | Κοινότητα αφιερωμένη στην τεχνητή νοημοσύνη |
+| After (UTC) | [1/12/2022]{.btn .btn-outline-primary .btn-sm} | Μετά την κυκλοφορία του ChatGPT (30/11/2022) |
+| Before (UTC) | [10/3/2026]{.btn .btn-outline-primary .btn-sm} | Μέχρι την έναρξη της εργασίας |
+| Limit | `100` | Δείγμα εξερεύνησης, για να ρίξουμε μια ματιά (εδώ θα μελετήσουμε περισσότερα) |
+| Date Sort |  [Descending]{.btn .btn-outline-primary .btn-sm} | Εμφάνιση των πιο πρόσφατων πρώτα |
+| Body | `artificial intelligence` | Φιλτράρισμα μόνο comments που αναφέρονται ρητά στην ΑΙ |
+
+: Συμπλήρωση στο Comments Search {tbl-colwidths="[25,25,50]"}
+
+Συμπληρώνοντας τα παραπάνω προκύπτουν αποτελέσματα που μπορούμε να δούμε, αλλά και η κάτωθι προειδοποίηση:
+
+
+::: {.callout-warning}
+## Timeout. Maybe slow down a bit
+
+**Important:** Using keyword search on large subreddits or time frames is not fully supported.
+
+If you're experiencing timeouts, try reducing the limit or narrowing down the time frame.
+:::
+
+Για να μην κρασάρει η διαδικασία, λοιπόν, αλά και επειδή το Arctic Shift δεν επιτρέπει πολλά αποτελέσματα ανά άντληση, χωρίσαμε την άντληση σε εβδομάδες, ήτοι ένα αίτημα 100 αποτελεσμάτων ανά μήνα. Κι επειδή παρόμοιες ενέργειες έχουν μπλοκάρει τον γράφοντα από σελίδες, έχει προσθεθεί το `Sys.sleep(runif(1, min = 1, max = 3))`, ώστε να μην θεωρηθούμε κακόβουλο λογισμικό.
+
+Πρώτα όμως ορίζουμε τη συνάρτηση `fetch_arctic()` με την οποία θα αντλήσουμε τα δεδομένα μας.
+
+Chunk 1 — Ορισμός συνάρτησης και χρονικών περιόδων:
+
+
+
+```{r}
+#| eval: false
+
+# Ορίζουμε μια "συνταγή" (συνάρτηση) που ονομάζεται fetch_arctic.
+# Της δίνουμε μια ημερομηνία έναρξης (after) και μια λήξης (before)
+# και αυτή μας επιστρέφει τα σχόλια εκείνης της περιόδου.
+fetch_arctic <- function(after, before) {
+
+  # Το API του Arctic Shift δεν καταλαβαίνει ημερομηνίες όπως "2023-01-01".
+  # Καταλαβαίνει μόνο "Unix timestamps": πόσα δευτερόλεπτα έχουν περάσει
+  # από την 1η Ιανουαρίου 1970. Κάνουμε τη μετατροπή εδώ.
+  after_ts  <- as.integer(as.POSIXct(after,  tz = "UTC"))
+  before_ts <- as.integer(as.POSIXct(before, tz = "UTC"))
+  
+  # Προστασία: αν η έναρξη είναι ίδια ή μεταγενέστερη της λήξης,
+  # παραλείπουμε — δεν έχει νόημα να ζητήσουμε κενή περίοδο.
+  # (Αυτό συνέβη στο τελευταίο interval της προηγούμενης άντλησης
+  # και προκάλεσε crash.)
+  if (after_ts >= before_ts) return(NULL)
+  
+  # Κατασκευάζουμε τη διεύθυνση (URL) του αιτήματος προς το Arctic Shift.
+  # Είναι σαν να συμπληρώνουμε μια φόρμα αναζήτησης, αλλά μέσω κώδικα:
+  # - subreddit=artificial : θέλουμε σχόλια από το r/artificial
+  # - after/before         : το χρονικό παράθυρο που μας ενδιαφέρει
+  # - limit=100            : μέγιστο 100 σχόλια ανά αίτημα (όριο του API)
+  url <- paste0(
+    "https://arctic-shift.photon-reddit.com/api/comments/search",
+    "?subreddit=artificial",
+    "&after=",  after_ts,
+    "&before=", before_ts,
+    "&limit=100"
+  )
+  
+  # Στέλνουμε το αίτημα και διαβάζουμε την απάντηση.
+  # Το tryCatch είναι σαν "δίχτυ ασφαλείας": αν κάτι πάει στραβά
+  # (π.χ. διακοπή σύνδεσης), δεν σταματά όλη η διαδικασία —
+  # απλώς παραλείπει εκείνο το 4ωρο και συνεχίζει στο επόμενο.
+  tryCatch({
+    response <- httr::GET(url, httr::timeout(60))  # Περιμένουμε max 60 δευτ.
+    parsed   <- jsonlite::fromJSON(httr::content(response, "text"))
+    parsed$data  # Επιστρέφουμε τον πίνακα με τα σχόλια
+  }, error = function(e) {
+    message("  ⚠️ ΣΦΑΛΜΑ: ", e$message)
+    NULL  # Σε περίπτωση σφάλματος, επιστρέφουμε "τίποτα"
+  })
+}
+
+# Ορίζουμε το χρονικό εύρος της έρευνας:
+# από την κυκλοφορία του ChatGPT (1/12/2022) μέχρι σήμερα (9/3/2026).
+start_dt <- as.POSIXct("2022-12-01 00:00:00", tz = "UTC")
+end_dt   <- as.POSIXct("2026-03-09 23:59:59", tz = "UTC")
+
+# Χωρίζουμε το συνολικό διάστημα σε περιόδους των 4 ωρών.
+# Αντί να ζητήσουμε όλα τα σχόλια 3+ χρόνων σε ένα αίτημα
+# (που θα προκαλούσε timeout), στέλνουμε ~7.000 μικρά αιτήματα.
+# Κάθε στοιχείο της λίστας "periods" είναι ένα ζεύγος (έναρξη, λήξη).
+periods <- seq(start_dt, end_dt, by = "4 hours") |>
+  purrr::map(function(start) {
+    end <- min(start + 4*3600 - 1, end_dt)
+    c(as.character(start), as.character(end))
+  })
+
+message("Σύνολο intervals: ", length(periods))
+```
+
+Chunk 2 — Άντληση με checkpoints:
+
+
+```{r}
+#| eval: false
+
+# Ορίζουμε πού θα αποθηκευτούν τα αρχεία στον υπολογιστή μας.
+cache_file      <- "data/cache/raw_reddit.rds"       # Όλα τα δεδομένα (ογκώδες)
+checkpoint_file <- "data/cache/checkpoint.rds"        # Σημείο συνέχισης αν κρασάρει
+
+# Δημιουργούμε τον φάκελο αν δεν υπάρχει ήδη
+dir.create("data/cache", recursive = TRUE, showWarnings = FALSE)
+
+message("⚙️ Άντληση από Arctic Shift (", length(periods), " intervals)...")
+
+# Έλεγχος αν υπάρχει αποθηκευμένη πρόοδος από προηγούμενη διακοπή.
+# Αν ναι, συνεχίζουμε από εκεί που σταματήσαμε — δεν ξαναρχίζουμε από την αρχή.
+if (file.exists(checkpoint_file)) {
+  checkpoint <- readRDS(checkpoint_file)
+  result     <- checkpoint$result      # Τα σχόλια που είχαμε μαζέψει
+  start_from <- checkpoint$last_i + 1  # Το interval που είχαμε φτάσει
+  message("📂 Συνέχεια από interval ", start_from)
+} else {
+  result     <- list()  # Άδεια λίστα για να γεμίσει με σχόλια
+  start_from <- 1       # Ξεκινάμε από την αρχή
+}
+
+# Η κύρια επανάληψη: διατρέχουμε κάθε 4ωρο interval ένα-ένα.
+for (i in start_from:length(periods)) {
+  p <- periods[[i]]
+  message("  Αντλώ: ", p[1], " → ", p[2])
+  
+  # Τυχαία παύση 1-3 δευτερολέπτων μεταξύ αιτημάτων.
+  # Λόγος 1: Δεν "βομβαρδίζουμε" τον server με συνεχή αιτήματα.
+  # Λόγος 2: Μιμούμαστε ανθρώπινη συμπεριφορά για να μην μπλοκαριστούμε.
+  Sys.sleep(runif(1, min = 1, max = 3))
+  
+  chunk <- fetch_arctic(p[1], p[2])
+  if (!is.null(chunk)) result[[i]] <- chunk  # Προσθέτουμε στη λίστα αν υπάρχουν σχόλια
+  
+  # Κάθε 100 intervals αποθηκεύουμε την πρόοδο (checkpoint).
+  # Έτσι αν κρασάρει ο υπολογιστής, χάνουμε το πολύ 100 intervals
+  # και όχι ολόκληρη τη δουλειά.
+  if (i %% 100 == 0) {
+    saveRDS(list(result = result, last_i = i), checkpoint_file)
+    message("💾 Checkpoint: ", i, "/", length(periods), " intervals")
+  }
+}
+
+# Ενώνουμε όλα τα μικρά κομμάτια σε έναν ενιαίο πίνακα.
+# Πρώτα επιλέγουμε μόνο τις 5 στήλες που χρειαζόμαστε από κάθε chunk,
+# ώστε να αποφύγουμε προβλήματα με τις υπόλοιπες 45 στήλες
+# που περιέχουν λίστες και nested data frames.
+comments_clean <- purrr::map(
+  purrr::compact(result),
+  ~ dplyr::select(.x, id, author, body, created_utc, score)
+) |> dplyr::bind_rows()
+
+# Αποθηκεύουμε το checkpoint αν δεν το έχουμε ήδη διαγράψει
+file.remove(checkpoint_file)
+
+message("✅ Αποθηκεύτηκε: ", nrow(comments_clean), " comments")
+
+dir.create("C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments", 
+           recursive = TRUE, showWarnings = FALSE)
+saveRDS(comments_clean,
+        "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/comments_clean.rds",
+        compress = "xz")
+```
+
+Chunk 3 — Φόρτωση δεδομένων:
+
+
+
+```{r}
+#| message: true
+#| warning: false
+#| cache: false
+
+# Αυτό το chunk τρέχει σε κάθε render της εργασίας.
+# Φορτώνει το αρχείο με τα καθαρά δεδομένα στη μνήμη του R
+# ώστε να είναι διαθέσιμα για όλη την ανάλυση που ακολουθεί.
+clean_path <- "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/comments_clean.rds"
+
+if (file.exists(clean_path)) {
+  comments <- readRDS(clean_path)
+  message("✅ Σύνολο comments: ", nrow(comments))
+} else {
+  # Αν το αρχείο δεν υπάρχει, η άντληση δεν έχει τρέξει ακόμα.
+  message("⚠️ Τα δεδομένα δεν έχουν αντληθεί ακόμα.")
+}
+```
+
+Chunk 4 — Επαναφορά:
+
+
+
+```{r}
+#| eval: false
+
+# ΠΡΟΣΟΧΗ: Εκτέλεσε αυτό ΜΟΝΟ αν θέλεις να ξαναρχίσεις την άντληση από το μηδέν.
+# Διαγράφει όλα τα αποθηκευμένα δεδομένα — η διαδικασία θα πάρει ξανά ~8 ώρες.
+file.remove("data/cache/raw_reddit.rds")        # Τα ακατέργαστα δεδομένα
+file.remove("data/cache/checkpoint.rds")         # Η αποθηκευμένη πρόοδος
+file.remove("C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/comments_clean.rds")  # Τα καθαρά δεδομένα
+```
+
+
+## Καθαρισμός δεδομένων
+
+```{r}
+#| message: false
+#| warning: false
+
+comments_clean <- comments |>
+  
+  # Αφαιρούμε deleted/removed comments — δεν έχουν αναλύσιμο περιεχόμενο
+  dplyr::filter(!body %in% c("[deleted]", "[removed]")) |>
+  dplyr::filter(!is.na(body), body != "") |>
+  
+  # Αφαιρούμε διπλότυπα (ίδιο id = ίδιο comment)
+  dplyr::distinct(id, .keep_all = TRUE) |>
+  
+  # Μετατρέπουμε το Unix timestamp σε αναγνώσιμη ημερομηνία
+  dplyr::mutate(
+    date  = lubridate::as_datetime(created_utc),
+    year  = lubridate::year(date),
+    month = lubridate::floor_date(date, "month")
+  )
+
+message("✅ Comments μετά τον καθαρισμό: ", nrow(comments_clean))
+message("🗑️ Αφαιρέθηκαν: ", nrow(comments) - nrow(comments_clean), " comments")
+```
+
+
+## Βασική παρουσίαση δεδομένων
+
+```{r}
+#| message: false
+#| warning: false
+
+# Συνοπτικός πίνακας
+tibble::tibble(
+  Μέτρο                        = c("Σύνολο comments", "Μοναδικοί χρήστες", 
+                                    "Χρονική περίοδος από", "Χρονική περίοδος έως"),
+  Τιμή                         = c(
+    nrow(comments_clean),
+    dplyr::n_distinct(comments_clean$author),
+    as.character(min(comments_clean$date)),
+    as.character(max(comments_clean$date))
+  )
+) |>
+  kableExtra::kbl(caption = "Βασικά στατιστικά dataset") |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| fig-cap: "Αριθμός comments ανά μήνα"
+
+comments_clean |>
+  dplyr::count(month) |>
+  ggplot2::ggplot(ggplot2::aes(x = month, y = n)) +
+  ggplot2::geom_line(color = "#0072B2", linewidth = 0.8) +
+  ggplot2::geom_point(color = "#0072B2", size = 1.5) +
+  ggplot2::labs(
+    title = "Δραστηριότητα στο r/artificial ανά μήνα",
+    x     = "Μήνας",
+    y     = "Αριθμός σχολίων"
+  ) +
+  ggplot2::theme_minimal()
+```
+
+## Top 10 χρήστες
+
+```{r}
+#| message: false
+#| warning: false
+
+comments_clean |>
+  dplyr::filter(author != "[deleted]") |>
+  dplyr::count(author, sort = TRUE) |>
+  dplyr::slice_head(n = 10) |>
+  kableExtra::kbl(
+    caption = "Top 10 πιο ενεργοί χρήστες",
+    col.names = c("Χρήστης", "Αριθμός σχολίων")
+  ) |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## Κατανομή scores
+
+
+```{r}
+#| message: false
+#| warning: false
+#| fig-cap: "Κατανομή scores (upvotes) των σχολίων"
+
+comments_clean |>
+  dplyr::filter(score <= 50) |>  # Αφαιρούμε ακραίες τιμές για καλύτερη εικόνα
+  ggplot2::ggplot(ggplot2::aes(x = score)) +
+  ggplot2::geom_histogram(binwidth = 1, fill = "#0072B2", color = "white") +
+  ggplot2::labs(
+    title = "Κατανομή scores σχολίων",
+    x     = "Score (upvotes)",
+    y     = "Πλήθος σχολίων"
+  ) +
+  ggplot2::theme_minimal()
+```
+
+
+# Ανάλυση συναισθήματος
+
+AFINN — βαθμολογεί με κλίμακα (-5 έως +5)
+
+"good" = +2, "excellent" = +3, "terrible" = -3
+Αθροίζεις τους αριθμούς → παίρνεις ένα συνολικό score
+Η ένταση του συναισθήματος έχει σημασία
+
+Bing — απλώς θετικό ή αρνητικό
+
+"good" = positive, "excellent" = positive, "terrible" = negative
+Μετράς πόσες θετικές vs αρνητικές λέξεις
+Η ένταση δεν έχει σημασία
+
+## Bing
+
+```{r}
+#| message: false
+#| warning: false
+#| cache: true
+
+bing <- tidytext::get_sentiments("bing")
+
+# Αποθήκευση/φόρτωση bing_data
+bing_path <- "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/bing.rds"
+
+if (file.exists(bing_path)) {
+  bing_data <- readRDS(bing_path)
+} else {
+  # Διασπούμε σε λέξεις και αντιστοιχούμε με το Bing lexicon.
+  # Κάθε λέξη παίρνει την ετικέτα "positive" ή "negative".
+  bing_data <- comments_clean |>
+    tidytext::unnest_tokens(word, body) |>
+    dplyr::inner_join(bing, by = "word") |>
+    dplyr::count(id, month, sentiment) |>
+    # Μετατρέπουμε από "long" σε "wide" μορφή:
+    # αντί για δύο γραμμές (positive/negative) ανά comment,
+    # θέλουμε μία γραμμή με δύο στήλες.
+    tidyr::pivot_wider(
+      names_from  = sentiment,
+      values_from = n,
+      values_fill = 0  # Αν δεν υπάρχουν θετικές/αρνητικές λέξεις, βάζουμε 0
+    ) |>
+    dplyr::mutate(
+      # Καθαρό sentiment = θετικές μείον αρνητικές λέξεις
+      net_sentiment = positive - negative
+    )
+  saveRDS(bing_data, bing_path)
+}
+
+# --- ΓΡΑΦΗΜΑ 1: Συνολική αναλογία θετικών/αρνητικών ---
+bing_data |>
+  dplyr::summarise(
+    Θετικές  = sum(positive),
+    Αρνητικές = sum(negative)
+  ) |>
+  tidyr::pivot_longer(everything(), names_to = "Κατηγορία", values_to = "n") |>
+  dplyr::mutate(pct = n / sum(n) * 100) |>  # Μετατροπή σε ποσοστό
+  ggplot2::ggplot(ggplot2::aes(x = Κατηγορία, y = pct, fill = Κατηγορία)) +
+  ggplot2::geom_col(show.legend = FALSE) +
+  ggplot2::scale_fill_manual(values = c("Θετικές" = "#009E73", "Αρνητικές" = "#D55E00")) +
+  ggplot2::labs(
+    title = "Συνολική αναλογία θετικών/αρνητικών λέξεων (Bing)",
+    x     = "Κατηγορία",
+    y     = "Ποσοστό (%)"
+  ) +
+  ggplot2::theme_minimal()
+
+# --- ΓΡΑΦΗΜΑ 2: Εξέλιξη στον χρόνο ---
+# Υπολογίζουμε το μέσο καθαρό sentiment ανά μήνα
+bing_data |>
+  dplyr::group_by(month) |>
+  dplyr::summarise(mean_net = mean(net_sentiment), .groups = "drop") |>
+  ggplot2::ggplot(ggplot2::aes(x = month, y = mean_net)) +
+  ggplot2::geom_line(color = "#0072B2", linewidth = 0.8) +
+  ggplot2::geom_point(color = "#0072B2", size = 1.5) +
+  ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  ggplot2::labs(
+    title = "Εξέλιξη sentiment ανά μήνα (Bing)",
+    x     = "Μήνας",
+    y     = "Μέσο καθαρό sentiment (θετικές − αρνητικές)"
+  ) +
+  ggplot2::theme_minimal()
+```
+
+
+## AFINN
+
+```{r}
+#| message: false
+#| warning: false
+#| cache: true
+
+afinn <- tidytext::get_sentiments("afinn")
+
+# Αν έχουμε ήδη υπολογίσει το comments_afinn, το φορτώνουμε.
+# Αλλιώς το υπολογίζουμε και το αποθηκεύουμε για την επόμενη φορά.
+afinn_path <- "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/comments_afinn.rds"
+
+if (file.exists(afinn_path)) {
+  comments_afinn <- readRDS(afinn_path)
+} else {
+  comments_afinn <- comments_clean |>
+    tidytext::unnest_tokens(word, body) |>
+    dplyr::inner_join(afinn, by = "word") |>
+    dplyr::group_by(id, month) |>
+    dplyr::summarise(sentiment = sum(value), .groups = "drop")
+  saveRDS(comments_afinn, afinn_path)
+}
+
+sentiment_by_month <- comments_afinn |>
+  dplyr::group_by(month) |>
+  dplyr::summarise(mean_sentiment = mean(sentiment), .groups = "drop")
+
+sentiment_by_month |>
+  ggplot2::ggplot(ggplot2::aes(x = month, y = mean_sentiment)) +
+  ggplot2::geom_line(color = "#0072B2", linewidth = 0.8) +
+  ggplot2::geom_point(color = "#0072B2", size = 1.5) +
+  ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  ggplot2::labs(
+    title = "Μέσο sentiment ανά μήνα (AFINN)",
+    x     = "Μήνας",
+    y     = "Μέσο sentiment score"
+  ) +
+  ggplot2::theme_minimal()
+```
+
+
+```{r}
+#| message: false
+#| warning: false
+
+# Top 5 πιο θετικά και 5 πιο αρνητικά σχόλια
+comments_afinn |>
+  dplyr::left_join(
+    dplyr::select(comments_clean, id, body), 
+    by = "id"
+  ) |>
+  dplyr::arrange(dplyr::desc(sentiment)) |>
+  dplyr::slice(c(1:5, (dplyr::n() - 4):dplyr::n())) |>
+  dplyr::mutate(
+    Κατηγορία = c(rep("🟢 Θετικό", 5), rep("🔴 Αρνητικό", 5)),
+    body = stringr::str_trunc(body, 200)  # Κόβουμε στους 200 χαρακτήρες
+  ) |>
+  dplyr::select(Κατηγορία, sentiment, body) |>
+  kableExtra::kbl(
+    caption   = "Top 5 πιο θετικά και αρνητικά σχόλια (AFINN)",
+    col.names = c("Κατηγορία", "Score", "Σχόλιο")
+  ) |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover")) |>
+  kableExtra::column_spec(3, width = "60%")
+```
+
+
+::: {.callout-note}
+## Περιορισμοί της μεθόδου AFINN
+
+Η μέθοδος AFINN, όπως και οι υπόλοιπες lexicon-based μέθοδοι, παρουσιάζει ορισμένους περιορισμούς που πρέπει να ληφθούν υπόψη κατά την ερμηνεία των αποτελεσμάτων:
+
+- **Δεν κατανοεί context:** Το sentiment που μετράται δεν αφορά απαραίτητα την ΤΝ — ένα σχόλιο μπορεί να έχει υψηλό θετικό score επειδή περιέχει πολλές θετικές λέξεις για άσχετο θέμα.
+- **Ευαίσθητο σε επαναλήψεις:** Λέξεις που επαναλαμβάνονται τεχνητά (π.χ. "SCAM SCAM SCAM...") οδηγούν σε ακραίες βαθμολογίες που δεν αντικατοπτρίζουν πραγματικό συναίσθημα.
+- **Δεν κατανοεί negation:** Φράσεις όπως "not good" μετράνε το "good" ως θετικό.
+- **Μόνο αγγλικές λέξεις:** Σχόλια σε άλλες γλώσσες αγνοούνται πλήρως.
+:::
+
+## NRC
+
+
+```{r}
+#| message: false
+#| warning: false
+#| cache: true
+
+nrc <- tidytext::get_sentiments("nrc")
+
+# Ορίζουμε τα όρια των περιόδων
+t1 <- as.POSIXct("2022-12-01", tz = "UTC")
+t2 <- as.POSIXct("2026-02-26", tz = "UTC")
+step <- as.numeric(difftime(t2, t1, units = "secs")) / 3
+break1_equal  <- t1 + step
+break2_equal  <- t1 + 2 * step
+break1_events <- as.POSIXct("2023-04-01", tz = "UTC")
+break2_events <- as.POSIXct("2025-01-01", tz = "UTC")
+
+# Συνάρτηση που προσθέτει στήλη "period" σε κάθε σχόλιο
+assign_period <- function(data, break1, break2, labels) {
+  data |>
+    dplyr::mutate(
+      period = dplyr::case_when(
+        date < break1 ~ labels[1],
+        date < break2 ~ labels[2],
+        TRUE          ~ labels[3]
+      ),
+      period = factor(period, levels = labels)
+    )
+}
+
+labels_equal <- c(
+  "Δεκ 2022 – Ιαν 2024",
+  "Ιαν 2024 – Μαρ 2025",
+  "Μαρ 2025 – Φεβ 2026"
+)
+
+labels_events <- c(
+  "Δεκ 2022 – Μαρ 2023\n(ChatGPT εποχή)",
+  "Απρ 2023 – Δεκ 2024\n(GPT-4, Gemini, Claude)",
+  "Ιαν 2025 – Φεβ 2026\n(DeepSeek, Grok)"
+)
+
+comments_equal  <- assign_period(comments_clean, break1_equal,  break2_equal,  labels_equal)
+comments_events <- assign_period(comments_clean, break1_events, break2_events, labels_events)
+
+# Συνάρτηση που υπολογίζει NRC ανά περίοδο σε ποσοστά.
+# Διαιρούμε με το σύνολο της περιόδου ώστε οι περίοδοι
+# να είναι συγκρίσιμες μεταξύ τους.
+compute_nrc <- function(data) {
+  data |>
+    tidytext::unnest_tokens(word, body) |>
+    dplyr::inner_join(nrc, by = "word") |>
+    dplyr::count(period, sentiment) |>
+    dplyr::group_by(period) |>
+    dplyr::mutate(pct = n / sum(n) * 100) |>  # Ποσοστό εντός κάθε περιόδου
+    dplyr::ungroup()
+}
+
+# Αποθήκευση/φόρτωση nrc_equal
+nrc_equal_path <- "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/nrc_equal.rds"
+if (file.exists(nrc_equal_path)) {
+  nrc_equal <- readRDS(nrc_equal_path)
+} else {
+  nrc_equal <- compute_nrc(comments_equal)
+  saveRDS(nrc_equal, nrc_equal_path)
+}
+
+# Αποθήκευση/φόρτωση nrc_events
+nrc_events_path <- "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/nrc_events.rds"
+if (file.exists(nrc_events_path)) {
+  nrc_events <- readRDS(nrc_events_path)
+} else {
+  nrc_events <- compute_nrc(comments_events)
+  saveRDS(nrc_events, nrc_events_path)
+}
+
+# Συνάρτηση γραφήματος
+plot_nrc <- function(data, title) {
+  data |>
+    ggplot2::ggplot(ggplot2::aes(x = sentiment, y = pct, fill = period)) +
+    ggplot2::geom_col(position = "dodge") +
+    ggplot2::coord_flip() +
+    ggplot2::labs(
+      title = title,
+      x     = "Συναίσθημα",
+      y     = "Ποσοστό (%)",
+      fill  = "Περίοδος"
+    ) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(legend.position = "bottom")
+}
+
+plot_nrc(nrc_equal,  "NRC ανά περίοδο — Ίσα τμήματα")
+plot_nrc(nrc_events, "NRC ανά περίοδο — Γεγονότα ΤΝ")
+```
+
+
+
+```{r}
+#| message: false
+#| warning: false
+#| cache: true
+
+# Ορίζουμε 5 περιόδους με βάση σημαντικά γεγονότα της ΤΝ
+labels_events5 <- c(
+  "Δεκ 2022 – Μαρ 2023\n(ChatGPT)",
+  "Απρ 2023 – Νοε 2023\n(GPT-4, Claude 1, Llama)",
+  "Δεκ 2023 – Ιουλ 2024\n(Gemini, Claude 3, GPT-4o)",
+  "Αυγ 2024 – Δεκ 2024\n(Claude 3.5, Llama 3, o1)",
+  "Ιαν 2025 – Φεβ 2026\n(DeepSeek, Grok, Claude 3.7)"
+)
+
+comments_events5 <- comments_clean |>
+  dplyr::mutate(
+    period = dplyr::case_when(
+      date < as.POSIXct("2023-04-01", tz = "UTC") ~ labels_events5[1],
+      date < as.POSIXct("2023-12-01", tz = "UTC") ~ labels_events5[2],
+      date < as.POSIXct("2024-08-01", tz = "UTC") ~ labels_events5[3],
+      date < as.POSIXct("2025-01-01", tz = "UTC") ~ labels_events5[4],
+      TRUE                                         ~ labels_events5[5]
+    ),
+    period = factor(period, levels = labels_events5)
+  )
+
+# Αποθήκευση/φόρτωση nrc_events5
+nrc_events5_path <- "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/nrc_events5.rds"
+if (file.exists(nrc_events5_path)) {
+  nrc_events5 <- readRDS(nrc_events5_path)
+} else {
+  nrc_events5 <- comments_events5 |>
+    tidytext::unnest_tokens(word, body) |>
+    dplyr::inner_join(nrc, by = "word") |>
+    dplyr::count(period, sentiment) |>
+    dplyr::group_by(period) |>
+    dplyr::mutate(pct = n / sum(n) * 100) |>  # Ποσοστό εντός κάθε περιόδου
+    dplyr::ungroup()
+  saveRDS(nrc_events5, nrc_events5_path)
+}
+
+# Γράφημα με facet_wrap — ένα πλαίσιο ανά περίοδο
+nrc_events5 |>
+  ggplot2::ggplot(ggplot2::aes(x = sentiment, y = pct, fill = sentiment)) +
+  ggplot2::geom_col(show.legend = FALSE) +
+  ggplot2::coord_flip() +
+  ggplot2::facet_wrap(~ period, ncol = 2) +
+  ggplot2::labs(
+    title = "NRC sentiment ανά περίοδο — 5 φάσεις ΤΝ",
+    x     = "Συναίσθημα",
+    y     = "Ποσοστό (%)"
+  ) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(strip.text = ggplot2::element_text(size = 8))
+```
+
+
+
+## VADER
+
+```{r}
+# Μετράμε πόσο παίρνει για 100 comments
+system.time(
+  vader::vader_df(head(comments_clean$body, 100))
+)
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| cache: true
+
+# Ορίζουμε τα όρια των 6 περιόδων.
+# Κάθε περίοδος καλύπτει 6 μήνες, εκτός από την τελευταία που καλύπτει 9.
+periodos <- list(
+  list(start = "2022-12-01", end = "2023-05-31", label = "Δεκ 2022 – Μαΐ 2023"),
+  list(start = "2023-06-01", end = "2023-11-30", label = "Ιουν 2023 – Νοε 2023"),
+  list(start = "2023-12-01", end = "2024-05-31", label = "Δεκ 2023 – Μαΐ 2024"),
+  list(start = "2024-06-01", end = "2024-11-30", label = "Ιουν 2024 – Νοε 2024"),
+  list(start = "2024-12-01", end = "2025-05-31", label = "Δεκ 2024 – Μαΐ 2025"),
+  list(start = "2025-06-01", end = "2026-02-26", label = "Ιουν 2025 – Φεβ 2026")
+)
+
+vader_path <- "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/vader.rds"
+
+if (file.exists(vader_path)) {
+  vader_data <- readRDS(vader_path)
+  
+  # Ορίζουμε χειροκίνητα τα levels του factor περιόδου,
+  # ώστε τα γραφήματα να εμφανίζουν τις περιόδους στη σωστή σειρά
+  vader_data <- vader_data |>
+    dplyr::mutate(
+      period = factor(period, levels = c(
+        "Δεκ 2022 – Μαΐ 2023",
+        "Ιουν 2023 – Νοε 2023",
+        "Δεκ 2023 – Μαΐ 2024",
+        "Ιουν 2024 – Νοε 2024",
+        "Δεκ 2024 – Μαΐ 2025",
+        "Ιουν 2025 – Φεβ 2026"
+      ))
+    )
+} else {
+  
+  # Θέτουμε σταθερό "seed" ώστε η τυχαία δειγματοληψία να είναι
+  # αναπαραγώγιμη — αν ξανατρέξουμε τον κώδικα, θα πάρουμε
+  # ακριβώς τα ίδια σχόλια.
+  set.seed(42)
+  
+  # Για κάθε περίοδο κάνουμε δειγματοληψία 6.000 comments.
+  # Το purrr::map_dfr επαναλαμβάνει τη διαδικασία για κάθε περίοδο
+  # και ενώνει τα αποτελέσματα σε έναν ενιαίο πίνακα.
+  deigma <- purrr::map_dfr(periodos, function(p) {
+    
+    # Βήμα 1: Κρατάμε μόνο τα comments που ανήκουν στην τρέχουσα περίοδο
+    periodos_data <- comments_clean |>
+      dplyr::filter(
+        date >= as.POSIXct(p$start, tz = "UTC"),
+        date <= as.POSIXct(p$end,   tz = "UTC")
+      )
+    
+    # Βήμα 2: Υπολογίζουμε πόσα comments θα πάρουμε.
+    # Αν η περίοδος έχει λιγότερα από 6.000, παίρνουμε όλα.
+    n_sample <- min(6000, nrow(periodos_data))
+    
+    # Βήμα 3: Τυχαία επιλογή και προσθήκη ετικέτας περιόδου
+    periodos_data |>
+      dplyr::slice_sample(n = n_sample) |>
+      dplyr::mutate(period = p$label)
+  })
+  
+  message("✅ Σύνολο δείγματος: ", nrow(deigma), " comments")
+  message("⏳ Εκτελείται το VADER — αναμένεται ~1 ώρα...")
+  
+  # Εφαρμόζουμε το VADER σε κάθε comment του δείγματος.
+  # Το vader_df() επιστρέφει 4 τιμές ανά comment:
+  # pos      = ποσοστό θετικών λέξεων (0 έως 1)
+  # neg      = ποσοστό αρνητικών λέξεων (0 έως 1)
+  # neu      = ποσοστό ουδέτερων λέξεων (0 έως 1)
+  # compound = συνολικό score (-1 = πολύ αρνητικό, +1 = πολύ θετικό)
+  vader_scores <- vader::vader_df(deigma$body)
+  
+  # Συνδυάζουμε τα αποτελέσματα με τα στοιχεία του δείγματος
+  vader_data <- deigma |>
+    dplyr::mutate(
+      compound = vader_scores$compound,
+      pos      = vader_scores$pos,
+      neg      = vader_scores$neg,
+      neu      = vader_scores$neu
+    ) |>
+    dplyr::select(id, month, date, period, compound, pos, neg, neu)
+  
+  # Αποθηκεύουμε για να μην χρειαστεί να ξανατρέξουμε
+  saveRDS(vader_data, vader_path)
+  message("✅ Αποθηκεύτηκε!")
+}
+
+
+
+
+# --- ΓΡΑΦΗΜΑ 1: Μέσο compound score ανά περίοδο ---
+# Το compound score συνοψίζει το συνολικό sentiment κάθε comment
+# σε έναν αριθμό από -1 (πολύ αρνητικό) έως +1 (πολύ θετικό)
+vader_data |>
+  dplyr::group_by(period) |>
+  dplyr::summarise(mean_compound = mean(compound, na.rm = TRUE), .groups = "drop") |>
+  ggplot2::ggplot(ggplot2::aes(x = period, y = mean_compound, group = 1)) +
+  ggplot2::geom_line(color = "#0072B2", linewidth = 0.8) +
+  ggplot2::geom_point(color = "#0072B2", size = 2) +
+  ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  ggplot2::labs(
+    title = "Εξέλιξη sentiment ανά περίοδο (VADER)",
+    x     = "Περίοδος",
+    y     = "Μέσο compound score (-1 έως +1)"
+  ) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+
+# --- ΓΡΑΦΗΜΑ 2: Αναλογία θετικών/αρνητικών/ουδέτερων ανά περίοδο ---
+# Βλέπουμε πώς αλλάζει η σύνθεση του sentiment σε κάθε περίοδο
+vader_data |>
+  dplyr::group_by(period) |>
+  dplyr::summarise(
+    Θετικά   = mean(pos, na.rm = TRUE) * 100,
+    Αρνητικά = mean(neg, na.rm = TRUE) * 100,
+    Ουδέτερα = mean(neu, na.rm = TRUE) * 100,
+    .groups  = "drop"
+  ) |>
+  tidyr::pivot_longer(
+    cols      = c(Θετικά, Αρνητικά, Ουδέτερα),
+    names_to  = "Κατηγορία",
+    values_to = "pct"
+  ) |>
+  dplyr::mutate(
+    Κατηγορία = factor(Κατηγορία, levels = c("Θετικά", "Ουδέτερα", "Αρνητικά"))
+  ) |>
+  ggplot2::ggplot(ggplot2::aes(x = period, y = pct, fill = Κατηγορία)) +
+  ggplot2::geom_col(position = "dodge") +
+  ggplot2::scale_fill_manual(values = c(
+    "Θετικά"   = "#009E73",
+    "Ουδέτερα" = "#999999",
+    "Αρνητικά" = "#D55E00"
+  )) +
+  ggplot2::labs(
+    title = "Αναλογία συναισθημάτων ανά περίοδο (VADER)",
+    x     = "Περίοδος",
+    y     = "Ποσοστό (%)",
+    fill  = "Κατηγορία"
+  ) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+```
+
+# Πλάνο
+
+Μέρος 2 — Sentiment Analysis
+
+NLP με tidytext
+Lexicons (AFINN, NRC, BING, VADER)
+Οπτικοποιήσεις αποτελεσμάτων
+
+| Μέθοδος | Υπέρ | Κατά |
+|---------|------|------|
+| **AFINN** | Πολύ απλό, λίγες γραμμές κώδικα, αριθμητικό score (εύκολο για γραφήματα), ενσωματωμένο στο tidytext | Δεν καταλαβαίνει context/negation, αγγλικές λέξεις μόνο, μικρό λεξιλόγιο |
+| **NRC** | Απλό όπως το AFINN, δίνει 8 συναισθήματα (πλουσιότερη ανάλυση), ενσωματωμένο στο tidytext | Δεν καταλαβαίνει context/negation, αγγλικές λέξεις μόνο |
+| **Bing** | Απλό, θετικό/αρνητικό, ενσωματωμένο στο tidytext | Πιο απλό από AFINN/NRC, δεν καταλαβαίνει context/negation |
+| **VADER** | Σχεδιασμένο για social media/Reddit, καταλαβαίνει negation & emoji, αριθμητικό score | Χρειάζεται επιπλέον package (`vader`), λίγο πιο σύνθετο |
+
+Μέρος 3 — Spark
+
+Ίδια επεξεργασία με sparklyr
+Σύγκριση χρόνων εκτέλεσης
+Συμπεράσματα για scalability
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

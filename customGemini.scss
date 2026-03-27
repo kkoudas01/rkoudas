@@ -1,0 +1,49 @@
+/*-- scss:defaults --*/
+// Χρησιμοποιούμε ένα ελαφρώς πιο σκούρο πορτοκαλί για καλύτερο contrast ratio (WCAG AA)
+$navbar-bg: #c45500; 
+$navbar-fg: #ffffff; 
+$navbar-hl: #1a252f; // Πιο σκούρο μπλε για το hover/active για να ξεχωρίζει
+
+/*-- scss:rules --*/
+
+/* -----------------------------------------
+   ΔΙΟΡΘΩΣΗ ΠΙΝΑΚΩΝ ΣΕ DARK THEME 
+   ----------------------------------------- */
+
+.table thead th,
+table thead th {
+    background-color: #2b3e50 !important;
+    color: #ffffff !important;
+    // Η γραμμή έγινε λίγο πιο έντονη για να οριοθετεί καθαρά την κεφαλίδα
+    border-bottom: 3px solid #c45500 !important;
+    padding: 12px 8px !important;
+}
+
+.table tbody td, .table tbody th,
+table tbody td {
+    background-color: #2b3e50 !important;
+    color: #f8f9fa !important; // Πιο καθαρό λευκό για μέγιστη αντίθεση
+    border-top: 1px solid #4e5d6c !important;
+}
+
+/* -----------------------------------------
+   ΔΙΟΡΘΩΣΗ ΓΙΑ INLINE CODE (π.χ. `ggplot2`)
+   ----------------------------------------- */
+
+:not(pre) > code, 
+h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
+    // Αλλάζουμε το πορτοκαλί κείμενο σε ένα πιο ανοιχτό χρώμα (π.χ. απαλό πορτοκαλί/μπεζ)
+    // Το σκούρο πορτοκαλί πάνω σε σκούρο μπλε είναι δυσδιάκριτο.
+    background-color: rgba(0, 0, 0, 0.3) !important; // Σκουραίνουμε το background του κώδικα
+    color: #ffca99 !important; // Ανοιχτό χρώμα για να "χτυπάει" στο μάτι
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* Προσθήκη για Προσβασιμότητα: Focus Ring */
+// Βοηθάει χρήστες που χρησιμοποιούν πληκτρολόγιο να βλέπουν που κάνουν κλικ
+a:focus {
+    outline: 3px solid #ffca99 !important;
+    outline-offset: 2px;
+}
