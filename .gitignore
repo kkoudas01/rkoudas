@@ -1,4 +1,4 @@
-# R αρχεία περιόδου — παράγονται αυτόματα
+# R αρχεία περιόδου
 .Rproj.user
 .Rhistory
 .RData
@@ -9,12 +9,12 @@
 .RDataTmp3
 .Rapp.history
 
-# Quarto cache — παράγονται αυτόματα κατά το render
+# Quarto cache
 **/_cache/
 /.quarto/
 **/*.quarto_ipynb
 
-# Μεγάλα αρχεία που δεν χρειάζονται
+# Μεγάλα αρχεία
 mushrooms_clean.csv
 Parking_Bays.csv
 Trees_In_Camden.csv
