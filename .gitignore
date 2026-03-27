@@ -16,8 +16,8 @@
 
 # Μεγάλα αρχεία
 mushrooms_clean.csv
-Parking_Bays.csv
-Trees_In_Camden.csv
+#Parking_Bays.csv
+#Trees_In_Camden.csv
 
 # PDFs
-*.pdf
+#*.pdf
