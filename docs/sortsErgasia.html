@@ -241,6 +241,12 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Καθαρισμός μνήμης R.</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p>Η παρούσα ενότητα είναι μια εργασία για το μάθημα Δομές Δεδομένων του τμήματος Πληροφορικής του Ιονίου Πανεπιστημίου. Σε αυτήν θα παρουσιαστούν κάποιες μέθοδοι ταξινόμησης λιστών απαρτιζόμενων από αριθμούς. Η παρουσίαση θα γίνει:</p>
+<ul>
+<li>με μια λεκτική περιγραφή πάνω σε μία τυχαία μικρή λίστα αριθμών,</li>
+<li>με μια συνοπτική αφήγηση της συλλογιστικής της εκάστοτε μεθόδου,</li>
+<li>με κώδικα <i class="fa-brands fa-r-project" aria-label="r-project"></i>.</li>
+</ul>
 <section id="selection-sort---ταξονόμηση-με-επιλογή" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Selection Sort - Ταξονόμηση με επιλογή</h1>
 <p>Η ταξινόμηση με επιλογή λειτουργεί ως εξής:</p>
@@ -2465,7 +2471,7 @@ A' έλεγχος ✅
 </section>
 <section id="πολυπλοκότητες-χρόνου" class="level1" data-number="8">
 <h1 data-number="8"><span class="header-section-number">8</span> Πολυπλοκότητες χρόνου</h1>
-<p>Στο σημείο αυτό θα κάνουμε μια συνοπτική παρουσίαση της πολυπλοκότητας των αλγορίθμων που εξετάσαμε. Σχετική μελέτη είχε γίνει και σε <a href="https://github.com/kkoudas01/fidia/blob/main/sorts.ipynb">παλαιότερη εργασία σε γλώσσα Python</a>, η επανάληψή της όμως στην R δεν ήταν εφικτή. Προς τούτο έγινε σχετική ερώτηση στο LLM <em>claude.ai</em>:</p>
+<p>Στο σημείο αυτό θα κάνουμε μια συνοπτική παρουσίαση της πολυπλοκότητας των αλγορίθμων που εξετάσαμε. Σχετική μελέτη είχε γίνει και σε <a href="https://github.com/kkoudas01/fidia/blob/main/sorts.ipynb">παλαιότερη εργασία σε γλώσσα Python</a>, η επανάληψή της όμως στην <i class="fa-brands fa-r-project" aria-label="r-project"></i> δεν ήταν εφικτή. Προς τούτο έγινε σχετική ερώτηση στο LLM <em>claude.ai</em>:</p>
 <blockquote class="blockquote">
 <p>Έχω αυτή την πειραματική αξιολόγηση της περιπλοκότητας διαφόρων αλγορίθμων ταξινόμησης (το συνημμένο). Είναι σε γλώσσα Python. Εκτελείται σε ανεκτό χρονικό διάστημα.</p>
 <p>Όμως, αν την υλοποιήσω σε κώδικα R, αργεί πάρα πολύ, ακόμα και σε σχετικά μικρό πλήθος δοκιμών και με μικρά σύνολα αριθμών. Πού οφείλεται αυτό;</p>
