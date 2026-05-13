@@ -21,3 +21,10 @@ mushrooms_clean.csv
 
 # PDFs
 #*.pdf
+
+# Τρέχω τα παρακάτω στο terminal:
+
+#git rm -r --cached .
+#git add .
+#git commit -m "Remove large files"
+#git push

@@ -48,6 +48,7 @@ rm(list = ls())
 | `kableExtra` | Θα μάς χρειαστεί για την παρουσίαση των πινάκων. |
 | `tidytext` | Αυτό είναι το πακέτο που θα κάνει τα 3/4 της Sentiment Analysis (AFINN, NRC, Bing). |
 | `textdata` | Μέσω αυτού κάνουμε χρήση των λεξικών εντός των οποίων καταγράφεται η συναισθηματική βαθμολογία των αγγλικών λέξεων. |
+| `packHV` | Αυτό επιτρέπει την κατασκευή ιστογράμματος και θηκογράμματος μαζί, ώστε να φαίνονται τυχούσες ασυμμετρίες. |
 | `vader` | Αυτό είναι το πακέτο που θα κάνει το υπολοιπόμενο 1/4 της Sentiment Analysis (VADER). |
 | `jsonlite` | Τα σχόλια που θα καταβάσουμε είναι JSON. Το πακέτο αυτό μάς βοηθά να τα μετατρέψουμε σε dataframe. |
 | `httr` | Με τη βοήθεια αυτού του πακέτου θα κατεβάσουμε τα JSON. |
@@ -69,6 +70,7 @@ packages <- c(
   "kableExtra",
   "tidytext",
   "textdata",
+  "packHV",
   "vader"
   # N.B.:Για να επανενεργοποιηθούν τα παρακάτω θα πρέπει να μει "," μετά το vader.
   # "jsonlite",
@@ -514,218 +516,460 @@ comments_clean |>
 
 
 
-# Παλιά
+## Κατανομή score
 
-
-Μέρος 1 — Δεδομένα & EDA
-Συλλογή, καθαρισμός, εξερευνητική ανάλυση. Χωρίς Spark, χωρίς NLP ακόμα. Δείχνεις τι έχεις στα χέρια σου.
-Μέρος 2 — Sentiment Analysis με tidytext
-Καθαρό NLP χωρίς Spark. Εδώ φαίνεται η λογική του sentiment analysis αναλυτικά.
-Μέρος 3 — Spark: Κλιμάκωση
-Επαναλαμβάνεις την ίδια επεξεργασία με Spark και συγκρίνεις:
-
-Χρόνο εκτέλεσης
-Αποτελέσματα (πρέπει να είναι ίδια)
-Σχολιάζεις πότε το Spark αξίζει
-
-
-
-
-
-
-
-
-
-Chunk 1 — Ορισμός συνάρτησης και χρονικών περιόδων:
-
-
-
-
-
-Chunk 2 — Άντληση με checkpoints:
-
-
-
-Chunk 3 — Φόρτωση δεδομένων:
-
-
-
-
-
-
-
-
-
-## Top 10 χρήστες
-
-
-
-## Κατανομή scores
+Στο Reddit ο χρήστης έχει τη δυνατότητα να αξιολογήσει μιαν απάντηση είτε με θετική είτε με αρνητική βαθμολογία. Ακολουθεί η κατανομή τους.
 
 
 ```{r}
-#| message: false
-#| warning: false
-#| fig-cap: "Κατανομή scores (upvotes) των σχολίων"
 
 comments_clean |>
-  dplyr::filter(score <= 50) |>  # Αφαιρούμε ακραίες τιμές για καλύτερη εικόνα
-  ggplot2::ggplot(ggplot2::aes(x = score)) +
-  ggplot2::geom_histogram(binwidth = 1, fill = "#0072B2", color = "white") +
-  ggplot2::labs(
-    title = "Κατανομή scores σχολίων",
-    x     = "Score (upvotes)",
+  dplyr::filter(abs(score) <= 20) |>  # Αφαιρούμε ακραίες τιμές για καλύτερη εικόνα
+  ggplot(aes(x = score)) +
+  geom_histogram(binwidth = 1) +
+  labs(
+    title = "Κατανομή βαθμολογιών σχολίων",
+    x     = "Βαθμολογία",
     y     = "Πλήθος σχολίων"
-  ) +
-  ggplot2::theme_minimal()
+  )
 ```
 
 
-# Ανάλυση συναισθήματος
+# Ανάλυση συναισθήματος (NLP)
 
-AFINN — βαθμολογεί με κλίμακα (-5 έως +5)
+Στο σημείο αυτό θα υλοποιήσουμε τον στόχο της εργασίας, δηλαδή να αναλύσουμε τη συναισθηματική φόρτιση των συναισθημάτων του Reddit. Ως προς αυτό υπάρχουν διάφοροι τρόποι.
 
-"good" = +2, "excellent" = +3, "terrible" = -3
-Αθροίζεις τους αριθμούς → παίρνεις ένα συνολικό score
-Η ένταση του συναισθήματος έχει σημασία
+ 
 
-Bing — απλώς θετικό ή αρνητικό
 
-"good" = positive, "excellent" = positive, "terrible" = negative
-Μετράς πόσες θετικές vs αρνητικές λέξεις
-Η ένταση δεν έχει σημασία
+## Lexicon-based
 
-## Bing
+::: {.callout-note}
+## Βασικά χαρακτηριστικά μεθόδων lexicon-based
+
+Οι lexicon-based μέθοδοι βασίζονται αποκλειστικά σε λεξικά. Σε γενικές γραμμές «χρωματίζουν» συναισθηματικά λέξεις της αγγλικής γλώσσας και αποδίδουν στο εκάστοτε κείμενο τη συνολική «απόχρωση».  
+
+:::
+
+Πιο συγκεκριμένα έχουμε τις κάτωθι μεθόδους, τις οποίες θα χρησιμοπιήσουμε.
+
+
+| Bing | AFINN | NRC |
+| --- | --- | --- |
+| Η κάθε λέξη με *θετική* νοηματοδότηση (π.χ. οι "good", "excellent" κ.τ.λ.) βαθμολογειται με **1**, ανώ αυτές με *αρνητική* νοηματοδότηση (π.χ. οι "bad", "terrible" κ.τ.λ.) με **-1**. Η συναισθηματική φόρτιση του σχολίου υπολογίζεται από το αλγεβρικό άθροισμα των βαθμολογιών όλων των λέξεων. | Η κάθε λέξη φέρει έναν βαθμό συναισθηματικής φόρτισης. Επι παραδείγματι η "good" βαθμολογείται με **+2**, ενώ η "excellent" με **+3**. Φυσικά, υπάρχει και αρνητική βαθμολογία, λ.χ. η "terrible" βαθμολογείται με **-3**. Η βαθμολογία του εκάστοτε σχολίου ορίζεται ως το αλγεβρικό άθροισμα της θετικής/αρνητικής έντασης των λέξεών του. | Εν προκειμένω η κάθε λέξη δεν λογίζεται απλά ως *θετική* ή *αρνητική*, αλλά συνδέεται με μια ποικιλία συναισθημάτων. Συγκεκριμένα έχουμε τα εξής 8: *Θυμός* (*anger*), *Αναμονή/Προσδοκία* (*anticipation*), *Αηδία* (*disgust*), *Φόβος* (*fear*), *Χαρά* (*joy*), *Λύπη* (*sadness*), *Έκπληξη* (*surprise*) και *Εμπιστοσύνη* (*trust*).  | 
+
+: Μέθοδοι lexicon-based NLP που θα χρησιμοποιηθούν στην εργασία.
+
+### Bing
+
+Επειδή η διαδικασία εκτέλεσης της παρούσας μεθόδου, όπως και των υπολοίπων, απαιτεί αρκετό χρόνο, τα αποτελέσματα εξήχθησαν μία μόνο φορά, οπότε και αποθηκεύτηκαν σε ξεχωριστό [repository](https://github.com/kkoudas01/BigDataKoudas/tree/main/redditComments). Στο εξής, εφόσον υπάρχει αρχείο **bing.rds** με τα αποτελέσματα (`if (file.exists(bing_path))`), χρησιμοποιούμε τα δικά του (`bing_data <- readRDS(bing_path)`). Διαφορετικά (ήτοι την 1η φορά ή αν διαγράψουμε το **bing.rds**) τα αντλούμε από την αρχή. Συγκεκριμένα:
+
+::: {.callout-caution collapse="true"}
+## Κρυφά chunk
+
+Τα χωρία κώδικα που αφορούν τα κάτωθι dataframe δεν περιέχουν παρά τμήματα του ακριβώς επόμενου χωρίου, τα στάδια του οποίου παρουσιάζουν. Ως εκ τούτου έχουν κρυφτεί (`echo: false`), διότι κρίθηκε από τον γράφοντα ότι περισσότερο θα περιπλέξουν την παρουσίαση της εργασίας, παρά θα τη διασαφινίσουν οι τροποποιημένες επαναλήψεις γραμμών του κώδικα. Εν προκειμένω μάς ενδιαφέρουν μόνο τα αποτελέσματα που αυτά εξάγουν, ώστε να δούμε βήμα-βήμα τον κώδικα.
+:::
+
+- Με την `tidytext::get_sentiments("bing")` κατεβάζουμε από το πακέτο `tidytext` το λεξικό συναισθημάτων Bing. Το λεξικό περιέχει δύο στήλες: word (λέξεις) και sentiment (θετικό ή αρνητικό).
+
+```{r}
+#| echo: false
+tidytext::get_sentiments("bing") |>
+  head() |>
+  kableExtra::kbl(
+    caption = "Λεξικό Bing"
+  ) |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+- Από το `comments_clean` παίρνουμε κάθε σχόλιό του (`body`) και το σπάμε σε λέξεις. Συγκεκριμένα, η `tidytext::unnest_tokens(word, body)` φτιάχνει ένα νέο dataframe, όπου έχει μια νέα στήλη, την `word`, αποτελούμενη από όλες τις λέξεις όλων των σχολίων. Οι υπόλοιπες στήλες μένουν ως έχουν (εξερουμένης της `body`, που εξοστρακίστηκε). Παραθέτουμε ένα ενδεικτικό τμήμα του εν λόγω dataframe.
+
+
+
+```{r}
+#| echo: false
+
+comments_clean |>
+  head() |>
+  tidytext::unnest_tokens(word, body)  |>
+  head() |>
+  kableExtra::kbl(
+    caption = "Ενδεικτικό αποτέλεσμα της unnest_tokens()"
+  ) |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+- Το `dplyr::inner_join(bing, by = "word")` κρατά μόνο τις λέξεις της στήλης `word` που υπάρχουν και στο dataframe των σχολίων (`comments_clean`) και στο λεξικό `bing`. Επίσης, δημιουργεί τη στήλη `sentiment`, φέρουσα τους χαρακτηρισμούς "positive" ή "negative" από το λεξικό. Τέλος, οι λέξεις που δεν είναι στο λεξικό (π.χ. άρθρα, ονόματα) χάνονται. Αυτό δεν αποτελεί πρόβλημα, διότι δεν φέρουν συναίσθημα.
+
+
+
+```{r}
+#| echo: false
+
+comments_clean |>
+  head() |>
+  tidytext::unnest_tokens(word, body)  |>
+  dplyr::inner_join(tidytext::get_sentiments("bing"), by = "word") |>
+  head() |>
+  kableExtra::kbl(
+    caption = "Ενδεικτικό αποτέλεσμα της dplyr::inner_join()"
+  ) |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+
+- Ακολούθως η `dplyr::count(id, month, sentiment)` φτιάχνει ένα dataframe με στήλες τις `id`, `month`, `sentiment` και `n`, όπου η νέα στήλη `n` μετράει το πλήθος των *θετικών* και *αρνητικών* λέξεων του κάθε σχολίου (`id`).
+
+```{r}
+#| echo: false
+
+comments_clean |>
+  head() |>
+  tidytext::unnest_tokens(word, body)  |>
+  dplyr::inner_join(tidytext::get_sentiments("bing"), by = "word") |>
+  dplyr::count(id, month, sentiment) |>
+  head() |>
+  kableExtra::kbl(
+    caption = "Ενδεικτικό αποτέλεσμα της dplyr::count()"
+  ) |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+- Η `tidyr::pivot_wider()` «πλαταίνει» το προηγούμενο dataframe διασπώντας τη στήλη `sentiment` στα εξ ων συνετέθη. Ήτοι δημιουργούνται δύο νέες στήλες, οι `positive` και `negative` με τιμές το πλήθος των *θετικών* και *αρνητικών* λέξεων αντίστοιχα του κάθε σχολίου (`id`).
+
+```{r}
+#| echo: false
+
+comments_clean |>
+  head() |>
+  tidytext::unnest_tokens(word, body)  |>
+  dplyr::inner_join(tidytext::get_sentiments("bing"), by = "word") |>
+  dplyr::count(id, month, sentiment) |>
+  tidyr::pivot_wider(
+      names_from  = sentiment,
+      values_from = n,
+      values_fill = 0
+    ) |>
+  head() |>
+  kableExtra::kbl(
+    caption = "Ενδεικτικό αποτέλεσμα της tidyr::pivot_wider()"
+  ) |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+- Η τελευταία εντολή για τη δημιουργία του **bing_data** είναι η `dplyr::mutate()`, ήπερ για κάθε σχόλιο βρίσκει τη συναισθηματική φόρτιση όλου του σχολίου αφαιρόντας από το θετικό του συναίσθημα (πλήθος *θετικών* λέξεων) το αρνητικό (πλήθος *αρνητικών* λέξεων).
+
+
+```{r}
+#| echo: false
+
+comments_clean |>
+  head() |>
+  tidytext::unnest_tokens(word, body)  |>
+  dplyr::inner_join(tidytext::get_sentiments("bing"), by = "word") |>
+  dplyr::count(id, month, sentiment) |>
+  tidyr::pivot_wider(
+      names_from  = sentiment,
+      values_from = n,
+      values_fill = 0
+    ) |>
+    dplyr::mutate(
+      net_sentiment = positive - negative
+    ) |>
+  head() |>
+  kableExtra::kbl(
+    caption = "Ενδεικτικό αποτέλεσμα της dplyr::mutate()"
+  ) |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+
+- Τέλος, με την `saveRDS(bing_data, bing_path)` αποθηκεύουμε ό,τι βρήκαμε, προκειμένου αυτή η χρονοβόρα κατάσταση να μην επαναληφθεί.
+
 
 ```{r}
 #| message: false
 #| warning: false
 #| cache: true
 
+# Το λεξικό.
 bing <- tidytext::get_sentiments("bing")
 
-# Αποθήκευση/φόρτωση bing_data
-bing_path <- "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/bing.rds"
+# Διαδρομή αποθήκευσης bing_data.
+bing_path <- "../BigDataKoudas/redditComments/bing.rds"
 
 if (file.exists(bing_path)) {
   bing_data <- readRDS(bing_path)
-} else {
-  # Διασπούμε σε λέξεις και αντιστοιχούμε με το Bing lexicon.
-  # Κάθε λέξη παίρνει την ετικέτα "positive" ή "negative".
+} else {  # Αν υπάρχει το bing.rds τα κάτωθι δεν θα εκτελεστούν.
   bing_data <- comments_clean |>
-    tidytext::unnest_tokens(word, body) |>
-    dplyr::inner_join(bing, by = "word") |>
-    dplyr::count(id, month, sentiment) |>
-    # Μετατρέπουμε από "long" σε "wide" μορφή:
-    # αντί για δύο γραμμές (positive/negative) ανά comment,
-    # θέλουμε μία γραμμή με δύο στήλες.
-    tidyr::pivot_wider(
+    tidytext::unnest_tokens(word, body) |> # Διάσπαση σχολίων σε λέξεις
+    dplyr::inner_join(bing, by = "word") |> # Συλλογή μόνω των λεξικογραφημένων λέξεων
+    dplyr::count(id, month, sentiment) |> # Καταμέτρηση θετικών/αρνητικών λέξεων
+    tidyr::pivot_wider( # Πλάτυνση προηγούμενου dataframe.
       names_from  = sentiment,
       values_from = n,
       values_fill = 0  # Αν δεν υπάρχουν θετικές/αρνητικές λέξεις, βάζουμε 0
     ) |>
     dplyr::mutate(
-      # Καθαρό sentiment = θετικές μείον αρνητικές λέξεις
-      net_sentiment = positive - negative
+      net_sentiment = positive - negative # Συμψηφισμός θετικών και αρνητικών λέξεων σε κάθε σχόλιο για εξαγωγή συνολικού συναισθήματος
     )
-  saveRDS(bing_data, bing_path)
+  saveRDS(bing_data, bing_path) # Αποθήκευση
 }
-
-# --- ΓΡΑΦΗΜΑ 1: Συνολική αναλογία θετικών/αρνητικών ---
-bing_data |>
-  dplyr::summarise(
-    Θετικές  = sum(positive),
-    Αρνητικές = sum(negative)
-  ) |>
-  tidyr::pivot_longer(everything(), names_to = "Κατηγορία", values_to = "n") |>
-  dplyr::mutate(pct = n / sum(n) * 100) |>  # Μετατροπή σε ποσοστό
-  ggplot2::ggplot(ggplot2::aes(x = Κατηγορία, y = pct, fill = Κατηγορία)) +
-  ggplot2::geom_col(show.legend = FALSE) +
-  ggplot2::scale_fill_manual(values = c("Θετικές" = "#009E73", "Αρνητικές" = "#D55E00")) +
-  ggplot2::labs(
-    title = "Συνολική αναλογία θετικών/αρνητικών λέξεων (Bing)",
-    x     = "Κατηγορία",
-    y     = "Ποσοστό (%)"
-  ) +
-  ggplot2::theme_minimal()
-
-# --- ΓΡΑΦΗΜΑ 2: Εξέλιξη στον χρόνο ---
-# Υπολογίζουμε το μέσο καθαρό sentiment ανά μήνα
-bing_data |>
-  dplyr::group_by(month) |>
-  dplyr::summarise(mean_net = mean(net_sentiment), .groups = "drop") |>
-  ggplot2::ggplot(ggplot2::aes(x = month, y = mean_net)) +
-  ggplot2::geom_line(color = "#0072B2", linewidth = 0.8) +
-  ggplot2::geom_point(color = "#0072B2", size = 1.5) +
-  ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
-  ggplot2::labs(
-    title = "Εξέλιξη sentiment ανά μήνα (Bing)",
-    x     = "Μήνας",
-    y     = "Μέσο καθαρό sentiment (θετικές − αρνητικές)"
-  ) +
-  ggplot2::theme_minimal()
 ```
 
-
-## AFINN
+Έχοντας στα χέρια μας τα δεδομένα που αντλήσαμε, μπορούμε να πάμε να τα παρουσιάσουμε. Αρχικά θα δούμε το ποσοστό των θετικά φορτισμένων λέξεων σε σχέση με των αρνητικά φορτισμένων.
 
 ```{r}
 #| message: false
 #| warning: false
 #| cache: true
 
-afinn <- tidytext::get_sentiments("afinn")
-
-# Αν έχουμε ήδη υπολογίσει το comments_afinn, το φορτώνουμε.
-# Αλλιώς το υπολογίζουμε και το αποθηκεύουμε για την επόμενη φορά.
-afinn_path <- "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/comments_afinn.rds"
-
-if (file.exists(afinn_path)) {
-  comments_afinn <- readRDS(afinn_path)
-} else {
-  comments_afinn <- comments_clean |>
-    tidytext::unnest_tokens(word, body) |>
-    dplyr::inner_join(afinn, by = "word") |>
-    dplyr::group_by(id, month) |>
-    dplyr::summarise(sentiment = sum(value), .groups = "drop")
-  saveRDS(comments_afinn, afinn_path)
-}
-
-sentiment_by_month <- comments_afinn |>
-  dplyr::group_by(month) |>
-  dplyr::summarise(mean_sentiment = mean(sentiment), .groups = "drop")
-
-sentiment_by_month |>
-  ggplot2::ggplot(ggplot2::aes(x = month, y = mean_sentiment)) +
-  ggplot2::geom_line(color = "#0072B2", linewidth = 0.8) +
-  ggplot2::geom_point(color = "#0072B2", size = 1.5) +
-  ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
-  ggplot2::labs(
-    title = "Μέσο sentiment ανά μήνα (AFINN)",
-    x     = "Μήνας",
-    y     = "Μέσο sentiment score"
-  ) +
-  ggplot2::theme_minimal()
+bing_data |>
+  dplyr::summarise( # Καταμέτρηση θετικών/αρνητικών λέξεων
+    Θετικές  = sum(positive),
+    Αρνητικές = sum(negative)
+  ) |>
+  tidyr::pivot_longer(everything(), names_to = "Κατηγορία", values_to = "n") |>
+  dplyr::mutate(pct = n / sum(n) * 100) |>  # Καταγραφή ποσοστού
+  ggplot(aes(x = Κατηγορία, y = pct, fill = Κατηγορία)) +
+  geom_col(show.legend = FALSE) +
+  scale_fill_manual(values = c("Θετικές" = "green", "Αρνητικές" = "red")) +
+  labs(
+    title = "Σύνολο θετικών και αρνητικών λέξεων (κατά Bing)",
+    x     = "Κατηγορία",
+    y     = "Ποσοστό (%)"
+  ) 
 ```
+
+Κλείνομυε αυτή την υποενότητα παρουσιάζοντας την εξέλιξη της συναισθηματικής κατάστασης των σχολίων (*θετική*/*αρνητική*) στην πάροδο του χρόνου.
 
 
 ```{r}
 #| message: false
 #| warning: false
+#| cache: true
 
-# Top 5 πιο θετικά και 5 πιο αρνητικά σχόλια
-comments_afinn |>
+bing_data |>
+  # Μάς ενδιαφέρει η ανάλυση ανά μήνα.
+  dplyr::group_by(month) |>
+  # Παίρνουμε το συνολικό συναίσθημα, τον συμψηφισμό net_sentiment.
+  dplyr::summarise(mean_net = mean(net_sentiment), .groups = "drop") |>
+  ggplot(aes(x = month, y = mean_net)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Εξέλιξη συναισθημάτων ανά μήνα (κατά Bing)",
+    x     = "Χρόνος",
+    y     = "Μέσο  συναίσθημα"
+  ) 
+```
+
+Παρατηρούμε ότι υπάρχει εμφανής πτωτική τάση των *θετικών* σχολίων, κάτι που ακολούθως επιβεβαιώνει και ο συντελεστής μονοτονικής συσχέτισης Kendall.
+
+
+```{r}
+bing_monthly <- bing_data |>
+  dplyr::group_by(month) |>
+  dplyr::summarise(mean_net = mean(net_sentiment), .groups = "drop")
+
+# Υπολογισμός Kendall
+cor(
+  x      = as.numeric(bing_monthly$month),
+  y      = bing_monthly$mean_net,
+  method = "kendall"
+)
+```
+
+
+Ας δούμε τώρα το top-5 των *θετικών* και των *αρνητικών* σχολίων. Έτσι:
+
+- εφοδιάζουμε το `bing_data` με τα σχόλια του `comments_clean` (`dplyr::left_join()`),
+- ταξινομούμε τις γραμμές κατά φθίνουσα σειρά `net_sentiment` (`dplyr::arrange(dplyr::desc(net_sentiment))`),
+- επιλέγουμε (`dplyr::slice()`) τις 5 πρώτες γραμμές  (`1:5`) και τις 5 τελευταίες (από την `dplyr::n() - 4` έως την `dplyr::n()`),
+- εφοδιάζουμε την κάθε γραμμή με έναν χαρακτηρισμό `"🟢 Θετικό"` ή `"🔴 Αρνητικό"` επισυνάπτοντας μιαν επιπλέον στήλη στο dataframe μας (`dplyr::mutate`),
+- κόβουμε για λόγους αισθητικής το μήκος των σχολίων που θα παρουσιαστούν (`body = stringr::str_trunc(body, 200)`),
+- και τέλος παρουσιάζουμε τα top-5 (*θετικά* και *αρνητικά*) κρατώντας μόνο τον χαρακτηρισμό (`"🟢 Θετικό"` ή `"🔴 Αρνητικό"`), το συνολικό σκορ των συναισθημάτων και το σχόλιο (`dplyr::select(Κατηγορία, net_sentiment, body)`).
+
+
+```{r}
+bing_data |>
   dplyr::left_join(
-    dplyr::select(comments_clean, id, body), 
+    dplyr::select(comments_clean, id, body),
     by = "id"
   ) |>
-  dplyr::arrange(dplyr::desc(sentiment)) |>
+  dplyr::arrange(dplyr::desc(net_sentiment)) |>
   dplyr::slice(c(1:5, (dplyr::n() - 4):dplyr::n())) |>
   dplyr::mutate(
     Κατηγορία = c(rep("🟢 Θετικό", 5), rep("🔴 Αρνητικό", 5)),
+    body = stringr::str_trunc(body, 200)
+  ) |>
+  dplyr::select(Κατηγορία, net_sentiment, body) |>
+  kableExtra::kbl(
+    caption   = "Top 5 πιο θετικά και αρνητικά σχόλια (Bing)",
+    col.names = c("Κατηγορία", "Score", "Σχόλιο")
+  ) |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover")) |>
+  kableExtra::column_spec(3, width = "60%")
+```
+
+### AFINN
+
+Η διαδικασία είναι παραπλήσια με της προηγούμενης ενότητας, οπότε θα είμαστε πιο λακωνικοί.
+
+- Αυτή τη φορά χρησιμοποιούμε άλλο λεξικό `tidytext::get_sentiments("afinn")`.
+- Όπως και στην προηγούμενη περίπτωση, έτσι κι εδώ τα αποτελέσματα της πρώτης διαδικασίας έχουν αποθηκευτεί (**comments_afinn.rds**) κι έκτοτε αντλούνται έτοιμα.
+- Διαφορετικά πράττουμε ως εξής:
+    + Αφού τεμαχίσουμε τα σχόλια (`comments_clean`) στις εξ ων συνετέθησαν λέξεις τους (`tidytext::unnest_tokens(word, body)`),
+    + βρίσκουμε ποιες εξ αυτών είναι καταχωρημένες στο λεξικό και τους προσάπτουμε την εξ αυτού συναισθηματική απόχρωση (`dplyr::inner_join(afinn, by = "word")`),
+    + κατόπιν τις ομαδοποιούμε ανά σχόλιο κρατώντας τον μήνα ως επιπλέον στήλη (`dplyr::group_by(id, month)`),
+    + τέλος βρίσκουμε το αλγεβρικό άθροισμα των βαθμών του κάθε σχολίου (επισημαίνουμε ότι η ομοαδοποίηση πρακτικά έχει γίνει με το `id` καθόσον είναι αδύνατον ένα σχόλιο να βρίσκεται σε δύο μήνες) και καταργούμε την όποια ομαδοποίηση (`dplyr::summarise(sentiment = sum(value), .groups = "drop")`). Έτσι έχουμε τον κάτωθι πίνακα.
+    
+::: {.callout-caution collapse="true"}
+## Κρυφό chunk
+
+Το χωρίο κώδικα που αφορά το κάτωθι dataframe δεν περιέχει παρά τμήματα του ακριβώς επόμενου χωρίου. Ως εκ τούτου έχει κρυφτεί (`echo: false`), διότι κρίθηκε από τον γράφοντα ότι περισσότερο θα περιπλέξει την παρουσίαση της εργασίας, παρά θα τη διασαφινίσει. Εν προκειμένω μάς ενδιαφέρουν μόνο τα αποτελέσματα που αυτό εξάγει, ώστε να δούμε βήμα-βήμα τον κώδικα.
+:::
+
+```{r}
+#| echo: false
+
+comments_clean |>
+  head() |>
+    tidytext::unnest_tokens(word, body) |> # Διάσπαση σχολίων σε λέξεις
+    dplyr::inner_join(tidytext::get_sentiments("afinn"), by = "word") |> # Συνένωση df σχολίων με λεξικό
+    dplyr::group_by(id, month) |> # Ομαδοποίηση
+    dplyr::summarise(sentiment = sum(value), .groups = "drop") |>
+  kableExtra::kbl(
+    caption = "Ενδεικτικό αποτέλεσμα της AFINN συναισθηματικής ανάλυσης"
+  ) |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| cache: true
+
+# Το λεξικό.
+afinn <- tidytext::get_sentiments("afinn")
+
+# Διαδρομή αποθήκευσης
+afinn_path <- "../BigDataKoudas/redditComments/comments_afinn.rds"
+
+if (file.exists(afinn_path)) {
+  comments_afinn <- readRDS(afinn_path)
+} else {
+  comments_afinn <- comments_clean |>
+    tidytext::unnest_tokens(word, body) |> # Διάσπαση σχολίων σε λέξεις
+    dplyr::inner_join(afinn, by = "word") |> # Συνένωση df σχολίων με λεξικό
+    dplyr::group_by(id, month) |> # Ομαδοποίηση
+    dplyr::summarise(sentiment = sum(value), .groups = "drop") # Σούμα κάθε σχολίου
+  saveRDS(comments_afinn, afinn_path) # Αποθήκευση comments_afinn
+}
+```
+
+Ακολούθως, το dataframe με την συναισθηματική φόρτιση του κάθε σχολίου ομαδοποιείται ανά μήνα.
+
+
+```{r}
+#| message: false
+#| warning: false
+#| cache: true
+
+afinn_monthly <- comments_afinn |>
+  dplyr::group_by(month) |>
+  dplyr::summarise(mean_sentiment = mean(sentiment), .groups = "drop")
+```
+
+Έτσι, μπορούμε πάλι να δούμε την εξέλιξη της συναισθηματικής φόρτισης των σχολίων στην πάροδο του χρόνου.
+
+```{r}
+#| message: false
+#| warning: false
+#| cache: true
+
+afinn_monthly |>
+  ggplot(aes(x = month, y = mean_sentiment)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Εξέλιξη μέσου μηνιαίου συναισθήματος (κατά AFINN)",
+    x     = "Μήνας",
+    y     = "Μέσο συναισθηματικό score"
+  )
+```
+
+
+Παρατηρούμε παρόμοια πτωτική τάση με την περίπτωση της μεθόδου Bing, κάτι που έρχεται να επιβεβαιώσει πανηγυρικά και ο συντελεστής μονοτονικής συσχέτισης Kendall.
+
+```{r}
+# Υπολογισμός Kendall
+cor(
+  x      = as.numeric(afinn_monthly$month),
+  y      = afinn_monthly$mean_sentiment,
+  method = "kendall"
+)
+```
+
+Δύο πιθανές εικασίες, περί της ομοιότητας των αποτελεσμάτων της AFINN και της Bing, θα ήταν ότι:
+ 
+ 1. οι βαθμολογίες AFINN των λέξεων σε κάθε σχόλιο έχουν συμμετρική κατανομή,
+ 2. οι βαθμολογίες είναι συμμετρικά κατανεμειμένες ανά μήνα.
+
+Μία εξ αυτών θα δικαιολογούσε τη μηνιαία ταύτιση AFINN-Bing. Δυστυχώς, ελέγχοντας τους συντελεστές ασυμμετρίας Pearson σε κάθε περίπτωση διαπιστώνει κανείς πως καμία εξ αυτών δεν επιβεβαιώνεται. Λόγω αυτής της αποτυχίας επιβεβαίωσης ο γράφων δεν βρήκε λόγο να αναπαραχθούν τα αποτελέσματα βάσει των οποίων απορρίφθησαν οι εικασίες τους, άρα και ο κώδικάς τους.
+
+
+Μια αρχική προσπάθεια επαλήθευσης των προαναφερθέντων εικασιών ήταν και το παρακάτω χωρίο κώδικα. Σε αυτό υπολογίζεται σε κάθε σχόλιο η κανονικοποιημένη βαθμολογία της κάθε λέξης, συγκεκριμένα:
+
+$$
+zscore_{word,comment} = \dfrac{score_{word}-\mathbb{E}(score_{word}|word\in comment)}{\operatorname{Var}(score_{word}|word\in comment)}
+$$
+
+και μετά παρουσιάζονται τα z-score μαζί. Δεν θέλει πολύ σκέψη να καταλάβει κανείς πως αυτό υπολογίζει την κατανομή των (κανονικοποιημένων) βαθμολογιών όλων των λέξεων όλων των σχολίων, άρα δεν αποτελεί καλή ερμηνεία της ομοιότητας AFINN-Bing. Αφήνουμε όμως το αποτέλεσμα να υπάρχει, επειδή δίνει την κατανομή της συναισθηματικής φόρτισης της κάθε λέξης γύρω από τη μέση τιμή της.
+
+```{r}
+afinn_z_path <- "../BigDataKoudas/redditComments/words_comments_afinn.rds"
+
+if (file.exists(afinn_z_path)) {
+  afinn_z <- readRDS(afinn_z_path)
+} else {
+  afinn_z <- comments_clean |>
+    tidytext::unnest_tokens(word, body) |>
+    dplyr::inner_join(tidytext::get_sentiments("afinn"), by = "word") |>
+    dplyr::group_by(id) |>
+    dplyr::filter(dplyr::n() >= 2) |>
+    dplyr::mutate(z = (value - mean(value)) / sd(value)) |>
+    dplyr::ungroup() |>
+    dplyr::pull(z)
+  saveRDS(afinn_z, afinn_z_path)
+}
+
+# 1) hist_boxplot
+packHV::hist_boxplot(afinn_z,
+                     main = "Κατανομή κανονικοποιημένων βαθμολογιών (AFINN)",
+                     xlab = "z-score")
+
+```
+
+Τέλος, ας παρουσιάσουμε και πάλι τα top-5 *θετικά* και *αρνητικά* σχόλια. Η διαδικασία είναι ίδια με την περίπτωση της Bing, οπότε δεν θα γίνει αναλυτική περιγραφή της, παρά μόνο κάποιες νύξεις μέσω σχολίων.
+
+```{r}
+#| message: false
+#| warning: false
+
+
+comments_afinn |>
+  dplyr::left_join(
+    dplyr::select(comments_clean, id, body), # Προσθήκη σώματος σχολίου.
+    by = "id"
+  ) |>
+  dplyr::arrange(dplyr::desc(sentiment)) |> # Ταξινόμηση σε φθίνουσα σειρά.
+  dplyr::slice(c(1:5, (dplyr::n() - 4):dplyr::n())) |> # Τα top-5 (ζενίθ-ναδίρ)
+  dplyr::mutate(
+    Κατηγορία = c(rep("🟢 Θετικό", 5), rep("🔴 Αρνητικό", 5)), # Επισήμανση «προσήμου»
     body = stringr::str_trunc(body, 200)  # Κόβουμε στους 200 χαρακτήρες
   ) |>
-  dplyr::select(Κατηγορία, sentiment, body) |>
+  dplyr::select(Κατηγορία, sentiment, body) |> # Επιλογή στηλών
   kableExtra::kbl(
     caption   = "Top 5 πιο θετικά και αρνητικά σχόλια (AFINN)",
     col.names = c("Κατηγορία", "Score", "Σχόλιο")
@@ -734,19 +978,52 @@ comments_afinn |>
   kableExtra::column_spec(3, width = "60%")
 ```
 
+### NRC
 
-::: {.callout-note}
-## Περιορισμοί της μεθόδου AFINN
+Ένα προφανές μειονέκτημα των προηγούμενων μεθόδον είναι ότι αντιμετωπίζουν «μονόχρωμα» την κάθε λέξη. Ναι μεν η AFINN επιτρέπει την αποτύπωση της έντασης του συναισθήματος, αλλά στην πραγματικότητα αντιμετωπίζει τις λέξεις ως σημεία σε έναν άξονα. Όμως δεν είναιμονοδιάστατη η συναισθηματική νοηματοδότηση των λέξεων. Επί παραδείγματι, άλλη συναισθηματική απόχρωση έχει η λέξη «lonely» από τη λέξη «afraid». Ναι μεν και τα δύο συγκαταλέγονται στα *αρνητικά*, αλλά η μεν «lonely» δηλώνει θλύψη, η δε «afraid» φόβο.
 
-Η μέθοδος AFINN, όπως και οι υπόλοιπες lexicon-based μέθοδοι, παρουσιάζει ορισμένους περιορισμούς που πρέπει να ληφθούν υπόψη κατά την ερμηνεία των αποτελεσμάτων:
+Το NRC έρχεται να καλύψει αυτό το πρόβλημα. Αντί για μία συναισθηματική απόχρωση δύο προσήμων, έχει 8 επιπλέον αυτών των δύο. Ο παρακάτω πίνακας τις αναφέρει.
 
-- **Δεν κατανοεί context:** Το sentiment που μετράται δεν αφορά απαραίτητα την ΤΝ — ένα σχόλιο μπορεί να έχει υψηλό θετικό score επειδή περιέχει πολλές θετικές λέξεις για άσχετο θέμα.
-- **Ευαίσθητο σε επαναλήψεις:** Λέξεις που επαναλαμβάνονται τεχνητά (π.χ. "SCAM SCAM SCAM...") οδηγούν σε ακραίες βαθμολογίες που δεν αντικατοπτρίζουν πραγματικό συναίσθημα.
-- **Δεν κατανοεί negation:** Φράσεις όπως "not good" μετράνε το "good" ως θετικό.
-- **Μόνο αγγλικές λέξεις:** Σχόλια σε άλλες γλώσσες αγνοούνται πλήρως.
-:::
 
-## NRC
+| Συναίσθημα (αγγλ.) | Συναίσθημα (ελλ.) | Παραδείγματα λέξεων | 🟢  𝓥𝓢 🔴 |
+|---|---|---|---|
+  | positive | Θετικό | good, success | 🟢 ΘΕΤΙΚΟ |
+| anticipation | Προσμονή | advance, expect | 🟢 Θετικό |
+| joy | Χαρά | happy, love | 🟢 Θετικό |
+| trust | Εμπιστοσύνη | honest, safe | 🟢 Θετικό |
+| surprise | Έκπληξη | amazing, sudden | ⚪ εξαρτάται |
+| negative | Αρνητικό | bad, wrong | 🔴 ΑΡΝΗΤΙΚΟ |
+| anger | Θυμός | abuse, attack | 🔴 Αρνητικό |
+| disgust | Αηδία | corrupt, filth | 🔴 Αρνητικό |
+| fear | Φόβος | afraid, danger | 🔴 Αρνητικό |
+| sadness | Λύπη | grief, lonely | 🔴 Αρνητικό |
+
+
+: Συναισθήματα που αναγνωρίζει το NRC
+
+Είναι προφανές ότι κάθε λέξη που εντάσσεται σε κάποιο από τα 8 νέα συναισθήματα (*anticipation*, *joy*, *trust*, *surprise*, *anger*, *disgust*, *fear*, *sadness*) εντάσσεται αυτομάτως και σε μία εκ των κατηγοριών *θετικό*/*αρνητικό*. Εξαίρεση αποτελεί η συναισθηματική κατηγορία *surprise*. Σε αυτήν μπορούμε να βρούμε λέξεις με *θετικό* πρόσημο (π.χ. «wonderful») και με αρνητικό (π.χ. «shock»).
+
+Σημειοτέον ότι NRC δεν έχει τον fuzzy set χαρακτήρα της AFINN. Στην NRC dεν υπάρχει βαθμός ανήκειν, αλλά κάθε λέξη ανήκει με έναν απόλυτο τρόπο σε ένα συναίσθημα. Επί παραδείγματι:
+
+| word | anger | joy | fear | positive |
+|---|---|---|---|---|
+| love | 0 | 1 | 0 | 1 |
+| abuse | 1 | 0 | 1 | 0 |
+| happy | 0 | 1 | 0 | 1 |
+
+Ας δούμε τώρα τι δίνει αυτή η ανάλυση για τα σχόλια που μαζέψαμε. Για να αποτυπωθεί η πορεία του εκάστοτε συναισθήματος στο χρόνο χωρίσαμε την περίοδο μελέτης σε 3 ίσα τμήματα και τα συμπαρουσιάζουμε. Από το LLM Claude προτάθηκε να χωριστεί η περίοδος μελέτης, όχι σε ίσα τμήματα, αλλά με βάση γεγονότα που συνέβησαν στον τομέα της Τ.Ν.:
+
+- ChatGPT εποχή,
+- GPT-4, Gemini, Claude, 
+- DeepSeek, Grok
+
+Όμως τα αποτελέσματα ήταν παρόμοια με την περίπτωση των ίσων τμημάτων, επομένως ο γράφων δεν βρήκε λόγο να παραθέσει αυτά ή τον κώδικά τους.
+
+Έχουμε λοιπόν:
+
+- Κατεβάζουμε το αντίστοιχο λεξικό (`nrc <- tidytext::get_sentiments("nrc")`).
+- Ορίζουμε τα όρια των περιόδων (`t1`, `t2`) και χρησιμοποιούμε την `difftime()` (βλ. [εδώ](https://www.geeksforgeeks.org/r-language/calculate-time-difference-between-dates-in-r-programming-difftime-function/)) για να βρούμε τα δευτερόλεπτα μεταξύ αυτών των δύο και να τα μοιράσουμε στα 3.
+- Δημιουργούμε μια συνθήκη τυπου AN-TOTE (`dplyr::case_when()`) βάσει της οποίας η νέα στήλη `period` που επισυνάπτεται στο `comments_clean` (`mutate()`) θα περιέχει τις 3 περιόδους μελέτης, ήτοι 12/2022–1/2024, 1/2024-3/2025 και 3/2025-2/2026.
 
 
 ```{r}
@@ -754,164 +1031,133 @@ comments_afinn |>
 #| warning: false
 #| cache: true
 
-nrc <- tidytext::get_sentiments("nrc")
+nrc <- tidytext::get_sentiments("nrc") # Το λεξικό.
 
-# Ορίζουμε τα όρια των περιόδων
+# Ορίζουμε τα όρια των περιόδων.
 t1 <- as.POSIXct("2022-12-01", tz = "UTC")
 t2 <- as.POSIXct("2026-02-26", tz = "UTC")
 step <- as.numeric(difftime(t2, t1, units = "secs")) / 3
-break1_equal  <- t1 + step
-break2_equal  <- t1 + 2 * step
-break1_events <- as.POSIXct("2023-04-01", tz = "UTC")
-break2_events <- as.POSIXct("2025-01-01", tz = "UTC")
+break1  <- t1 + step # Τέλος 1ης περιόδου.
+break2  <- t1 + 2 * step # Τέλος 2ης περιόδου.
 
-# Συνάρτηση που προσθέτει στήλη "period" σε κάθε σχόλιο
-assign_period <- function(data, break1, break2, labels) {
-  data |>
-    dplyr::mutate(
-      period = dplyr::case_when(
-        date < break1 ~ labels[1],
-        date < break2 ~ labels[2],
-        TRUE          ~ labels[3]
-      ),
-      period = factor(period, levels = labels)
-    )
-}
-
-labels_equal <- c(
+labels <- c(
   "Δεκ 2022 – Ιαν 2024",
   "Ιαν 2024 – Μαρ 2025",
   "Μαρ 2025 – Φεβ 2026"
 )
 
-labels_events <- c(
-  "Δεκ 2022 – Μαρ 2023\n(ChatGPT εποχή)",
-  "Απρ 2023 – Δεκ 2024\n(GPT-4, Gemini, Claude)",
-  "Ιαν 2025 – Φεβ 2026\n(DeepSeek, Grok)"
-)
-
-comments_equal  <- assign_period(comments_clean, break1_equal,  break2_equal,  labels_equal)
-comments_events <- assign_period(comments_clean, break1_events, break2_events, labels_events)
-
-# Συνάρτηση που υπολογίζει NRC ανά περίοδο σε ποσοστά.
-# Διαιρούμε με το σύνολο της περιόδου ώστε οι περίοδοι
-# να είναι συγκρίσιμες μεταξύ τους.
-compute_nrc <- function(data) {
-  data |>
-    tidytext::unnest_tokens(word, body) |>
-    dplyr::inner_join(nrc, by = "word") |>
-    dplyr::count(period, sentiment) |>
-    dplyr::group_by(period) |>
-    dplyr::mutate(pct = n / sum(n) * 100) |>  # Ποσοστό εντός κάθε περιόδου
-    dplyr::ungroup()
-}
-
-# Αποθήκευση/φόρτωση nrc_equal
-nrc_equal_path <- "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/nrc_equal.rds"
-if (file.exists(nrc_equal_path)) {
-  nrc_equal <- readRDS(nrc_equal_path)
-} else {
-  nrc_equal <- compute_nrc(comments_equal)
-  saveRDS(nrc_equal, nrc_equal_path)
-}
-
-# Αποθήκευση/φόρτωση nrc_events
-nrc_events_path <- "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/nrc_events.rds"
-if (file.exists(nrc_events_path)) {
-  nrc_events <- readRDS(nrc_events_path)
-} else {
-  nrc_events <- compute_nrc(comments_events)
-  saveRDS(nrc_events, nrc_events_path)
-}
-
-# Συνάρτηση γραφήματος
-plot_nrc <- function(data, title) {
-  data |>
-    ggplot2::ggplot(ggplot2::aes(x = sentiment, y = pct, fill = period)) +
-    ggplot2::geom_col(position = "dodge") +
-    ggplot2::coord_flip() +
-    ggplot2::labs(
-      title = title,
-      x     = "Συναίσθημα",
-      y     = "Ποσοστό (%)",
-      fill  = "Περίοδος"
-    ) +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(legend.position = "bottom")
-}
-
-plot_nrc(nrc_equal,  "NRC ανά περίοδο — Ίσα τμήματα")
-plot_nrc(nrc_events, "NRC ανά περίοδο — Γεγονότα ΤΝ")
+comments_equal  <- comments_clean |>
+  dplyr::mutate(
+    period = dplyr::case_when(
+      date < break1 ~ labels[1],
+      date < break2 ~ labels[2],
+      TRUE          ~ labels[3]
+      ),
+    period = factor(period, levels = labels) # Για σωστή χρονολογική σειρά στα γραφήματα.
+    )
 ```
 
+Κάποια κομμάτια της διαδικασίας της 1ης εξαγωγής αποτελεσμάτων είναι κοινά με τις προηγούμενες μεθόδους, οπότε παρουσιάζονται μόνο συνοπτικά στα σχόλια. Ας δούμε μόνο κάποια που διαφοροποιούνται:
 
+- Όπως και στις παραπάνω μεθόδους, η διαδικασία αυτή άντλησε αρκετούς χρονικούς πόρους, οπότε εκτελέστηκε μία φορά και τα δεδομένα της αποθηκεύτηκαν προς μετέπειτα χρήση.
+- Η `dplyr::count(period, sentiment)` σε κάθε περίοδο (`period`) καταγράφει το πλήθος των καταγραφών του εάστοτε συναισθήματος (`sentiment`).
+- Για να μην δημιουργεί ψευδείς εντυπώσεις μία πολυπληθής σε σχόλια περίοδος, καταγράφουμε τα ποσοστά των συναισθημάτων σε κάθε περίοδο (`dplyr::mutate(pct = n / sum(n) * 100)`).
 
 ```{r}
 #| message: false
 #| warning: false
 #| cache: true
-
-# Ορίζουμε 5 περιόδους με βάση σημαντικά γεγονότα της ΤΝ
-labels_events5 <- c(
-  "Δεκ 2022 – Μαρ 2023\n(ChatGPT)",
-  "Απρ 2023 – Νοε 2023\n(GPT-4, Claude 1, Llama)",
-  "Δεκ 2023 – Ιουλ 2024\n(Gemini, Claude 3, GPT-4o)",
-  "Αυγ 2024 – Δεκ 2024\n(Claude 3.5, Llama 3, o1)",
-  "Ιαν 2025 – Φεβ 2026\n(DeepSeek, Grok, Claude 3.7)"
-)
-
-comments_events5 <- comments_clean |>
-  dplyr::mutate(
-    period = dplyr::case_when(
-      date < as.POSIXct("2023-04-01", tz = "UTC") ~ labels_events5[1],
-      date < as.POSIXct("2023-12-01", tz = "UTC") ~ labels_events5[2],
-      date < as.POSIXct("2024-08-01", tz = "UTC") ~ labels_events5[3],
-      date < as.POSIXct("2025-01-01", tz = "UTC") ~ labels_events5[4],
-      TRUE                                         ~ labels_events5[5]
-    ),
-    period = factor(period, levels = labels_events5)
-  )
-
-# Αποθήκευση/φόρτωση nrc_events5
-nrc_events5_path <- "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/nrc_events5.rds"
-if (file.exists(nrc_events5_path)) {
-  nrc_events5 <- readRDS(nrc_events5_path)
+# Αποθήκευση/φόρτωση nrc_equal
+nrc_equal_path <- "../BigDataKoudas/redditComments/nrc_equal.rds"
+if (file.exists(nrc_equal_path)) {
+  nrc_equal <- readRDS(nrc_equal_path)
 } else {
-  nrc_events5 <- comments_events5 |>
-    tidytext::unnest_tokens(word, body) |>
-    dplyr::inner_join(nrc, by = "word") |>
-    dplyr::count(period, sentiment) |>
-    dplyr::group_by(period) |>
-    dplyr::mutate(pct = n / sum(n) * 100) |>  # Ποσοστό εντός κάθε περιόδου
-    dplyr::ungroup()
-  saveRDS(nrc_events5, nrc_events5_path)
+  nrc_equal <- comments_equal |>
+  tidytext::unnest_tokens(word, body) |> # Σπάσιμο σχολίων σε λέξεις
+  dplyr::inner_join(nrc, by = "word") |> # Ένωση με λεξικό βάσει υπαρχόντων λέξεων και στα δύο.
+  dplyr::count(period, sentiment) |> # Καταγραφές συναισθημάτων ανά περίοδο
+  dplyr::group_by(period) |>
+  dplyr::mutate(pct = n / sum(n) * 100) |>  # Ποσοστό εντός κάθε περιόδου
+  dplyr::ungroup()
+  saveRDS(nrc_equal, nrc_equal_path)
 }
+```
 
-# Γράφημα με facet_wrap — ένα πλαίσιο ανά περίοδο
-nrc_events5 |>
-  ggplot2::ggplot(ggplot2::aes(x = sentiment, y = pct, fill = sentiment)) +
-  ggplot2::geom_col(show.legend = FALSE) +
+Και τώρα είμαστε έτοιμοι να δούμε οπτικά τα αποτελέσματα της παρούσης μελέτης.
+
+```{r}
+#| message: false
+#| warning: false
+#| cache: true
+nrc_equal |>
+  ggplot2::ggplot(ggplot2::aes(x = sentiment, y = pct, fill = period)) +
+  ggplot2::geom_col(position = "dodge") +
   ggplot2::coord_flip() +
-  ggplot2::facet_wrap(~ period, ncol = 2) +
   ggplot2::labs(
-    title = "NRC sentiment ανά περίοδο — 5 φάσεις ΤΝ",
+    title = "NRC ανά περίοδο",
     x     = "Συναίσθημα",
-    y     = "Ποσοστό (%)"
+    y     = "Ποσοστό (%)",
+    fill  = "Περίοδος"
   ) +
-  ggplot2::theme_minimal() +
-  ggplot2::theme(strip.text = ggplot2::element_text(size = 8))
+  ggplot2::theme(legend.position = "bottom")
 ```
 
 
+Όπως και στις μεθόδους Bing και AFINN, έτσι και με την NRC παρατηρούμε μια πτωτική τάση στα *θετικά* συναισθήματα και μία ανωδική στα *αρνητικά*.
 
-## VADER
+
+
+## Lexicon and rule-based
+
+::: {.callout-warning}
+## Περιορισμοί lexicon-based μεθόδων
+
+Οι προαναφερθείσες μέθοδοι (οι λεγόμενες lexicon-based) έχουν τα εξής προφανή προβλήματα: 
+
+- Δεν κατανοούν ότι η άρνηση της άρνησης είναι κατάφαση. Π.χ. η φράση "not good", ως έχουσα τη *θετική* λέξη "good", εκλαμβάνεται *θετική*.
+
+- Είναι ευαίθητες στις επαναλήψεις. Π.χ. ένα σχόλιο "SCAM SCAM SCAM..." υπολογίζεται ως υπερβολικά αρνητικό από την AFINN. 
+
+:::
+
+### VADER
+
+::: {.callout-note}
+## Πλεονεκτήματα VADER
+
+Η VADER έρχεται για να αποφύγουμε αυτά τα προβλήματα. Αυτή δεν φέρει τα προαναφερθέντα τα τρωτά σημεία, αλλά:
+
+- Αναγνωρίζει λέξεις που ενισχύουν ("very", "extremely") ή αποδυναμώνουν ("kind of", "marginally") το συναίσθημα. 
+
+- Έχει τη δυνατότητα να κατανοεί την αργκό και να αναγνωρίζει emojis, πράγμα που την κάνει κατάλληλη για ανάλυση συναισθημάτων στα social media. 
+
+:::
+
+Στην πρώτη απόπειρα να εκτελεστεί αυτή η μέθοδος ο γράφων περίμενε τον κώδικα για πάνω από 45 λεπτά χωρίς να έχει εξαχθεί κάποιο αποτέλεσμα. Μία σκέψη ήταν ότι υπάρχει κάποιο bug στον κώδικα. Μία άλλη ήταν ότι η VADER είναι πολύ χρονοβόρα. Προς τούτο έγινε ο κάτωθι έλεγχος.
 
 ```{r}
 # Μετράμε πόσο παίρνει για 100 comments
-system.time(
+(vader_time <- system.time(
   vader::vader_df(head(comments_clean$body, 100))
-)
+))
 ```
+
+Βλέπουμε ότι χρειάστηκαν `r vader_time[[3]]` δευτερόλεπτα για τα $100$ σχόλια. Δεδομένου ότι το `comments_clean` έχει `r length(comments_clean$id)` σχόλια, θα χρειαστούμε `r vader_time[[3]]*length(comments_clean$id)/(100*3600)` ώρες. Αυτό κάνει ανέφικτο το να μελετηθούν όλα τα σχόλια του `comments_clean`. Λόγω αυτού θα κάνουμε κάποιες δειγματοληψίες και, φυσικά, θα αποθηκεύσουμε τα αποτελέσματα (στο `vader_path`), ώστε κι αυτός ο χρόνος που τελικά σπαταλήθηκε να μην επαναληφθεί.
+
+Συγκεκριμένα, στην περίπτωση που δεν έχουν αποθηκευτεί τα δεδομένα (`if (file.exists(vader_path))=FALSE`), η δειγματοληψία θα γίνει σε 6 περιόδους (`periodos`) και σε κάθε μία από τις περιόδους αυτές εφαρμόζονται τα παρακάτω και συνεννώνονται σε ένα dataframe μέσω της `purrr::map_dfr(periodos, ΕΝΕΡΓΕΙΕΣ)` (βλ. [εδώ](https://purrr.tidyverse.org/reference/map_dfr.html)):
+
+- Φιλτράρουμε από το `comments_clean` τις γραμμές εντός του εκάστοτε ιαστήματος (`dplyr::filter()`).
+- Ακολούθως, επιλέγουμε τυχαία `n_sample` γραμμές από τα σχόλια της περιόδου (`slice_sample(n = n_sample)`) επισυνάπτοντάς τους δίπλα ως ετικέτα την επερίοδο στην οποία ανήκουν (`dplyr::mutate(period = p$label)`).
+- Στα σχόλια του δείγματος του `comments_clean` που μόλις φτιάξαμε (`deigma`) εφαρμόζουμε τη VADER (`vader_scores <- vader::vader_df(deigma$body)`).   Η `vader_df()` επιστρέφει 4 τιμές ανά σχόλιο:
+
+  + `pos`, ήτοι ποσοστό θετικών λέξεων (0 έως 1),
+  + `neg`, ήτοι ποσοστό αρνητικών λέξεων (0 έως 1),
+  + `neu`, ήτοι ποσοστό ουδέτερων λέξεων (0 έως 1),
+  + `compound`, ήτοι συνολικό σκορ (-1 = πολύ αρνητικό, +1 = πολύ θετικό).
+  
+- Ύστερα προσθέτουμε τις βαθμολογίες της VADER ως νέες στήλες στο δείγμα (`dplyr::mutate()`) και κρατάμε μόνο τις στήλες που μας ενδιαφέρουν (`dplyr::select(id, month, date, period, compound, pos, neg, neu)`). Το αποτέλεσμα είναι ένας πίνακας όπου κάθε γραμμή είναι ένα σχόλιο με την περίοδό του και τις βαθμολογίες του VADER.
+
+
 
 ```{r}
 #| message: false
@@ -919,7 +1165,7 @@ system.time(
 #| cache: true
 
 # Ορίζουμε τα όρια των 6 περιόδων.
-# Κάθε περίοδος καλύπτει 6 μήνες, εκτός από την τελευταία που καλύπτει 9.
+# Κάθε περίοδος καλύπτει ένα εξάμηνο, εκτός από την τελευταία που καλύπτει 9 μήνες.
 periodos <- list(
   list(start = "2022-12-01", end = "2023-05-31", label = "Δεκ 2022 – Μαΐ 2023"),
   list(start = "2023-06-01", end = "2023-11-30", label = "Ιουν 2023 – Νοε 2023"),
@@ -929,13 +1175,13 @@ periodos <- list(
   list(start = "2025-06-01", end = "2026-02-26", label = "Ιουν 2025 – Φεβ 2026")
 )
 
-vader_path <- "C:/Users/kkoud/Documents/GitHub/BigDataKoudas/redditComments/vader.rds"
+# Η διαδρομή αποθήκευσης.
+vader_path <- "../BigDataKoudas/redditComments/vader.rds"
 
 if (file.exists(vader_path)) {
   vader_data <- readRDS(vader_path)
   
-  # Ορίζουμε χειροκίνητα τα levels του factor περιόδου,
-  # ώστε τα γραφήματα να εμφανίζουν τις περιόδους στη σωστή σειρά
+  # Ορίζουμε ως factor τις περιόδους, ώστε να εμφανίζονται με τη σωστή σειρά.
   vader_data <- vader_data |>
     dplyr::mutate(
       period = factor(period, levels = c(
@@ -949,42 +1195,29 @@ if (file.exists(vader_path)) {
     )
 } else {
   
-  # Θέτουμε σταθερό "seed" ώστε η τυχαία δειγματοληψία να είναι
-  # αναπαραγώγιμη — αν ξανατρέξουμε τον κώδικα, θα πάρουμε
-  # ακριβώς τα ίδια σχόλια.
+  # Σταθερό seed, για σταθερά αποτελέσματα.
   set.seed(42)
   
-  # Για κάθε περίοδο κάνουμε δειγματοληψία 6.000 comments.
-  # Το purrr::map_dfr επαναλαμβάνει τη διαδικασία για κάθε περίοδο
-  # και ενώνει τα αποτελέσματα σε έναν ενιαίο πίνακα.
+  # Το purrr::map_dfr επαναλαμβάνει τη διαδικασία για κάθε περίοδο και ενώνει τα αποτελέσματα σε έναν ενιαίο πίνακα.
   deigma <- purrr::map_dfr(periodos, function(p) {
     
-    # Βήμα 1: Κρατάμε μόνο τα comments που ανήκουν στην τρέχουσα περίοδο
+    # Κρατάμε μόνο τα comments που ανήκουν στην τρέχουσα περίοδο
     periodos_data <- comments_clean |>
       dplyr::filter(
         date >= as.POSIXct(p$start, tz = "UTC"),
         date <= as.POSIXct(p$end,   tz = "UTC")
       )
     
-    # Βήμα 2: Υπολογίζουμε πόσα comments θα πάρουμε.
-    # Αν η περίοδος έχει λιγότερα από 6.000, παίρνουμε όλα.
+    # Μέγεθος δείγματος. Αν η περίοδος τύχει να έχει λιγότερες από 6000 καταγραφές, τις επιλέγουμε όλες.
     n_sample <- min(6000, nrow(periodos_data))
     
-    # Βήμα 3: Τυχαία επιλογή και προσθήκη ετικέτας περιόδου
+    # Τυχαία επιλογή και προσθήκη ετικέτας περιόδου.
     periodos_data |>
       dplyr::slice_sample(n = n_sample) |>
       dplyr::mutate(period = p$label)
   })
   
-  message("✅ Σύνολο δείγματος: ", nrow(deigma), " comments")
-  message("⏳ Εκτελείται το VADER — αναμένεται ~1 ώρα...")
-  
-  # Εφαρμόζουμε το VADER σε κάθε comment του δείγματος.
-  # Το vader_df() επιστρέφει 4 τιμές ανά comment:
-  # pos      = ποσοστό θετικών λέξεων (0 έως 1)
-  # neg      = ποσοστό αρνητικών λέξεων (0 έως 1)
-  # neu      = ποσοστό ουδέτερων λέξεων (0 έως 1)
-  # compound = συνολικό score (-1 = πολύ αρνητικό, +1 = πολύ θετικό)
+  # Εφαρμόζουμε τη VADER σε κάθε σχόλιο του δείγματος.
   vader_scores <- vader::vader_df(deigma$body)
   
   # Συνδυάζουμε τα αποτελέσματα με τα στοιχεία του δείγματος
@@ -999,32 +1232,80 @@ if (file.exists(vader_path)) {
   
   # Αποθηκεύουμε για να μην χρειαστεί να ξανατρέξουμε
   saveRDS(vader_data, vader_path)
-  message("✅ Αποθηκεύτηκε!")
 }
+```
+
+Ας δούμε τι έχει να πει και η VADER για την εξέληξη των συναισθημάτων στον χρόνο.
 
 
+```{r}
+#| message: false
+#| warning: false
+#| cache: true
 
-
-# --- ΓΡΑΦΗΜΑ 1: Μέσο compound score ανά περίοδο ---
-# Το compound score συνοψίζει το συνολικό sentiment κάθε comment
-# σε έναν αριθμό από -1 (πολύ αρνητικό) έως +1 (πολύ θετικό)
 vader_data |>
   dplyr::group_by(period) |>
   dplyr::summarise(mean_compound = mean(compound, na.rm = TRUE), .groups = "drop") |>
   ggplot2::ggplot(ggplot2::aes(x = period, y = mean_compound, group = 1)) +
-  ggplot2::geom_line(color = "#0072B2", linewidth = 0.8) +
-  ggplot2::geom_point(color = "#0072B2", size = 2) +
-  ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  ggplot2::geom_line() +
+  ggplot2::geom_point() +
   ggplot2::labs(
-    title = "Εξέλιξη sentiment ανά περίοδο (VADER)",
+    title = "Εξέλιξη συναισθήματος ανά περίοδο",
     x     = "Περίοδος",
-    y     = "Μέσο compound score (-1 έως +1)"
+    y     = "Μέσο compound score"
   ) +
   ggplot2::theme_minimal() +
   ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+```
 
-# --- ΓΡΑΦΗΜΑ 2: Αναλογία θετικών/αρνητικών/ουδέτερων ανά περίοδο ---
-# Βλέπουμε πώς αλλάζει η σύνθεση του sentiment σε κάθε περίοδο
+Και πάλι ανιχνεύουμε πτωτική τάση, όπως και με τις άλλες μεθόδους. Ας δούμε όμως και πιο συγκεκριμένα πώς εξελίσσεται το κάθε συναίσθημα, εξετάζοντας συγχρόνως και τις μεταξύ τους σχέσεις.
+
+
+
+
+
+
+
+```{r}
+vader_data |>
+  dplyr::group_by(period) |>
+  dplyr::summarise(
+    Θετικά   = mean(pos, na.rm = TRUE) * 100,
+    Αρνητικά = mean(neg, na.rm = TRUE) * 100,
+    Ουδέτερα = mean(neu, na.rm = TRUE) * 100,
+    .groups  = "drop"
+  ) |>
+  tidyr::pivot_longer(
+    cols      = c(Θετικά, Αρνητικά, Ουδέτερα),
+    names_to  = "Κατηγορία",
+    values_to = "pct"
+  ) |>
+  dplyr::mutate(
+    Κατηγορία = factor(Κατηγορία, levels = c("Θετικά", "Ουδέτερα", "Αρνητικά"))
+  ) |>
+  ggplot2::ggplot(ggplot2::aes(x = Κατηγορία, y = pct, fill = period)) +
+  ggplot2::geom_col(position = "dodge") +
+  ggplot2::scale_fill_grey(start = 0.8, end = 0.1) +
+  ggplot2::labs(
+    title = "Πορεία κάθε συναισθήματος στον χρόνο",
+    x     = "Κατηγορία",
+    y     = "Ποσοστό (%)",
+    fill  = "Περίοδος"
+  ) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+```
+
+Βλέπουμε πτωτική πορεία των *θετικών* συναισθημάτων και ανωδική των *αρνητικών*.
+
+Το άλλο που επίσης παρατηρούμε είναι ο μεγάλος όγκος *ουδέτερων* συναισθημάτων σε σχέση με τα *θετικά* και τα *αρνητικά*. Αυτή η αναλογία φαίνεται να διατηρείται στον χρόνο, όπως βλέπουμε και από το παρακάτω γράφημα.
+
+
+```{r}
+#| message: false
+#| warning: false
+#| cache: true
+
 vader_data |>
   dplyr::group_by(period) |>
   dplyr::summarise(
@@ -1058,30 +1339,32 @@ vader_data |>
   ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
 ```
 
-# Πλάνο
 
-Μέρος 2 — Sentiment Analysis
+Τέλος, ας εξετάσουμε τα top-5 πιο *θετικά* και top-5 πιο *αρνητικά* σχόλια.
 
-NLP με tidytext
-Lexicons (AFINN, NRC, BING, VADER)
-Οπτικοποιήσεις αποτελεσμάτων
+```{r}
+vader_data |>
+  dplyr::filter(!is.na(compound)) |>  # Αφαιρούμε τα NA
+  dplyr::left_join(
+    dplyr::select(comments_clean, id, body),
+    by = "id"
+  ) |>
+  dplyr::arrange(dplyr::desc(compound)) |>
+  dplyr::slice(c(1:5, (dplyr::n() - 4):dplyr::n())) |>
+  dplyr::mutate(
+    Κατηγορία = c(rep("🟢 Θετικό", 5), rep("🔴 Αρνητικό", 5)),
+    body = stringr::str_trunc(body, 200)
+  ) |>
+  dplyr::select(Κατηγορία, compound, body) |>
+  kableExtra::kbl(
+    caption   = "Top 5 πιο θετικά και αρνητικά σχόλια (VADER)",
+    col.names = c("Κατηγορία", "Compound Score", "Σχόλιο")
+  ) |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover")) |>
+  kableExtra::column_spec(3, width = "60%")
+```
 
-| Μέθοδος | Υπέρ | Κατά |
-|---------|------|------|
-| **AFINN** | Πολύ απλό, λίγες γραμμές κώδικα, αριθμητικό score (εύκολο για γραφήματα), ενσωματωμένο στο tidytext | Δεν καταλαβαίνει context/negation, αγγλικές λέξεις μόνο, μικρό λεξιλόγιο |
-| **NRC** | Απλό όπως το AFINN, δίνει 8 συναισθήματα (πλουσιότερη ανάλυση), ενσωματωμένο στο tidytext | Δεν καταλαβαίνει context/negation, αγγλικές λέξεις μόνο |
-| **Bing** | Απλό, θετικό/αρνητικό, ενσωματωμένο στο tidytext | Πιο απλό από AFINN/NRC, δεν καταλαβαίνει context/negation |
-| **VADER** | Σχεδιασμένο για social media/Reddit, καταλαβαίνει negation & emoji, αριθμητικό score | Χρειάζεται επιπλέον package (`vader`), λίγο πιο σύνθετο |
-
-Μέρος 3 — Spark
-
-Ίδια επεξεργασία με sparklyr
-Σύγκριση χρόνων εκτέλεσης
-Συμπεράσματα για scalability
-
-
-
-
+Αξίζει να παρατηρήσουμε πως εξοστρακίστηκαν σχόλια όπως το "SCAM, SCCAM, SCAM...". Φαίνεται πως εδώ έγινε μια πιο ουσιαστική αξιολόγηση.
 
 
 

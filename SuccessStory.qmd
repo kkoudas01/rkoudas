@@ -1,0 +1,12 @@
+---
+title: "Ελλάδα 2.0"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    number-sections: true
+    fig-cap: true
+---
