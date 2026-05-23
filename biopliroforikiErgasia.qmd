@@ -1,0 +1,127 @@
+---
+title: "Ανάλυση Ρυθμιστικών Δικτύων και Πρωτεωμικών Δεικτών στον Σακχαρώδη Διαβήτη Τύπου ΙΙ με χρήση της R"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    number-sections: true
+    fig-cap: true
+---
+
+
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+
+```{r}
+# Καθαρισμός μνήμης R.
+rm(list = ls())
+```
+
+
+# Εισαγωγή
+
+Ο Σακχαρώδης Διαβήτης Τύπου ΙΙ είναι μια σύνθετη μεταβολική νόσος. Η κατανόηση των μοριακών μηχανισμών απαιτεί την ανάλυση:
+
+Γενετικών δεικτών: Πολυμορφισμοί (SNPs) και γονιδιακή έκφραση.
+
+Πρωτεωμικών δεικτών: Επίπεδα πρωτεϊνών στο πλάσμα ή στους ιστούς-στόχους (π.χ. πάγκρεας, ήπαρ).
+
+Ρυθμιστικών Δικτύων: Πώς τα γονίδια και οι πρωτεΐνες αλληλεπιδρούν για να ελέγξουν την ινσουλινοαντοχή.
+
+
+# Προετοιμασία Περιβάλλοντος
+
+```{r}
+# Εγκατάσταση απαραίτητων πακέτων (BioConductor)
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# Βασικά πακέτα για ανάλυση
+BiocManager::install(c("limma", "GEOquery", "WGCNA", "biomaRt", "igraph"))
+library(ggplot2)
+library(dplyr)
+
+# Με το πέρας της εργασίας
+# Διαγράφεις τα πακέτα ανάλυσης
+# remove.packages(c("limma", "GEOquery", "WGCNA", "biomaRt", "igraph"))
+
+# Διαγράφεις και το ίδιο το BiocManager
+# remove.packages("BiocManager")
+```
+
+
+# Απόκτηση Δεδομένων (Data Acquisition)
+Για την εργασία σας, μπορείτε να αντλήσετε πραγματικά δεδομένα από τη βάση GEO (Gene Expression Omnibus).
+
+Παράδειγμα κώδικα για λήψη δεδομένων:
+
+```{r}
+library(GEOquery)
+# Παράδειγμα dataset για Διαβήτη Τύπου ΙΙ (GSE sequence ID - ενδεικτικό)
+gse <- getGEO("GSE164448", destdir = ".", getGPL = TRUE)
+data <- exprs(gse[[1]]) # Πίνακας έκφρασης
+metadata <- pData(gse[[1]]) # Δεδομένα ασθενών (Control vs Diabetes)
+```
+
+# Ανάλυση Διαφορικής Έκφρασης (Differential Expression)
+Εδώ εντοπίζουμε ποιες πρωτεΐνες ή γονίδια (δείκτες) αλλάζουν σημαντικά στους διαβητικούς.
+
+```{r}
+library(limma)
+# Δημιουργία design matrix (Ομάδα ελέγχου vs Διαβήτης)
+group <- factor(metadata$characteristics_ch1) # Προσαρμόστε ανάλογα με το dataset
+design <- model.matrix(~0 + group)
+colnames(design) <- c("Control", "Diabetes")
+
+# Γραμμικό μοντέλο
+fit <- lmFit(data, design)
+contrast.matrix <- makeContrasts(Diabetes - Control, levels = design)
+fit2 <- contrasts.fit(fit, contrast.matrix)
+fit2 <- eBayes(fit2)
+
+# Εξαγωγή αποτελεσμάτων
+top_markers <- topTable(fit2, adjust="BH", sort.by="P", n=50)
+head(top_markers)
+```
+
+
+# Κατασκευή Ρυθμιστικού Δικτύου (Regulatory Networks)
+Χρησιμοποιούμε τη μέθοδο WGCNA (Weighted Gene Co-expression Network Analysis) για να δούμε πώς συνδέονται οι δείκτες μεταξύ τους.
+
+
+```{r}
+# Απλοποιημένη δημιουργία δικτύου με igraph για οπτικοποίηση των top δεικτών
+library(igraph)
+
+# Έστω ότι έχουμε έναν πίνακα συσχέτισης των κορυφαίων πρωτεϊνών
+cor_matrix <- cor(t(data[rownames(top_markers)[1:20], ]))
+diag(cor_matrix) <- 0
+cor_matrix[abs(cor_matrix) < 0.7] <- 0 # Κρατάμε μόνο ισχυρές συσχετίσεις
+
+network <- graph_from_adjacency_matrix(cor_matrix, mode = "undirected", weighted = TRUE)
+
+# Σχεδίαση δικτύου
+plot(network, vertex.size=10, vertex.label.cex=0.8, 
+     main="Ρυθμιστικό Δίκτυο Κορυφαίων Δεικτών Διαβήτη")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,812 @@
+---
+title: "Περιουσιακά στοιχεία ελλήνων βουλευτών 2024"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    number-sections: true
+    fig-cap: true
+---
+
+```{r}
+#| echo = F,
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+
+
+```{r}
+#| eval = FALSE,
+#| echo = FALSE
+# ΓΙΑ ΚΑΤΕΒΑΣΜΑ ΔΕΔΟΜΕΝΩΝ (ανενεργο)
+rm(list = ls())
+if(!require(httr)){
+    install.packages("httr")
+    library(httr)
+}
+if(!require(jsonlite)){
+    install.packages("jsonlite")
+    library(jsonlite)
+}
+if(!require(dplyr)){
+    install.packages("dplyr")
+    library(dplyr)
+}
+if(!require(progress)){  # Για την εμφάνιση προόδου
+    install.packages("progress")
+    library(progress)
+}
+
+# --- 2. Ορισμός του εύρους ετών που μας ενδιαφέρει ---
+start_year <- 2024
+end_year <- 2024
+target_years <- as.character(start_year:end_year) # Μετατροπή σε χαρακτήρες για το API
+
+cat("Προετοιμασία για ανάκτηση δεδομένων για τα οικονομικά έτη από", start_year, "έως", end_year, "\n")
+
+# --- 3. Βήμα: Ανάκτηση όλων των slugs των βουλευτών ---
+cat("Βήμα 1/2: Ανακτώνται τα slugs όλων των βουλευτών...\n")
+
+search_url_base <- "https://pothenesxes.vouliwatch.gr/api/members-search"
+all_members_slugs <- list()
+
+response_all_members <- GET(paste0(search_url_base, "?q="))
+
+if (status_code(response_all_members) == 200) {
+  all_members_data <- fromJSON(content(response_all_members, "text", encoding = "UTF-8"), flatten = TRUE)
+  if (nrow(all_members_data) > 0) {
+    all_members_slugs <- all_members_data$slug
+    cat("Βρέθηκαν", length(all_members_slugs), "διαφορετικά slugs βουλευτών.\n")
+  } else {
+    cat("Προσοχή: Δεν βρέθηκαν slugs βουλευτών. Ελέγξτε το API /members-search.\n")
+    stop("Δεν είναι δυνατή η ανάκτηση των slugs των βουλευτών. Η διαδικασία διακόπτεται.")
+  }
+} else {
+  warning(paste("Αποτυχία ανάκτησης όλων των slugs. Status Code:", status_code(response_all_members)))
+  print(content(response_all_members, "text", encoding = "UTF-8"))
+  stop("Δεν είναι δυνατή η ανάκτηση των slugs των βουλευτών. Η διαδικασία διακόπτεται.")
+}
+
+# --- 4. Βήμα: Ανάκτηση αναλυτικών στοιχείων για κάθε βουλευτή, για κάθε έτος, με τυχαία καθυστέρηση ---
+cat("\nΒήμα 2/2: Ανακτώνται αναλυτικά στοιχεία για κάθε βουλευτή για όλα τα επιλεγμένα έτη με τυχαία καθυστέρηση...\n")
+
+member_details_url <- "https://pothenesxes.vouliwatch.gr/api/member"
+DEDOMENAvouli <- list() 
+
+min_delay <- 1 # Ελάχιστη καθυστέρηση σε δευτερόλεπτα
+max_delay <- 3 # Μέγιστη καθυστέρηση σε δευτερόλεπτα
+
+# Ο συνολικός αριθμός αιτημάτων θα είναι ο αριθμός των βουλευτών επί τον αριθμό των ετών
+total_requests <- length(all_members_slugs) * length(target_years)
+
+pb <- progress_bar$new(
+  format = "  Πρόοδος [:bar] :percent (:eta)",
+  total = total_requests,
+  clear = FALSE,
+  width = 60
+)
+
+for (slug in all_members_slugs) {
+  for (year in target_years) {
+    pb$tick() # Ενημέρωση μπάρας προόδου για κάθε αίτημα
+
+    request_body <- list(
+      data = list(
+        slug = slug,
+        year = year # Ρητά το τρέχον έτος
+      )
+    )
+
+    response_details <- POST(member_details_url,
+                             body = toJSON(request_body, auto_unbox = TRUE),
+                             add_headers("Content-Type" = "application/json"))
+
+    if (status_code(response_details) == 200) {
+      member_data <- fromJSON(content(response_details, "text", encoding = "UTF-8"), flatten = TRUE)
+      # Ελέγχουμε αν υπάρχουν δεδομένα για το συγκεκριμένο έτος
+      if (!is.null(member_data$member) && !is.null(member_data$member$fiscal)) {
+        # Δημιουργούμε ένα μοναδικό όνομα για το στοιχείο της λίστας (π.χ., "slug_year")
+        list_name <- paste0(slug, "_", year)
+        DEDOMENAvouli[[list_name]] <- member_data$member # Αλλαγή του ονόματος της λίστας
+      } else {
+        # Αν δεν υπάρχουν δεδομένα για το έτος, σημειώνουμε το slug_year ως NULL ή κενό
+        warning(paste0("Δεν βρέθηκαν δεδομένα πόθεν έσχες για τον βουλευτή ", slug, " για το έτος ", year, "."))
+        DEDOMENAvouli[[paste0(slug, "_", year)]] <- NULL # Αλλαγή του ονόματος της λίστας
+      }
+    } else {
+      warning(paste0("Αποτυχία ανάκτησης δεδομένων για τον βουλευτή με slug: ", slug, " για το έτος ", year, ". Status Code: ", status_code(response_details)))
+      DEDOMENAvouli[[paste0(slug, "_", year)]] <- NULL # Αλλαγή του ονόματος της λίστας
+    }
+
+    # Τυχαία καθυστέρηση, μη με μπανάρουν
+    random_sleep_time <- runif(1, min = min_delay, max = max_delay)
+    Sys.sleep(random_sleep_time)
+  }
+}
+
+cat("\nΟλοκληρώθηκε η ανάκτηση δεδομένων για όλα τα επιλεγμένα έτη.\n")
+
+# --- 5. Βήμα: Αποθήκευση της λίστας σε αρχείο .rds ---
+output_file_path <- paste0("../BigDataKoudas/pothen2024/DEDOMENAvouli2024.rds") 
+saveRDS(DEDOMENAvouli, file = output_file_path) 
+
+cat("Τα δεδομένα αποθηκεύτηκαν επιτυχώς στο αρχείο:", output_file_path, "\n")
+```
+
+# Εισαγωγή
+
+
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+# Εισαγωγή αποθηκευμένων δεδομένων. Το περιεκτικότερο είναι το DEDOMENAvouli_2015_2021.rds
+rm(list = ls())
+
+if(!require(ggridges)) install.packages("ggridges")
+library(ggplot2)
+library(ggridges)
+if(!require(pheatmap)) install.packages("pheatmap")
+library(pheatmap)
+if(!require(purrr)){
+    install.packages("purrr")
+    library(purrr)
+}
+if(!require(dplyr)){
+    install.packages("dplyr")
+    library(dplyr)
+}
+if(!require(tidyr)){
+    install.packages("tidyr")
+    library(tidyr)
+}
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+
+if(!require(tidyr)){
+    install.packages("tidyr")
+    library(tidyr)
+}
+if(!require(pheatmap)){
+  install.packages("pheatmap")
+  library(pheatmap)
+}
+DEDOMENAvouli <- readRDS("../BigDataKoudas/pothen2024/DEDOMENAvouli2024.rds")
+
+# vouliDEDOMENA <- readRDS("vouliDEDOMENA.rds")
+# vouliDATA <- readRDS("vouliDATA.rds")
+
+```
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+
+
+# Φόρτωση των δεδομένων
+DEDOMENAvouli <- readRDS("../BigDataKoudas/pothen2024/DEDOMENAvouli2024.rds")
+
+
+PerioysiakaStoixeia <- map_dfr(DEDOMENAvouli, function(x) {
+  tibble(
+    Όνομα_Επώνυμο        = trimws(paste(x$last_name, x$first_name)),
+    Κοινοβουλευτική_Ομάδα = x$fiscal$parliament_group.name,
+    Εισόδημα             = as.numeric(x$fiscal$total_revenue),
+    Επενδυτικά_Προϊόντα  = as.numeric(x$fiscal$total_stocks),
+    Καταθέσεις           = as.numeric(x$fiscal$total_deposits),
+    Επιχειρήσεις = as.numeric(x$fiscal$total_companies),
+    Ακίνητα              = as.numeric(x$fiscal$total_properties),
+    Κινητή_Περιουσία     = as.numeric(x$fiscal$total_mobiles)
+  )
+})
+
+```
+
+
+
+
+Οφείλω να ομολογήσω πως αφετηρία στο όλο εγχείρημα ήταν μια ανάρτηση του, διόλου συμπαθούς στον γράφοντα, Θάνου Τζήμερου. Εκεί παρουσιαζόταν το πόθεν έσχες του βουλευτή του ΚΚΕ [Γ. Λαμπρούλη](https://vouliwatch.gr/mp/lamproylis-georgios), συνοδευόμενο με την ανάλογη ειρωνεία.
+
+Η πρώτη μου σκέψη ήταν ότι επρόκειτο για ψευδείς ειδήσεις που διέδιδε ο Τζήμερος. Επειδή, όμως, αναγνώρισα την αισθητική της σελίδας [Vouli Watch](https://pothenesxes.vouliwatch.gr/) με μία πρόχειρη έρευνα διαπίστωσα ότι δεν ήταν fake news.
+
+Η επόμενη σκέψη μου ήταν πως ο Γ. Λαμπρούλης είναι ένα απομονωμένο σημείο, μια εισοδηματικά ακραία περίπτωση του ΚΚΕ. Με μία γρήγορη εξέταση των μέσων εισοδημάτων του κάθε κόμματος, διαψεύστηκε και αυτή η σκέψη, όπερ και φαίνεται να επιβεβαιώνουν και τα αποτελέσματα αυτής της έρευνας.
+
+Ο τελευταίος αντίλογος που προσπάθησα να δώσω ήταν:
+
+- *Και πού είναι το πρόβλημα. Κι ο Ένγκελς ήταν πλούσιος. Δεν είναι κακό κάποιος αστός να είναι αρνητής της τάξης του.*
+
+Το πρόβλημα με αυτή την τοποθέτηση δεν είναι ότι είναι κακό κάποιος πλούσιος να είναι αρνητής της τάξης του. Είναι πρόβλημα διότι είναι απίθανο να είναι αρνητής της τάξης του. Δεν είναι μεμπτό κάποιος να είναι πλούσιος και να νοιάζεται τους φτωχούς, είναι δύσκολο να συμβεί. «Η ταξική θέση επάγει ταξική συνείδηση» που λέγαν και οι αρχαίοι ημών σύντροφοι. Αυτή η θέση βάσει της οποίας δεν απευθυνόμαστε στους πλούσιους ζητώντας τους να νοιαστούν τους φτωχούς, αλλά στους φτωχούς ζητώντας τους να νοιαστούν για τον εαυτό τους. Για να το θέσω και λίγο πιο ωμά και καθαρά: 
+
+- *Αν κάποιος έχει 20 ακίνητα, πόση διάθεση έχει να ψάξει ριξικέλευθες λύσεις στο στεγαστικό πρόβλημα (π.χ. πλαφόν στα ενοίκια) και να παλέψει έντονα γι' αυτές;*
+
+Τα παραπάνω έκαναν αναγκαία μια πιο προσεκτική μελέτη των περιουσιακών στοιχείων των μελών του κάθε κόματος. Σε αυτήν, πέραν του εισοδήματος περί ου ο λόγος αρχικά, μελετόνται μεταξύ των άλλων και οι καταθέσεις. Σε αυτές θα δούμε ότι οι ΚΚΕδες έρχονται τελευταίοι και απένταροι, κάτι που υποδεικνύει ενδεχομένως μια ερμηνεία της προαναφερθείσας παραδοξότητας. **Αυτή η μελέτη πιστοποιεί αριθμητικά το γεγονός ότι ως επί το πλείστον τα εισοδήματα των στελεχών του ΚΚΕ πάνε στο κόμμα.**
+
+Αλλά ας το δούμε με τα μάτια μας.  
+
+# Παρουσίαση δεδομένων
+
+Η παρούσα ενότητα είναι συνέχεια [προηγούμενης έρευνας](pothenesxes.html). Ερχόμαστε τώρα να μελετήσουμε τα περιουσιακά στοιχεία των ελλήνων βουλευτών σε πιο περιορισμένο χρονικό εύρος (έτος 2024), αλλά που να εξετάζει όλες τις κοινωβουλευτικές ομάδες.
+
+::: {.callout-note collapse="true"}
+## Πηγές
+
+
+
+Τα δεδομένα αντλήθηκαν από τη σελίδα [VouliWatch](https://pothenesxes.vouliwatch.gr/) και αποθηκεύτηκαν σε αρχείο `.rds` [εδώ](https://github.com/kkoudas01/BigDataKoudas/blob/main/pothen2024/DEDOMENAvouli2024.rds). Ο ενδιαφερόμενος αναγνώστης μπορεί να τα κατεβάσει ελεύθερα από εκεί, όπως και να δει τον κώδικα της παρούσας ενότητας [εδώ](https://github.com/kkoudas01/rkoudas).
+:::
+
+
+
+Αρχικά παρουσιάζουμε τον πίνακα με τα δεδομένα που θα εξετάσουμε. Ο κάτωθι πίνακας καταγράφει:
+
+- το όνομα του βουλευτή (στήλη `Όνομα_Επώνυμο`),
+- την κοινοβουλευτική ομάδα στην οποία εντάσσόταν το 2024 (στήλη `Κοινοβουλευτική_Ομάδα`) και
+- για την οικογένεια του βουλευτή:
+  - το εισόδημά τους (στήλη `Εισόδημα`),
+  - το εισόδημα από μετοχές, ομόλογα, αμοιβαία κεφάλαια κ.λπ (στήλη `Επενδυτικά_Προϊόντα`),
+  - το χρηματικό ποσό που βρίσκεται αποταμιευμένο στους τραπεζικούς τους λογαριασμούς (στήλη `Καταθέσεις`),
+  - το ποσό που αντιπροσωπεύει το κεφάλαιο συμμετοχής τους σε επιχειρηματικές δραστηριότητες, εταιρείες ή μερίδια αγοράς (στήλη `Επιχειρήσεις`),
+  - το πλήθος των ακινήτων που έχουν στην κατοχή τους (στήλη `Ακίνητα`)
+  - το πλήθος των μεταφορικών μέσων (αυτοκίνητα ή μοτοσυκλέτες) που είναι εγγεγραμμένα στο όνομά τους (στήλη `Κινητή_Περιουσία`)
+
+
+```{r}
+#| echo = F,
+#| results = "asis",
+#| message = FALSE
+knitr::kable(PerioysiakaStoixeia) %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "400px")
+```
+
+## Καθαρισμός δεδομένων
+
+Για να γίνει μια σωστή στιτιστική ανάλυση, έστω και σε επίπεδο οπτικής απεικόνισης, θα πρέπει τα δεδομένα μας να είναι του τύπου «Εντάξει τώρα αυτό τι το 'βαλες;». Προς τούτο έγιναν δύο εκκαθαρίσεις.
+
+::: {.panel-tabset}
+
+### Απόρριψη μικρών ομάδων
+
+
+Ένα πρόβλημα που έχουν τα δοδομένα, και το οποίο πρέπει να επισημάνουμε, είναι ότι συμπεριλαμβάνουν και κοινοβουλευτικές ομάδες με πολύ λίγα άτομα. Έτσι, για να έχει κάποια στατιστική αξία η μελέτη, θα ασχοληθούμε μόνο με τους βουλευτές που ανήκουν σε ομάδες με τουλάχιστον 5 μέλη. Παραθέτουμε ακολούθως τις κοινοβουλευτικές ομάδες με το πλήθος των μελών της κάθε μίας, ώστε να δει ο αναγνώστης ποιες δεν θα μελετηθούν.
+
+::: {.callout-tip collapse="true"}
+## Αλλαγή παραμέτρων στα γραφήματα
+
+Ο αναγνώστης που θέλει να έχει όλες τις κοινοβουλευτικές ομάδες στις γραφικές παραστάσεις, μπορεί να γράψει `min_members = 1` ως επιπλέον όρισμα στις συναρτήσεις `bars_party()`, `dens_party()`, `box_party()` και `heat_party()` που παράγουν τα γραφήματα.
+
+:::
+
+
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+PerioysiakaStoixeia %>%
+  count(Κοινοβουλευτική_Ομάδα, name = "Πλήθος") %>%
+  filter(Πλήθος >= 1)  %>%    
+  arrange(desc(Πλήθος)) %>% 
+  knitr::kable() %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+### Απόρριψη ακραίων στοιχείων
+
+
+Ένα άλλο πρόβλημα που επίσης έχουν τα δεδομένα είναι ότι υπάρχουν διάφοροι, όπως ο [Κ. Μητσοτάκης](https://vouliwatch.gr/mp/mitsotakis-kyriakos), οι οποίοι έχουν βγάλει τα μαλλιά της κεφαλής τους σε σχέση με τους υπολοίπους, μιλώντας π.χ. για τα εισοδήματα. Αν τους κρατούσαμε στη μελέτη, τα γραφήματα θα ήταν πολύ δυσανάγνωστα, χωρίς κάποια δυνατότητα να μάς βοηθήσουν να βγάλουμε κάποια συμπεράσματα. Ο παρακάτω πίνακας καταγράφει αυτούς που πρόκειται να αποσυρθούν από τις γραφικές παραστάσεις στην περίπτωση του π.χ. του εισοδήματος.
+
+::: {.callout-tip collapse="true"}
+## Αλλαγή παραμέτρων στα γραφήματα
+
+Ο αναγνώστης που θέλει να συμπεριλάβει τις ακραίες τιμές στη μελέτη του, μπορεί να θέσει ως επιπλέον όρισμα στις προαναφερθείσες συναρτήσεις `outliers = 1`.
+
+:::
+
+#### Εισόδημα {.unnumbered}
+
+```{r}
+#| echo: false
+PerioysiakaStoixeia %>%
+  group_by(Κοινοβουλευτική_Ομάδα) %>%
+  mutate(
+    Q1 = quantile(Εισόδημα, 0.25, na.rm = TRUE),
+    Q3 = quantile(Εισόδημα, 0.75, na.rm = TRUE),
+    IQR = Q3 - Q1,
+    is_outlier = Εισόδημα < (Q1 - 1.5 * IQR) | Εισόδημα > (Q3 + 1.5 * IQR)
+  ) %>%
+  ungroup() %>%
+  filter(is_outlier == TRUE) %>%
+  select(`Όνομα` = Όνομα_Επώνυμο, 
+         `Κοινοβουλευτική ομάδα` = Κοινοβουλευτική_Ομάδα, 
+         Εισόδημα) %>%
+  arrange(`Κοινοβουλευτική ομάδα`, desc(Εισόδημα)) %>%
+  knitr::kable(caption = "Outliers εισοδήματος ανά κοινοβουλευτική ομάδα")  %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+#### Καταθέσεις {.unnumbered}
+
+```{r}
+#| echo: false
+PerioysiakaStoixeia %>%
+  group_by(Κοινοβουλευτική_Ομάδα) %>%
+  mutate(
+    Q1 = quantile(Καταθέσεις, 0.25, na.rm = TRUE),
+    Q3 = quantile(Καταθέσεις, 0.75, na.rm = TRUE),
+    IQR = Q3 - Q1,
+    is_outlier = Καταθέσεις < (Q1 - 1.5 * IQR) | Καταθέσεις > (Q3 + 1.5 * IQR)
+  ) %>%
+  ungroup() %>%
+  filter(is_outlier == TRUE) %>%
+  select(`Όνομα` = Όνομα_Επώνυμο, 
+         `Κοινοβουλευτική ομάδα` = Κοινοβουλευτική_Ομάδα, 
+         Καταθέσεις) %>%
+  arrange(`Κοινοβουλευτική ομάδα`, desc(Καταθέσεις)) %>%
+  knitr::kable(caption = "Outliers καταθέσεων ανά κοινοβουλευτική ομάδα")  %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+:::
+
+
+
+
+Πριν προχωρήσουμε στην παρουσίαση, παρουσιάζουμε τις συντομεύσεις των ονομάτων των κοινοβουλευτικών ομάδων.
+
+```{r}
+#| echo = FALSE,
+#| message = FALSE
+
+
+# ── Λεξικό συντομεύσεων ──
+short_names <- c(
+  "Ελληνική Λύση" = "ΕΛ",
+  "Συνασπισμός Ριζοσπαστικής Αριστεράς" = "ΣΥΡΙΖΑ",
+  "Νέα Δημοκρατία" = "ΝΔ",
+  "Ανεξάρτητοι" = "Ανεξ.",
+  "Νέα Αριστερά" = "ΝΕΑΡ",
+  "ΠΑΣΟΚ-Κίνημα Αλλαγής" = "ΠΑΣΟΚ",
+  "ΜέΡΑ25" = "ΜέΡΑ25",
+  "Κομμουνιστικό Κόμμα Ελλάδας" = "ΚΚΕ",
+  "Το Ποτάμι" = "Ποτάμι",
+  "Πλεύση Ελευθερίας" = "Πλ.Ελευθ.",
+  "Ομάδα της Προοδευτικής Συμμαχίας των Σοσιαλιστών και Δημοκρατών στο Ευρωπαϊκό Κοινοβούλιο" = "S&D",
+  "Συνομοσπονδιακή Ομάδα της Ευρωπαϊκής Ενωτικής Αριστεράς/Αριστερά των Πρασίνων των Βορείων Χωρών" = "GUE/NGL",
+  "Κoιvoβoυλευτική Ομάδα τoυ Ευρωπαϊκoύ Λαϊκoύ Κόμματoς (Χριστιανoδημoκράτες)" = "ΕΛΚ",
+  "Μη Εγγεγραμμένοι" = "Μη Εγγ.",
+  "Ομάδα τωv Πρασίνων / Ευρωπαϊκή Ελεύθερη Συμμαχία" = "Πράσινοι/EFA",
+  "Renew Europe" = "Renew",
+  "Ομάδα των Ευρωπαίων Συντηρητικών και Μεταρρυθμιστών" = "ECR",
+  "ΝΙΚΗ" = "ΝΙΚΗ",
+  "ΣΠΑΡΤΙΑΤΕΣ" = "ΣΠΑΡΤΙΑΤΕΣ",
+  "Πατριώτες για την Ευρώπη" = "Πατριώτες"
+)
+
+
+
+# ── Συνάρτηση density ridges ──
+dens_party <- function(metavliti, min_members = 5, outliers = 1) {
+  df <- PerioysiakaStoixeia %>%
+    mutate(short_group = recode(Κοινοβουλευτική_Ομάδα, !!!short_names,
+                                .default = Κοινοβουλευτική_Ομάδα))
+  # Φιλτράρισμα πολύ μικρών ομάδων
+  df <- df %>%
+    group_by(short_group) %>%
+    filter(n() >= min_members) %>%
+    ungroup()
+  
+  # Αφαίρεση ακραίων τιμών αν ζητηθεί
+  if (outliers == 0) {
+    df <- df %>%
+      group_by(short_group) %>%
+      filter(
+        .data[[metavliti]] >= quantile(.data[[metavliti]], 0.25, na.rm = TRUE) - 1.5 * IQR(.data[[metavliti]], na.rm = TRUE),
+        .data[[metavliti]] <= quantile(.data[[metavliti]], 0.75, na.rm = TRUE) + 1.5 * IQR(.data[[metavliti]], na.rm = TRUE)
+      ) %>%
+      ungroup()
+  }
+  
+  titlos <- paste("Κατανομή(", metavliti, ") ανά κοινοβουλευτική ομάδα")
+  
+  ggplot(df,
+         aes(x = .data[[metavliti]],
+             y = reorder(short_group, .data[[metavliti]], median, na.rm = TRUE),
+             fill = short_group)) +
+    geom_density_ridges(alpha = 0.8, scale = 1.1) +
+    scale_fill_viridis_d(option = "D", guide = "none") +
+    labs(title = titlos, x = metavliti, y = "Κοινοβουλευτική Ομάδα") +
+    theme_ridges(font_size = 11) +
+    theme(plot.title = element_text(size = 13, face = "bold"))
+}
+
+# ── Συνάρτηση boxplot ──
+box_party <- function(metavliti, min_members = 5, outliers = 1) {
+  df <- PerioysiakaStoixeia %>%
+    mutate(short_group = recode(Κοινοβουλευτική_Ομάδα, !!!short_names,
+                                .default = Κοινοβουλευτική_Ομάδα))
+  # Φιλτράρισμα πολύ μικρών ομάδων
+  df <- df %>%
+    group_by(short_group) %>%
+    filter(n() >= min_members) %>%
+    ungroup()
+  
+  # Αν ο χρήστης ζητήσει αφαίρεση των ακραίων τιμών
+  if (outliers == 0) {
+    df <- df %>%
+      group_by(short_group) %>%
+      filter(
+        .data[[metavliti]] >= quantile(.data[[metavliti]], 0.25, na.rm = TRUE) - 1.5 * IQR(.data[[metavliti]], na.rm = TRUE),
+        .data[[metavliti]] <= quantile(.data[[metavliti]], 0.75, na.rm = TRUE) + 1.5 * IQR(.data[[metavliti]], na.rm = TRUE)
+      ) %>%
+      ungroup()
+  }
+  
+  titlos <- paste("Κατανομή(", metavliti, ") ανά κοινοβουλευτική ομάδα")
+  
+  ggplot(df,
+         aes(x = reorder(short_group, .data[[metavliti]], median, na.rm = TRUE),
+             y = .data[[metavliti]], fill = short_group)) +
+    geom_boxplot(alpha = 0.8,
+                 outlier.size = if (outliers == 0) NA else 1.2) +
+    scale_fill_viridis_d(option = "D", guide = "none") +
+    coord_flip() +
+    labs(title = titlos, x = "Κοινοβουλευτική Ομάδα", y = metavliti) +
+    theme_minimal() +
+    theme(plot.title = element_text(size = 13, face = "bold"),
+          axis.text.y = element_text(size = 10))
+}
+
+heat_party <- function(metavliti, min_members = 5, outliers = 1) {
+  
+  # Δεδομένα με συντομεύσεις
+  df <- PerioysiakaStoixeia %>%
+    mutate(short_group = recode(Κοινοβουλευτική_Ομάδα, !!!short_names,
+                                .default = Κοινοβουλευτική_Ομάδα))
+  
+  # Φιλτράρισμα μικρών ομάδων
+  df <- df %>%
+    group_by(short_group) %>%
+    filter(n() >= min_members) %>%
+    ungroup()
+  
+  # Αφαίρεση ακραίων τιμών αν ζητηθεί
+  if (outliers == 0) {
+    df <- df %>%
+      group_by(short_group) %>%
+      filter(
+        .data[[metavliti]] >= quantile(.data[[metavliti]], 0.25, na.rm = TRUE) - 
+          1.5 * IQR(.data[[metavliti]], na.rm = TRUE),
+        .data[[metavliti]] <= quantile(.data[[metavliti]], 0.75, na.rm = TRUE) + 
+          1.5 * IQR(.data[[metavliti]], na.rm = TRUE)
+      ) %>%
+      ungroup()
+  }
+  
+  # Υπολογισμός διαμέσου ανά ομάδα
+  medians <- df %>%
+    group_by(short_group) %>%
+    summarise(median = median(.data[[metavliti]], na.rm = TRUE), .groups = "drop")
+  
+  # Δημιουργία Ευκλείδειας απόστασης (ως πίνακας και ως dist)
+  dist_med <- dist(medians$median, method = "euclidean")   # 1-διάστατο, αλλά σωστό
+  dist_mat <- as.matrix(dist_med)
+  rownames(dist_mat) <- medians$short_group
+  colnames(dist_mat) <- medians$short_group
+  
+  # Heatmap με δενδρόγραμμα και χωρίς αριθμούς
+  pheatmap(dist_mat,
+           cluster_rows = TRUE,                   # δενδρόγραμμα στις γραμμές
+           cluster_cols = TRUE,                   # δενδρόγραμμα στις στήλες
+           clustering_distance_rows = dist_med,   # απόσταση για τις γραμμές
+           clustering_distance_cols = dist_med,   # απόσταση για τις στήλες
+           display_numbers = FALSE,               # κανένας αριθμός στα κελιά
+           main = paste("Αποστάσεις κομμάτων βάσει διαμέσου: ", metavliti),
+           angle_col = 45,
+           fontsize = 11)
+}
+
+bars_party <- function(metavliti, min_members = 5) {
+  # Δεδομένα με συντομεύσεις και φίλτρο ελάχιστου μεγέθους ομάδας
+  df <- PerioysiakaStoixeia %>%
+    mutate(short_group = recode(Κοινοβουλευτική_Ομάδα, !!!short_names,
+                                .default = Κοινοβουλευτική_Ομάδα)) %>%
+    group_by(short_group) %>%
+    filter(n() >= min_members) %>%
+    ungroup()
+  
+  # Υπολογισμός διαμέσου ανά ομάδα και ταξινόμηση
+  medians <- df %>%
+    group_by(short_group) %>%
+    summarise(median_val = median(.data[[metavliti]], na.rm = TRUE), .groups = "drop") %>%
+    mutate(short_group = reorder(short_group, median_val, decreasing = TRUE))
+  
+  titlos <- paste("Διάμεσος(", metavliti, ") ανά κοινοβουλευτική ομάδα")
+  
+  ggplot(medians, aes(x = short_group, y = median_val, fill = short_group)) +
+    geom_col(alpha = 0.85) +
+    scale_fill_viridis_d(option = "D", guide = "none") +
+    labs(title = titlos, x = "Κοινοβουλευτική Ομάδα", y = metavliti) +
+    theme_minimal() +
+    theme(plot.title = element_text(size = 13, face = "bold"),
+          axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
+}
+```
+
+
+```{r}
+#| echo = F
+# Δημιουργία πίνακα συντομεύσεων
+short_df <- data.frame(
+  `Κοινοβουλευτική Ομάδα` = names(short_names),
+  `Συντομογραφία` = short_names,
+  check.names = FALSE
+)
+
+# Εμφάνιση με kable
+knitr::kable(short_df, align = "lc",row.names = FALSE)  %>%
+  kable_styling("striped", full_width = F) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+
+# Εισόδημα
+
+Στην ενότητα παρατηρούμε το τζημέριο παράδοξο ένα προλεταριακό κόμμα να έχει μεγαλύτερα εισοδήματα από ένα δεξιό αστικό κυβερνόν κόμμα. Παρατηρούμε επίσης ότι τα εν λόγω κόμματα φαίνονται να έχουν περισσότερα ειοδηματικά κοινά, απ' ότι π.χ. το ΚΚΕ με ένα άλλο κόμμα αριστερής απόχρωσης, όπως ο ΣΥΡΙΖΑ.
+
+::: {.panel-tabset}
+
+## Σύγκριση
+
+::: {.callout-caution collapse="true"}
+
+### Τι είναι το διάμεσο εισόδημα;
+
+Το **διάμεσο εισόδημα** μιας κοινοβουλευτικής ομάδας είναι το εισόδημα πάνω από το οποίο έχουν τα μισά της άτομα και κάτω από το οποίο τα άλλα μισά. Είναι κάτι σαν τον μέσο όρο, προσδιορίζει πού περίπου βρίσκεται εισοδηματικά η κοινοβουλευτική ομάδα. Χωρίς όμως  να έχει την απαράδεκτη στατιστικά ευαισθησία αυτού στις ακραίες τιμές, όπου αρκεί μία [Ο. Κεφαλογιάννη](https://vouliwatch.gr/mp/kefalogianni-olga) για να σου πετάξει την εκτίμηση ένα κάρο μονάδες πάνω από το φυσιολογικό.
+
+:::
+
+
+```{r}
+#| echo = F
+bars_party("Εισόδημα", min_members = 10) 
+```
+
+## Κατανομές
+
+::: {.callout-caution collapse="true"}
+
+### Τι είναι η καμπύλη πυκνότητας;
+
+Η **καμπύλη πυκνότητας** δείχνει τις περιοχές των εισοδημάτων, στις οποίες υπάρχουν αρκετά (ή λίγα) άτομα με αυτό το εύρος εισοδημάτων.
+
+:::
+
+```{r}
+#| echo = F
+# Αντίστοιχα για density ridges
+dens_party("Εισόδημα", min_members = 10, outliers = 0)
+```
+
+::: {.callout-caution collapse="true"}
+
+### Τι είναι το θηκόγραμμα;
+
+Το **θηκόγραμμα** αποτελείται από τα εξής μέρη:
+
+- ένα κουτί, στην εισοδηματική περιοχή του οποίου βρίσκεται το κεντρικό 50% των βουλευτών, 
+- μία χοντρή μαύρη κατακόρυφη γραμμή μέσα στο κουτί, η οποία χωρίζει τους βουλευτές τους κόμματος σε δύο *ίδια* μισά: αυτούς που έχουν πάνω από αυτό το εισόδημα κι αυτούς που έχουν κάτω από αυτό,
+- δύο οριζόντιες γραμμές, οι οποίες ορίζουν το φυσιολογικό εισοδηματικό εύρος με βάση το τι εισοδήματα υπάρχουν στο κόμμα αυτό,
+- κάποια σημεία έξω από τις προαναφερθείσες οριζόντιες γραμμές, τα οποία δείχνουν τις ακραίες εισοδηματικά τιμές, τις μη-φυσιολογικές (οι παρόντες outliers προέκυψαν μετά την αρχική εκκαθάριση βάσει του νέου δείγματος).
+
+:::
+
+```{r}
+#| echo = F
+# Χωρίς ακραίες τιμές – ο άξονας θα προσαρμοστεί
+box_party("Εισόδημα", min_members = 10, outliers = 0)
+```
+
+## Σχέσεις
+
+::: {.callout-caution collapse="true"}
+
+### Τι είναι η μήτρα απόστασης και το δεντρόγραμμα;
+
+Η **μήτρα απόστασης** δείχνει την εισοδηματική απόσταση μεταξύ των κομμάτων. Το κόμμα της τάδε γραμμής έχει με το κόμμα της δείνα στήλης την απόσταση που ορίζει το κουτί στο οποίο διασταυρώνονεται η γραμμή του ενός με τη στήλη του άλλου.
+
+Το **δεντρόγραμμα** δείχνει τις ομάδες που σχηματίζονται βάσει αυτών των αποστάσεων. Τα κόμματα που είναι κοντά σχηματίζουν μία ομάδα σε σχέση με τα πιο απόμακρα.
+
+:::
+
+```{r}
+#| echo = F
+heat_party("Εισόδημα", min_members = 10)
+```
+
+:::
+
+
+# Καταθέσεις
+
+Εδώ, όπως αναφέραμε και στην εισαγωγή, το ΚΚΕ έρχεται τελευταίο, κάτι που υποδεικνύει ότι όλα αυτά τα χρήματα πάνε όλα στη λειτουργεία του κόμματος, αφήνοντας τα μέλη με καταθέσεις που έχει ένας μικρομεσαίος Έλληνας (με ελάχιστες εξαιρέσεις). Τα μέλη της ΝΔ συνεχίζουν να έχουν γεμάτες τσέπες, ενώ φαίνεται η κοντινή σχέση να είναι με το ΠΑΣΟΚ.
+
+::: {.panel-tabset}
+
+## Σύγκριση
+
+::: {.callout-caution collapse="true"}
+
+### Τι είναι η διάμεση κατάθεση;
+
+Η **διάμεση κατάθεση** μιας κοινοβουλευτικής ομάδας είναι η κατάθεση πάνω από την οποία έχουν τα μισά της άτομα και κάτω από την οποία τα άλλα μισά. Είναι κάτι σαν τον μέσο όρο, προσδιορίζει πού περίπου βρίσκεται από άποψη καταθέσεων η κοινοβουλευτική ομάδα. Χωρίς όμως  να έχει την απαράδεκτη στατιστικά ευαισθησία αυτού στις ακραίες τιμές, όπου αρκεί ένας [Γ. Γεραπετρίτης](https://vouliwatch.gr/mp/gierapetritis-giorgos) για να σου πετάξει την εκτίμηση ένα κάρο μονάδες πάνω από το φυσιολογικό.
+
+:::
+
+```{r}
+#| echo = F
+bars_party("Καταθέσεις", min_members = 10) 
+```
+
+## Κατανομές
+
+::: {.callout-caution collapse="true"}
+
+### Τι είναι η καμπύλη πυκνότητας;
+
+Η **καμπύλη πυκνότητας** δείχνει τις περιοχές των καταθέσεων, στις οποίες υπάρχουν αρκετά (ή λίγα) άτομα με αυτό το εύρος καταθέσεων.
+
+:::
+
+```{r}
+#| echo = F
+# Αντίστοιχα για density ridges
+dens_party("Καταθέσεις", min_members = 10, outliers = 0)
+```
+
+::: {.callout-caution collapse="true"}
+
+### Τι είναι το θηκόγραμμα;
+
+Το **θηκόγραμμα** αποτελείται από τα εξής μέρη:
+
+- ένα κουτί, στην περιοχή του οποίου βρίσκεται το κεντρικό 50% των βουλευτών από άποψη μεγέθους καταθέσεων, 
+- μία χοντρή μαύρη κατακόρυφη γραμμή μέσα στο κουτί, η οποία χωρίζει τους βουλευτές τους κόμματος σε δύο *ίδια* μισά: αυτούς που έχουν πάνω από αυτή την κατάθεση κι αυτούς που έχουν κάτω από αυτή,
+- δύο οριζόντιες γραμμές, οι οποίες ορίζουν το φυσιολογικό εύρος για μια κατάθεση με βάση το τι καταθέσεις υπάρχουν στο κόμμα αυτό,
+- κάποια σημεία έξω από τις προαναφερθείσες οριζόντιες γραμμές, τα οποία δείχνουν τις ακραίες τιμές καταθέσεων, τις μη-φυσιολογικές (οι παρόντες outliers προέκυψαν μετά την αρχική εκκαθάριση βάσει του νέου δείγματος).
+
+:::
+
+
+```{r}
+#| echo = F
+# Χωρίς ακραίες τιμές – ο άξονας θα προσαρμοστεί
+box_party("Καταθέσεις", min_members = 10, outliers = 0)
+```
+
+## Σχέσεις
+
+::: {.callout-caution collapse="true"}
+
+### Τι είναι η μήτρα απόστασης και το δεντρόγραμμα;
+
+Η **μήτρα απόστασης** δείχνει την απόσταση μεταξύ των κομμάτων με βάση τη διάμεση κατάθεση του καθενός. Το κόμμα της τάδε γραμμής έχει με το κόμμα της δείνα στήλης την απόσταση που ορίζει το κουτί στο οποίο διασταυρώνονεται η γραμμή του ενός με τη στήλη του άλλου.
+
+Το **δεντρόγραμμα** δείχνει τις ομάδες που σχηματίζονται βάσει αυτών των αποστάσεων. Τα κόμματα που είναι κοντά σχηματίζουν μία ομάδα σε σχέση με τα πιο απόμακρα.
+
+:::
+
+```{r}
+#| echo = F
+heat_party("Καταθέσεις", min_members = 10)
+```
+
+:::
+
+# Περαιτέρω
+
+Τα παρακάτω δεν προσέφεραν κάτι περισσότερο στην όλη μελέτη, οπότε δεν θα γίνει αναφορά σε αυτά. Παραταύτα, παραθέτουμε τα γραφήματά τους για τον αναγνώστη που θέλει να τα εξετάσει.
+
+
+::: {.panel-tabset}
+
+
+## Ακίνητα
+
+::: {.callout-warning collapse="true"}
+
+## Γραφήματα
+
+### Σύγκριση {.unnumbered}
+
+```{r}
+#| echo = F
+bars_party("Ακίνητα", min_members = 10) 
+```
+
+### Κατανομές {.unnumbered}
+
+```{r}
+#| echo = F
+# Αντίστοιχα για density ridges
+dens_party("Ακίνητα", min_members = 10, outliers = 0)
+```
+
+```{r}
+#| echo = F
+# Χωρίς ακραίες τιμές – ο άξονας θα προσαρμοστεί
+box_party("Ακίνητα", min_members = 10, outliers = 0)
+```
+
+### Σχέσεις {.unnumbered}
+
+```{r}
+#| echo = F
+heat_party("Ακίνητα", min_members = 10)
+```
+
+
+:::
+
+## Επενδυτικά προϊόντα
+
+::: {.callout-warning collapse="true"}
+## Γραφήματα
+
+### Σύγκριση {.unnumbered}
+
+```{r}
+#| echo = F
+bars_party("Επενδυτικά_Προϊόντα", min_members = 10) 
+```
+
+### Κατανομές {.unnumbered}
+
+```{r}
+#| echo = F
+# Αντίστοιχα για density ridges
+dens_party("Επενδυτικά_Προϊόντα", min_members = 10, outliers = 0)
+```
+
+
+```{r}
+#| echo = F
+# Χωρίς ακραίες τιμές – ο άξονας θα προσαρμοστεί
+box_party("Επενδυτικά_Προϊόντα", min_members = 10, outliers = 0)
+```
+
+### Σχέσεις {.unnumbered}
+
+```{r}
+#| echo = F
+heat_party("Επενδυτικά_Προϊόντα", min_members = 10)
+```
+
+:::
+
+:::
+
+
+
+---
+
+
+
+<script> (function(v,o,u,l,i){l=v.createElement(o);l.async=1;l.src=u; i=v.getElementsByTagName(o)[0];i.parentNode.insertBefore(l,i); })(document,'script','https://vouliwatch.gr/resources/widget-dark.js') </script>
+
+
+
+

@@ -1,0 +1,10 @@
+kableExtra
+BiocManager
+ggplot2
+dplyr
+generics
+BiocGenerics
+Biobase
+GEOquery
+limma
+igraph
