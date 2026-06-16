@@ -1,5 +1,5 @@
 ---
-title: "{{< fa hammer >}} Εργαλεία"
+title: "{{< fa hammer >}} r4social"
 format:
   html:
     toc: true
@@ -17,7 +17,7 @@ format:
 
 -   [**για κοινωνικούς επιστήμονες**]{.smallcaps}
 
--   [**με τη συνδρομή της R**]{.smallcaps}
+-   [**με τη συνδρομή της {{< fa brands r-project >}}**]{.smallcaps}
 
 :::
 

@@ -27,7 +27,7 @@ website:
     title: "{{< fa brands r-project >}}Κούδας"
     left:
       - href: ergaleia.qmd
-        text: "Εργαλεία"
+        text: "r4social"
         icon: tools
       - href: ereynes.qmd
         text: "Έρευνες"
@@ -39,7 +39,7 @@ website:
   # 2. Οι πλευρικές μπάρες (Sidebars)
   sidebar:
     # --- Sidebar για τα Εργαλεία ---
-    - title: "Εργαλεία"
+    - title: "r4social"
       id: "tools-nav"
       # Εμφανίζεται μόνο όταν είμαστε σε σελίδες που ανήκουν στη λίστα contents
       contents:
