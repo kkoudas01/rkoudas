@@ -43,7 +43,7 @@ website:
       id: "tools-nav"
       # Εμφανίζεται μόνο όταν είμαστε σε σελίδες που ανήκουν στη λίστα contents
       contents:
-        - text: "ΕΡΓΑΛΕΙΑ"
+        - text: "r4social"
           href: ergaleia.qmd
         - text: "Πίνακες δεδομένων"
           href: pinakes.qmd
@@ -241,7 +241,7 @@ website:
           contents:
             - text: "Γραμμικοί μετασχηματισμοί"
               href: linearSX.qmd
-        - section: "Dεν καταλαβαίνω tι λένε τα κομπιούτερ"
+        - section: "Δεν καταλαβαίνω τι λένε τα κομπιούτερ"
           contents:
             - text: "Μέθοδοι ταξινόμησης"
               href: sortsErgasia.qmd

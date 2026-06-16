@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Κώστας Κούδας">
-<meta name="dcterms.date" content="2026-02-15">
+<meta name="dcterms.date" content="2026-06-16">
 
-<title>Κατανομή Poisson – r-koudas</title>
+<title>Προβλέψεις στις πανελλήνιες – r-koudas</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -115,7 +115,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta property="og:site_name" content="r-koudas">
 </head>
 
-<body class="nav-sidebar floating nav-fixed quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -143,7 +143,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Έρευνες</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./entos_ektos.html" aria-current="page"> <i class="bi bi-cup-hot" role="img">
+    <a class="nav-link" href="./entos_ektos.html"> <i class="bi bi-cup-hot" role="img">
 </i> 
 <span class="menu-text">Εντός εκτός κι επί τα αυτά</span></a>
   </li>  
@@ -153,217 +153,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
       </div> <!-- /container-fluid -->
     </nav>
-  <nav class="quarto-secondary-nav">
-    <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-        <i class="bi bi-layout-text-sidebar-reverse"></i>
-      </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1optikopoiisi.html">εν περιληψει</a></li><li class="breadcrumb-item">Κατανομές</li><li class="breadcrumb-item"><a href="./uniformDiscr.html">Διακριτές κατανομές</a></li><li class="breadcrumb-item"><a href="./poisson.html">Poisson</a></li></ol></nav>
-        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-        </a>
-    </div>
-  </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="sidebar-menu-container"> 
-    <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./entos_ektos.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">ΕΝΤΟΣ ΕΚΤΟΣ &amp; ΕΠΙ ΤΑ ΑΥΤΑ</span></a>
-  </div>
-</li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">εν περιληψει</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./1optikopoiisi.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Οπτικοποίηση με ggplot</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./2metasxDedomDPLYR.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Επεξεργασία δεδομένων με dplyr</span></a>
-  </div>
-</li>
-          <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Κατανομές</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
-          <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Διακριτές κατανομές</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth3 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./uniformDiscr.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Ομοιόμορφη διακριτή</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./binom.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Διωνυμική</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./hyperGeom.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Υπεργεωμετρική</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./geom.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Γεωμετρική</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./nBinom.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Αρνητική διωνυμική</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./poisson.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Poisson</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-          <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
- <span class="menu-text">Συνεχείς κατανομές</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth3 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./uniformCont.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Ομοιόμορφη συνεχής</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./expDist.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Εκθετική</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gammaDist.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Γάμμα</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./normalDist.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Κανονική</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-      </ul>
-  </li>
-          <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
- <span class="menu-text">Μηχανική Μάθηση</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./ergasiaKostasKoudas.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Εργασία στη μηχανική μάθηση</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
- <span class="menu-text">Mathematica</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./dataMathematica.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Μετατροπή λίστας/πίνακα</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
- <span class="menu-text">Διδακτική</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./linearSX.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Γραμμικοί μετασχηματισμοί</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
- <span class="menu-text">Δεν καταλαβαίνω τι λένε τα κομπιούτερ</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./sortsErgasia.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Μέθοδοι ταξινόμησης</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-    </ul>
-    </div>
-</nav>
-<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
         
@@ -371,9 +164,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1optikopoiisi.html">εν περιληψει</a></li><li class="breadcrumb-item">Κατανομές</li><li class="breadcrumb-item"><a href="./uniformDiscr.html">Διακριτές κατανομές</a></li><li class="breadcrumb-item"><a href="./poisson.html">Poisson</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Κατανομή Poisson</h1>
+<h1 class="title">Προβλέψεις στις πανελλήνιες</h1>
 </div>
 
 
@@ -390,7 +183,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 15, 2026</p>
+      <p class="date">June 16, 2026</p>
     </div>
   </div>
   
@@ -402,43 +195,92 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><mark>Ας υποθέσουμε ότι ένα γεγονός εμφανίζεται με έναν συγκεκριμένο μέσο ρυθμό σε κάποιο χρονικό διάστημα (ή σε κάποια περιοχή του χώρου). Το πλήθος των εμφανίσεων του γεγονότος αυτού σε αυτό το χρονικό διάστημα (ή σε αυτή την περιοχή του χώρου) ακολουθεί την <strong>κατανομή Poisson</strong>.</mark></p>
-<p>Θα το δούμε καλύτερα με ένα παράδειγμα. Ας υποθέσουμε ότι σε ένα κατάστημα φθάνουν κατά μέσο όρο 8 πελάτες την ώρα. Αυτό δεν σημαίνει, φυσικά, ότι αποκλείεται κάποια συγκεκριμένη ώρα να μην μπει κανένας ή κάποια άλλη να μπουν 20 πελάτες. Λέμε ότι κατά μέσο όρο μπαίνουν 8 πελάτες. Επομένως αξίζει να δούμε πόσο πιθανό είναι να μπουν οι 20 πελάτες που λέγαμε ή να είναι άδειο το μαγαζί για μία ώρα. Το πλήθος των πελατών που εισέρχονται στο κατάστημα σε διάστημα μιας ώρας ακολουθεί την κατανομή Poisson, οπότε θα εξετάσουμε την κατάσταση γράφοντας:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>( <span class="at">mfrow=</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>) )</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">100</span><span class="sc">*</span>i)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  xilies_ores <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="dv">1000</span>, <span class="dv">8</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  pin_syxn <span class="ot">&lt;-</span> <span class="fu">table</span>(xilies_ores)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">barplot</span>(pin_syxn)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="poisson_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Καθαρισμός μνήμης R.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Ακούμε διάφορους συναδέρφους να προβλέπου τα θέματα.</p>
+<blockquote class="blockquote">
+<p>Θα πέσει «ρυθμός μεταβολής.</p>
+<p>Θα πέσει «Θ.Μ.Τ.»</p>
+<p>κ.τ.λ.</p>
+</blockquote>
+<p>Από τις εν λόγω μαντικές ικανότητες «τσιμπάνε» γονείς, «τσμπάνε» τα πιτσιρίκια, «τσιμπάνε» και οι συνάδερφοι που πρωτοβγαίνουν στο επάγγελμα. Με το πέρας της εξέτασης, με το άγχος να σε παραλύει ακόμα, ούτε που κάθεται κανένεας να σκεφτεί πως ο καθηγητής-μέντιουμ έπεσε έξω.</p>
+<p>Εδώ θα πρέπει να σημειώσουμε πως για να κάνει κάποιος κάποια αξιοπρεπή πρόβλεψη απαιτούνται τουλάχιστον 30 μετρήσεις (βλ. πίνακα <a href="#tbl-data" class="quarto-xref">Table&nbsp;1</a>)</p>
+<div id="tbl-data" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Πόσες τουλάχιστον μετρήσεις απαιτούνται για κάθε προγνωστικό μοντέλο;
+</figcaption>
+<div aria-describedby="tbl-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Προγνωστικό μοντέλο</th>
+<th style="text-align: left;">Ελάχιστο πλήθος μετρήσεων (ιδανικές συνθήκες)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>t-test / ANOVA</strong></td>
+<td style="text-align: left;">30 (ανά ομάδα)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Linear Regression</strong> (Απλή Γραμμική)</td>
+<td style="text-align: left;">30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Multiple Linear Regression</strong> (Πολλαπλή - π.χ. 5 μεταβλητές)</td>
+<td style="text-align: left;">50 - 100</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Logistic Regression</strong> (Δυαδική)</td>
+<td style="text-align: left;">100 (ή τουλάχιστον 10 γεγονότα ανά μεταβλητή)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>ARIMA</strong> (Χρονοσειρές)</td>
+<td style="text-align: left;">50 (ιδανικά &gt;100 για εποχικότητα/seasonality)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Naive Bayes</strong></td>
+<td style="text-align: left;">100</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Decision Trees</strong> (Δέντρα Απόφασης)</td>
+<td style="text-align: left;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>KNN</strong> (K-Nearest Neighbors)</td>
+<td style="text-align: left;">200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>SVM</strong> (Support Vector Machines)</td>
+<td style="text-align: left;">300 - 500</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Random Forest</strong></td>
+<td style="text-align: left;">500</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>XGBoost / Gradient Boosting</strong></td>
+<td style="text-align: left;">1.000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Neural Networks</strong> (Απλά MLP)</td>
+<td style="text-align: left;">5.000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Deep Learning</strong> (CNN / LSTM)</td>
+<td style="text-align: left;">10.000+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </figure>
-</div>
-</div>
-</div>
-<p>Βλέπουμε κατά συνέπεια ότι συνήθως το μαγαζί μέσα σε μία ώρα θα υποδέχεται 7-9 πελάτες, ενώ σπανίως θα δέχεται πάνω από 15.</p>
-<p>Ας πάμε να βρούμε τώρα πόσο πιθανό είναι να μπουν ακριβώς 11 πελάτες σε μία ώρα. Θα χρειαστούμε τη συνάρτηση <code>dpois()</code>, οπότε θα γράψουμε:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dpois</span>(<span class="dv">11</span>, <span class="dv">8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.07219021</code></pre>
-</div>
-</div>
-<p>Έτσι βρίσκουμε 0.07219021, δηλαδή είναι κατά 7.22% πιθανό να εμφανιστούν ακριβώς 11 πελάτες σε μία ώρα.</p>
-<p>Συνολικά ο κώδικάς μας ήταν:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>( <span class="at">mfrow=</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>) )</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">100</span><span class="sc">*</span>i)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  xilies_ores <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="dv">1000</span>, <span class="dv">8</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  pin_syxn <span class="ot">&lt;-</span> <span class="fu">table</span>(xilies_ores)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">barplot</span>(pin_syxn)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dpois</span>(<span class="dv">11</span>, <span class="dv">8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 
