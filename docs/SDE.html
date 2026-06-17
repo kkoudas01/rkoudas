@@ -22,41 +22,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -337,16 +302,15 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#γενική-μορφή-σ.δ.ε." id="toc-γενική-μορφή-σ.δ.ε." class="nav-link active" data-scroll-target="#γενική-μορφή-σ.δ.ε."><span class="header-section-number">1</span> Γενική μορφή Σ.Δ.Ε.</a></li>
-  <li><a href="#το-λήμα-itô" id="toc-το-λήμα-itô" class="nav-link" data-scroll-target="#το-λήμα-itô"><span class="header-section-number">2</span> Το λήμα Itô</a></li>
+  <li><a href="#εισαγωγή-στις-σ.δ.ε." id="toc-εισαγωγή-στις-σ.δ.ε." class="nav-link active" data-scroll-target="#εισαγωγή-στις-σ.δ.ε."><span class="header-section-number">1</span> Εισαγωγή στις Σ.Δ.Ε.</a></li>
+  <li><a href="#το-λήμμα-itô" id="toc-το-λήμμα-itô" class="nav-link" data-scroll-target="#το-λήμμα-itô"><span class="header-section-number">2</span> Το λήμμα Itô</a></li>
   <li><a href="#μέση-τιμή-και-διασπορά" id="toc-μέση-τιμή-και-διασπορά" class="nav-link" data-scroll-target="#μέση-τιμή-και-διασπορά"><span class="header-section-number">3</span> Μέση τιμή και διασπορά</a></li>
   <li><a href="#η-εξίσωση-fokker-plank-για-τη-σ.π.π." id="toc-η-εξίσωση-fokker-plank-για-τη-σ.π.π." class="nav-link" data-scroll-target="#η-εξίσωση-fokker-plank-για-τη-σ.π.π."><span class="header-section-number">4</span> Η εξίσωση Fokker-Plank για τη σ.π.π.</a></li>
   <li><a href="#διάφορες-λύσεις" id="toc-διάφορες-λύσεις" class="nav-link" data-scroll-target="#διάφορες-λύσεις"><span class="header-section-number">5</span> Διάφορες λύσεις</a>
   <ul>
-  <li><a href="#γκαουσιανές-λύσεις" id="toc-γκαουσιανές-λύσεις" class="nav-link" data-scroll-target="#γκαουσιανές-λύσεις"><span class="header-section-number">5.1</span> Γκαουσιανές λύσεις</a></li>
-  <li><a href="#διαδικασία-ornstein-uhlenbeck" id="toc-διαδικασία-ornstein-uhlenbeck" class="nav-link" data-scroll-target="#διαδικασία-ornstein-uhlenbeck"><span class="header-section-number">5.2</span> Διαδικασία Ornstein-Uhlenbeck</a></li>
-  <li><a href="#γεωμετρική-κίνηση-brown" id="toc-γεωμετρική-κίνηση-brown" class="nav-link" data-scroll-target="#γεωμετρική-κίνηση-brown"><span class="header-section-number">5.3</span> Γεωμετρική κίνηση Brown</a></li>
-  <li><a href="#λογιστικό-μοντέλο" id="toc-λογιστικό-μοντέλο" class="nav-link" data-scroll-target="#λογιστικό-μοντέλο"><span class="header-section-number">5.4</span> Λογιστικό μοντέλο</a></li>
+  <li><a href="#γεωμετρική-κίνηση-brown" id="toc-γεωμετρική-κίνηση-brown" class="nav-link" data-scroll-target="#γεωμετρική-κίνηση-brown"><span class="header-section-number">5.1</span> Γεωμετρική κίνηση Brown</a></li>
+  <li><a href="#λογιστικό-μοντέλο" id="toc-λογιστικό-μοντέλο" class="nav-link" data-scroll-target="#λογιστικό-μοντέλο"><span class="header-section-number">5.2</span> Λογιστικό μοντέλο</a></li>
+  <li><a href="#διαδικασία-ornstein-uhlenbeck" id="toc-διαδικασία-ornstein-uhlenbeck" class="nav-link" data-scroll-target="#διαδικασία-ornstein-uhlenbeck"><span class="header-section-number">5.3</span> Διαδικασία Ornstein-Uhlenbeck</a></li>
   </ul></li>
   <li><a href="#τεστ-feller-για-εκρήξεις" id="toc-τεστ-feller-για-εκρήξεις" class="nav-link" data-scroll-target="#τεστ-feller-για-εκρήξεις"><span class="header-section-number">6</span> Τεστ Feller για εκρήξεις</a></li>
   </ul>
@@ -386,55 +350,177 @@ window.Quarto = {
 </header>
 
 
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Καθαρισμός μνήμης R.</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<section id="γενική-μορφή-σ.δ.ε." class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Γενική μορφή Σ.Δ.Ε.</h1>
+<section id="εισαγωγή-στις-σ.δ.ε." class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Εισαγωγή στις Σ.Δ.Ε.</h1>
 <p>Μια απλή Διαφορική Εξίσωση είναι η <span class="math inline">\(x'=b(x,t)\)</span> ή, κάνωντας χρήση διαφορικών, <span class="math inline">\(dx=b(x,t)dt\)</span>. Αυτό μάς λέει με ποιον τρόπο μεταβάλλεται το <span class="math inline">\(x\)</span> μετά από κάποιο μικρό χρονικό διάστημα <span class="math inline">\(dt\)</span>. Τι γίνεται, όμως, αν θέλουμε να βάλουμε έναν παράγοντα τυχαιότητας στον εν λόγω κανόνα μεταβολής;</p>
-<p>Διαδικασία Itô</p>
+<p>Στην πραγματική ζωή, όμως, τίποτα δεν είναι απόλυτα ντετερμινιστικό. Τουλάχιστον βάσει του επιπέδου γνώσης που έχουμε ή που μπορούμε να διαχειριστούμε. Έτσι, μια νότα τυχαιότητας στην παραπάνω Δ.Ε. θα έδινε ένα άρωμα ρεαλισμού εντονότερο από πριν. Μια ιδέα είναι να αυξομοιώνεται το αποτέλεσμα βάσει ενός τυχαίου μικρού άλματος <span class="math inline">\(dW_t\)</span> διεσταλμένο βάσει μιας συνάρτησης <span class="math inline">\(\sigma(X_t, t)\)</span>. Έτσι έχουμε την παρακάτω διαφορική εξίσωση και λέμε ότι η <span class="math inline">\(X_t\)</span> είναι μία διαδικασία Itô:</p>
 <p><span class="math display">\[
 dX_t = b(X_t, t)dt+\sigma(X_t, t)dW_t
 \]</span></p>
-<p>Όπου <span class="math inline">\(W_t\)</span> μια διαδικασία Wiener (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 284 και <span class="citation" data-cites="tsay2010">(<a href="#ref-tsay2010" role="doc-biblioref">Tsay 2010</a>)</span> σελ. 290).</p>
-<p>Μια διακριτοποιημένη εκδοχή της διαδικασίας Itô είναι η (βλ. <span class="citation" data-cites="tsay2010">(<a href="#ref-tsay2010" role="doc-biblioref">Tsay 2010</a>)</span> σελ. 291):</p>
+<p>Στον παραπάνω τύπο το <span class="math inline">\(W_t\)</span> είναι μια διαδικασία Wiener (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 284 και <span class="citation" data-cites="tsay2010">(<a href="#ref-tsay2010" role="doc-biblioref">Tsay 2010</a>)</span> σελ. 290). Δηλαδή έχει τις κάτωθι ιδιότητες (βλ <span class="citation" data-cites="ross2019">(<a href="#ref-ross2019" role="doc-biblioref">Ross 2019</a>)</span> σελ. 608):</p>
+<ul>
+<li><span class="math inline">\(W_0=0\)</span>,</li>
+<li>οι διαφορές <span class="math inline">\(W_{t_1}-W_{t_2}\)</span> είναι ανεξάρτητες και με ίδια κατανομή, για κάθε <span class="math inline">\(t_1&lt; t_2\)</span>,</li>
+<li>η <span class="math inline">\(W_t\)</span> ακολουθεί την κανονική κατανομή με μέση τιμή <span class="math inline">\(0\)</span> και διασπορά <span class="math inline">\(s^2 t\)</span>, για <span class="math inline">\(t&gt;0\)</span>.</li>
+</ul>
+<p>Αν μία φορά οι Διαφορικές Εξισώσεις ήταν ζόρικες και απαιτούσαν ειδικά τεχνάσματα, οι Στοχαστικές Διαφορικές Εξισώσεις είναι για να απελπίζεσαι. Έτσι, δεν θα δώσουμε εδώ μια γενική λύση της παραπάνω Σ.Δ.Ε., αλλά μόνο σε κάποιες υποπεριπτώσεις της, και στη γενικότερη περίπτωση θα αρκεστούμε στη γραφική της επίλυση χρησιμοποιώντας μια διακριτοποιημένη εκδοχή της διαδικασίας Itô (βλ. <span class="citation" data-cites="tsay2010">(<a href="#ref-tsay2010" role="doc-biblioref">Tsay 2010</a>)</span> σελ. 291):</p>
 <p><span class="math display">\[
-\Delta X=b(X_t,t)\Delta t+ \eta\sigma(X_t,t)\sqrt{\Delta t}
+\Delta X=b(X_t,t)\Delta t+ \eta\sigma(X_t,t)\sqrt{\Delta t},
 \]</span></p>
-<p>Όπου <span class="math inline">\(\Delta X=X_{t+\Delta t}-X_t\)</span> και <span class="math inline">\(\eta\sim N(0,1)\)</span>.</p>
+<p>όπου <span class="math inline">\(\Delta X=X_{t+\Delta t}-X_t\)</span> και <span class="math inline">\(\eta\sim N(0,1)\)</span>.</p>
 </section>
-<section id="το-λήμα-itô" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Το λήμα Itô</h1>
-<p>(βλ. <span class="citation" data-cites="allen2010">(<a href="#ref-allen2010" role="doc-biblioref">Allen 2010</a>)</span> σελ. 383)</p>
-<p>(βλ. <span class="citation" data-cites="tsay2010">(<a href="#ref-tsay2010" role="doc-biblioref">Tsay 2010</a>)</span> σελ. 292)</p>
+<section id="το-λήμμα-itô" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Το λήμμα Itô</h1>
+<p>Σημαντικό για την επίλυση κάποιων Σ.Δ.Ε., αλλά και για τον υπολογισμό διαφόρων χαρακτηριστικών της <span class="math inline">\(X_t\)</span> είναι το λήμα Itô (βλ. <span class="citation" data-cites="allen2010">(<a href="#ref-allen2010" role="doc-biblioref">Allen 2010</a>)</span> σελ. 383 και <span class="citation" data-cites="tsay2010">(<a href="#ref-tsay2010" role="doc-biblioref">Tsay 2010</a>)</span> σελ. 292), το οποίο δίνει το διαφορικό μιας συνάρτησης (<span class="math inline">\(G\)</span>) των <span class="math inline">\(X_t\)</span> και <span class="math inline">\(t\)</span>. Έτσι για την πραγματική συνάρτηση <span class="math inline">\(G(x,t)\)</span> με συνεχείς τις μερικές παραγώγους της (<span class="math inline">\(\partial_t G\)</span>, <span class="math inline">\(\partial_x G\)</span> και <span class="math inline">\(\partial_{xx}G\)</span>) έχουμε:</p>
+<p><span class="math display">\[
+\begin{align*}
+dG(X_t,t)=&amp;\left(\dfrac{\partial G(X_t,t)}{\partial t}+b(X_t,t)\dfrac{\partial G(X_t,t)}{\partial x}+\dfrac{\sigma^2(X_t,t)}{2}\dfrac{\partial^2 G(X_t,t)}{\partial x^2}\right)dt\\
+&amp;+\sigma(X_t,t)\dfrac{\partial G(X_t,t)}{\partial x}dW_t
+\end{align*}
+\]</span></p>
 </section>
 <section id="μέση-τιμή-και-διασπορά" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Μέση τιμή και διασπορά</h1>
+<p>Δεδομένου ότι η <span class="math inline">\(X_t\)</span> και το απειροστό <span class="math inline">\(dW_t\)</span> είναι ανεξάρτητα, όπως και τα <span class="math inline">\(dW_t\)</span> μεταξύ τους, έχουμε από την <span class="math inline">\(dX_t = b(X_t, t)dt+\sigma(X_t, t)dW_t\)</span></p>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\mathbb{E}(dX_t) = \mathbb{E}\left(b(X_t, t)dt+\sigma(X_t, t)dW_t\right)\\
+\Leftrightarrow &amp; d\mathbb{E}X_t=\mathbb{E}b(X_t, t)dt+\mathbb{E}\left(\sigma(X_t, t)dW_t\right)\\
+\Leftrightarrow &amp; d\mathbb{E}X_t=\mathbb{E}b(X_t, t)dt+\left(\mathbb{E}\sigma(X_t, t)\right)\left(d\mathbb{E}W_t\right)\\
+\Leftrightarrow &amp; d\mathbb{E}X_t=\mathbb{E}b(X_t, t)dt
+\end{align*}
+\]</span></p>
+<p>όπου η τελευταία ισότητα τεκμέρεται από το γεγονός <span class="math inline">\(\mathbb{E}W_t=0\)</span>. Η σχέση <span class="math inline">\(d\mathbb{E}X_t=\mathbb{E}b(X_t, t)dt\)</span>, που φτιάξαμε, δεν εμπεριέχει πουθενά στοιχεία Στοχαστικού Λογισμού. Είναι μια απλή Διαφορική Εξίσωση με άγνωστη συνάρτηση την <span class="math inline">\(m(t)=\mathbb{E}X_t\)</span>.</p>
+<p>Για τον υπολογισμό της <span class="math inline">\(\operatorname{Var}(X_t)\)</span>, λόγω της:</p>
+<p><span class="math display">\[
+\operatorname{Var}(X_t)=\mathbb{E}X_t^2-(EX_t)^2
+\]</span></p>
+<p>και δεδομένου ότι έχουμε βρει την <span class="math inline">\(\mathbb{E}X_t\)</span>, δεν έχουμε, παρά να βρούμε την <span class="math inline">\(\mathbb{E}X_t^2\)</span>. Έτσι, λόγω του λήμματος Itô (όπου <span class="math inline">\(G(x,t)=x^2\)</span>) έχουμε:</p>
+<p><span class="math display">\[
+dX_t^2=\left(2b(X_t,t)X_t+\sigma^2(X_t,t)\right)dt+2\sigma(X_t,t)X_tdW_t
+\]</span></p>
+<p>Έτσι, όπως πριν:</p>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\mathbb{E}(dX_t^2) = \mathbb{E}\left(\left(2b(X_t,t)X_t+\sigma^2(X_t,t)\right)dt+2\sigma(X_t,t)X_tdW_t\right)\\
+\Leftrightarrow &amp; d\mathbb{E}X_t^2=\mathbb{E}\left(2b(X_t,t)X_t+\sigma^2(X_t,t)\right)dt+\mathbb{E}\left(2\sigma(X_t,t)X_tdW_t\right)\\
+\Leftrightarrow &amp; d\mathbb{E}X_t^2=\mathbb{E}\left(2b(X_t,t)X_t+\sigma^2(X_t,t)\right)dt+\mathbb{E}\left(2\sigma(X_t,t)X_t\right)\mathbb{E}\left(dW_t\right)\\
+\Leftrightarrow &amp; d\mathbb{E}X_t^2=\mathbb{E}\left(2b(X_t,t)X_t+\sigma^2(X_t,t)\right)dt
+\end{align*}
+\]</span></p>
+<p>Η <span class="math inline">\(d\mathbb{E}X_t^2=\mathbb{E}\left(2b(X_t,t)X_t+\sigma^2(X_t,t)\right)dt\)</span> μια φυσιολογική Διαφορική Εξίσωση που μάς φανερώνει τη συνάρτηση <span class="math inline">\(sq(t)=\mathbb{E}X_t^2\)</span>, ήπερ είναι το τελευταίο ληθαράκι, για να βρούμε την <span class="math inline">\(\operatorname{Var}(X_t)\)</span>.</p>
+<p>Ας δούμε τα παραπάνω με ένα παράδειγμα μιας Σ.Δ.Ε. Σε πρώτη φάση ας ρίξουμε μια ματιά στη συνήθη Διαφορική Εξίσωση:</p>
+<p><span class="math display">\[
+x'=\alpha\cdot(\mu-x), \ \alpha&gt;0.
+\]</span></p>
+<p>Η φυσική της σημασία είναι προφανής: Η μεταβλητή <span class="math inline">\(x\)</span> έχει την τάση να επιστρέφει στο <span class="math inline">\(\mu\)</span>, διότι:</p>
+<ul>
+<li>αν <span class="math inline">\(x&gt;\mu\)</span>, τότε <span class="math inline">\(x'&lt;0\)</span>, άρα η <span class="math inline">\(x\)</span> κατεβαίνει προς το <span class="math inline">\(\mu\)</span>,</li>
+<li>αν <span class="math inline">\(x&lt;\mu\)</span>, τότε <span class="math inline">\(x'&gt;0\)</span>, άρα η <span class="math inline">\(x\)</span> ανεβαίνει προς το <span class="math inline">\(\mu\)</span>.</li>
+</ul>
+<p>Με διαφορικά η εν λόγω εξίσωση γράφεται <span class="math inline">\(dx=\alpha(\mu-x)dt\)</span>. Θέλοντας να κρατήσουμε την προαναφερθείσα συλλογιστική επαναφοράς, αλλά να τη διαταράξουμε με λίγη τυχαιότητα, τότε έχουμε την εξίσωση Langevin, η λύση της οποίας καλέιται διαδικασία Ornstein-Uhlenbeck (βλ. <span class="citation" data-cites="tsay2010">(<a href="#ref-tsay2010" role="doc-biblioref">Tsay 2010</a>)</span> σελ. 487-489):</p>
+<p><span class="math display">\[
+dX_t=\theta\cdot(\mu-X_t)dt+\sigma dW_t, \ \alpha,\sigma&gt;0.
+\]</span></p>
+<p>Έχουμε, όπως πριν:</p>
+<p><span class="math display">\[
+\mathbb{E}\left(dX_t\right)=\mathbb{E}\left(\theta\cdot(\mu-X_t)dt+\sigma dW_t\right)\Leftrightarrow d\mathbb{E}X_t=\theta(\mu-EX_t)dt
+\]</span></p>
+<p>Θέτουμε <span class="math inline">\(m(t)=\mathbb{E}X_t\)</span>, άρα έχουμε τη Διαφορική Εξίσωση:</p>
+<p><span class="math display">\[
+m'=\theta (\mu-m)
+\]</span></p>
+<p>με <span class="math inline">\(m(0)=\mathbb{E}X_0=x_0\)</span>. Εύκολα βρίσκουμε ότι:</p>
+<p><span class="math display">\[
+m(t)=\mu+e^{-\theta t}\left(x_0-\mu\right)
+\]</span></p>
+<p>Για τη διακύμανση θα πάμε να υπολογίσουμε το <span class="math inline">\(dX_t^2\)</span>, όπως είπαμε και στις γενικές οδηγίες. Λόγω του λήμματος Itô (όπου <span class="math inline">\(G(x,t)=x^2\)</span>) έχουμε:</p>
+<p><span class="math display">\[
+dX_t^2=\left(2\theta (\mu-X_t)X_t+\sigma^2\right)dt+2\sigma X_tdW_t.
+\]</span></p>
+<p>«Κοπανάμε» <span class="math inline">\(\mathbb{E}\)</span> και στις δύο μεριές της παραπάνω εξίσωσης, οπότε έχουμε:</p>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\mathbb{E}(dX_t^2) = \mathbb{E}\left(\left(2\theta (\mu-X_t)X_t+\sigma^2\right)dt+2\sigma X_tdW_t\right)\\
+\Leftrightarrow &amp; d\mathbb{E}X_t^2=\mathbb{E}\left(2\theta (\mu-X_t)X_t+\sigma^2\right)dt+\mathbb{E}\left(2\sigma X_tdW_t\right)\\
+\Leftrightarrow &amp; d\mathbb{E}X_t^2=\left(2\theta\mu\mathbb{E}X_t-2\theta\mathbb{E}X_t^2+\sigma^2\right)dt\\
+\Leftrightarrow &amp; d\mathbb{E}X_t^2=\left(2\theta\mu\left(\mu+e^{-\theta t}\left(x_0-\mu\right)\right)-2\theta\mathbb{E}X_t^2+\sigma^2\right)dt
+\end{align*}
+\]</span></p>
+<p>Θέτοντας <span class="math inline">\(sq(t)=\mathbb{E}X_t^2\)</span> έχουμε τη συνήθη Διαφορική Εξίσωση:</p>
+<p><span class="math display">\[
+sq'(t)=2\theta\mu\left(\mu+e^{-\theta t}\left(x_0-\mu\right)\right)-2\theta sq(t)+\sigma^2
+\]</span></p>
+<p>Λύνοντας την παραπάνω Διαφορική Εξίσωση έχουμε:</p>
+<p><span class="math display">\[
+sq(t)=\frac{e^{-2\theta t}\left(\left(e^{\theta t}-1\right)\left(2\theta\mu^2\left(e^{\theta t}-1\right)+\sigma^2\left(e^{\theta t}+1\right)\right)+4\theta\mu x_0\left(e^{\theta t}-1\right)+2\theta x_0^2\right)}{2\theta}
+\]</span></p>
+<p>Άρα:</p>
+<p><span class="math display">\[
+\begin{align*}
+\operatorname{Var}X_t&amp;=\mathbb{E}X_t^2-(\mathbb{E}X_t)^2\\
+&amp;=\dfrac{(1-e^{-2\theta t})\sigma^2}{2\theta}
+\end{align*}
+\]</span></p>
 </section>
 <section id="η-εξίσωση-fokker-plank-για-τη-σ.π.π." class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Η εξίσωση Fokker-Plank για τη σ.π.π.</h1>
-<p>Η συνάρτηση πυκνότητας πιθανότητας της <span class="math inline">\(X_t\)</span> (έστω <span class="math inline">\(p(x,t)\)</span>) είναι λύση της κάτωθι Μερικής Διαφορικής Εξίσωσης (βλ. <span class="citation" data-cites="allen2010">(<a href="#ref-allen2010" role="doc-biblioref">Allen 2010</a>)</span> σελ. 380 και 382):</p>
+<p>Δεδομένης της μη-επιλυσιμότητας της Σ.Δ.Ε. πολλάκις αρκούμαστε στο να βρούμε την κατανομή της <span class="math inline">\(X_t\)</span> κι όχι την <span class="math inline">\(X_t\)</span> την ίδια. Η συνάρτηση πυκνότητας πιθανότητας της <span class="math inline">\(X_t\)</span> (έστω <span class="math inline">\(p(x,t)\)</span>) είναι λύση της κάτωθι Μερικής Διαφορικής Εξίσωσης (βλ. <span class="citation" data-cites="allen2010">(<a href="#ref-allen2010" role="doc-biblioref">Allen 2010</a>)</span> σελ. 380 και 382), όπου ο αναγνώστης θα την βρει στη βιβλιογραφία είτε ως <strong>εξίσωση Fokker-Plank</strong> είτε ως <strong>εξίσωση Kolmogorov ορθής φοράς</strong>:</p>
 <p><span class="math display">\[
 \dfrac{\partial p(x,t)}{\partial t}=-\dfrac{\partial\left(b(x,t)p(x,t)\right)}{\partial x}+\dfrac{1}{2}\dfrac{\partial^2\left(\sigma^2(x,t)p(x,t)\right)}{\partial x^2}
 \]</span></p>
 </section>
 <section id="διάφορες-λύσεις" class="level1" data-number="5">
 <h1 data-number="5"><span class="header-section-number">5</span> Διάφορες λύσεις</h1>
-<section id="γκαουσιανές-λύσεις" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="γκαουσιανές-λύσεις"><span class="header-section-number">5.1</span> Γκαουσιανές λύσεις</h2>
-<p>(βλ. <span class="citation" data-cites="steele2001">(<a href="#ref-steele2001" role="doc-biblioref">Steele 2001</a>)</span> σελ. 139-140)</p>
+<p>Στην ενότητα αυτή θα παρουσιάσουμε διάφορα στοχαστικά μοντέλα κοινωνικών ή οικολογικών φαινομένων που να θεμελιώνονται με τη βοήθεια Σ.Δ.Ε.</p>
+<p>Αντίστοιχα με τη στοχαστική παραγώγιση, έχουμε και τη στοχαστική ολοκλήρωση. Δεν θα επεκταθούμε εδώ σε ορισμούς και εξηγήσεις, θα αναφέρουμε μόνο ότι ισχύουν οι βασικές ιδιότητες των ολοκληρωμάτων που ξέρουμε (προ Θ.Θ.Ο.Λ.) και δύο βασικούς υπολογισμούς (βλ. <span class="citation" data-cites="tsay2010">(<a href="#ref-tsay2010" role="doc-biblioref">Tsay 2010</a>)</span> σελ. 308-309 και <span class="citation" data-cites="allen2010">(<a href="#ref-allen2010" role="doc-biblioref">Allen 2010</a>)</span> σελ. 384), που θα μας χρησιμεύσουν:</p>
+<p><span class="math display">\[
+\int_{t_1}^{t_2}dG(X_t,t)=G(X_{t_2},t_2)-G(X_{t_1},t_1)
+\]</span></p>
+<p>και:</p>
+<p><span class="math display">\[
+\int_{t_1}^{t_2}W_sdW_s=\dfrac{W_{t_2}^2-W_{t_1}^2}{2}-\dfrac{t_2-t_1}{2}
+\]</span></p>
+<section id="γεωμετρική-κίνηση-brown" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="γεωμετρική-κίνηση-brown"><span class="header-section-number">5.1</span> Γεωμετρική κίνηση Brown</h2>
+<p>Σχεδόν από το λύκειο γνωρίζει κανείς το εκθετικό πληθυσμιακό μοντέλο, σύμφωνα με το οποίο η αύξηση ενός πληθυσμού είναι ανάλογη του μεγέθους του. Ένα απόλυτα λογικό μοντέλο, καθόσον, αν ο καθένας από εμάς τους <span class="math inline">\(x\)</span> Έλληνες κάνει από <span class="math inline">\(2\)</span> παιδιά, τότε η αύξηση του πληθυσμού μας (τα συνολικά παιδιά, δηλαδή) θα είναι <span class="math inline">\(\Delta x=2x\)</span>. Σε μαθηματικό συμβολισμό έχουμε:</p>
+<p><span class="math display">\[
+dx=rxdt.
+\]</span></p>
+<p>Ας βάλουμε λίγο θόρυβο στο μοντέλο αυτό. Συγκεκριμένα, ας θεωρήσουμε ότι το εύρος των τυχαίων κινήσεων είναι ανάλογο του ληθυσμού, μια εύλογη υπόθεση, αν θεωρήσουμε ότι οι τυχαίες διακυμάνσεις οφείλονται σε κάποιους τυχαίους παράγοντες που αφορούν το <em>κάθε</em> ένα άτομο. Έτσι έχουμε την κάτωθι Σ.Δ.Ε. (βλ. <span class="citation" data-cites="allen2010">(<a href="#ref-allen2010" role="doc-biblioref">Allen 2010</a>)</span> σελ. 384-385), η οποία ακούς στο όνομα <strong>γεωμετρική κίνηση Brown</strong>.</p>
+<p><span class="math display">\[
+dX_t=rX_tdt+cX_tdW_t.
+\]</span></p>
+<p>Θα εφαρμόσουμε το λήμμα Itô για <span class="math inline">\(G(x,t)=\ln x\)</span>. Οπότε έχουμε:</p>
+<p><span class="math display">\[
+\begin{align*}
+d\ln X_t&amp;=\left(rX_t\dfrac{1}{X_t}-\dfrac{c^2X_t^2}{2}\dfrac{1}{X_t^2}\right)dt+cX_t\dfrac{1}{X_t}dW_t\\
+&amp;=\left(r-\dfrac{c^2}{2}\right)dt+cdW_t
+\end{align*}
+\]</span></p>
+<p>Ολοκληρώνοντας τις δύο μεριές από <span class="math inline">\(0\)</span> έως <span class="math inline">\(t\)</span> έχουμε:</p>
+<p><span class="math display">\[
+\ln X_t-\ln X_0=\left(r-\dfrac{c^2}{2}\right)t+cW_t.
+\]</span></p>
+<p>Άρα:</p>
+<p><span class="math display">\[
+X_t=X_0\exp\left(\left(r-\dfrac{c^2}{2}\right)t+cW_t\right).
+\]</span></p>
 </section>
-<section id="διαδικασία-ornstein-uhlenbeck" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="διαδικασία-ornstein-uhlenbeck"><span class="header-section-number">5.2</span> Διαδικασία Ornstein-Uhlenbeck</h2>
-</section>
-<section id="γεωμετρική-κίνηση-brown" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="γεωμετρική-κίνηση-brown"><span class="header-section-number">5.3</span> Γεωμετρική κίνηση Brown</h2>
-<p>(βλ. <span class="citation" data-cites="allen2010">(<a href="#ref-allen2010" role="doc-biblioref">Allen 2010</a>)</span> σελ. 384-385)</p>
-</section>
-<section id="λογιστικό-μοντέλο" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="λογιστικό-μοντέλο"><span class="header-section-number">5.4</span> Λογιστικό μοντέλο</h2>
+<section id="λογιστικό-μοντέλο" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="λογιστικό-μοντέλο"><span class="header-section-number">5.2</span> Λογιστικό μοντέλο</h2>
 <p>(βλ. <span class="citation" data-cites="allen2010">(<a href="#ref-allen2010" role="doc-biblioref">Allen 2010</a>)</span> σελ. 386-387)</p>
+</section>
+<section id="διαδικασία-ornstein-uhlenbeck" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="διαδικασία-ornstein-uhlenbeck"><span class="header-section-number">5.3</span> Διαδικασία Ornstein-Uhlenbeck</h2>
+<p><span class="math display">\[
+dX_t=\theta\cdot(\mu-X_t)dt+\sigma dW_t, \ \alpha,\sigma&gt;0.
+\]</span></p>
+<p>Για να τη λύσουμε διαδικασία που θα ακολουθήσουμε μοιάζει με την παραγοντική ολοκλήρωση (βλ. <span class="citation" data-cites="steele2001">(<a href="#ref-steele2001" role="doc-biblioref">Steele 2001</a>)</span> σελ. 139-140) μορφής:</p>
+<p><span class="math display">\[
+dX_t=(\lambda(t) X_t+\theta(t))dt+\sigma(t) dW_t
+\]</span></p>
+<p>Θα ψάξουμε λύσεις της O-U της μορφής (βλ. <span class="citation" data-cites="steele2001">(<a href="#ref-steele2001" role="doc-biblioref">Steele 2001</a>)</span> σελ. 139-140):</p>
 </section>
 </section>
 <section id="τεστ-feller-για-εκρήξεις" class="level1" data-number="6">
@@ -447,12 +533,12 @@ I=(\ell,r)\text{, με }-\infty\leq \ell, r\leq+\infty
 <p><span class="math display">\[
 dX_t = b(X_t)dt+\sigma(X_t)dW_t
 \]</span></p>
-<p>Όπου <span class="math inline">\(b, \sigma : I\to \mathbb{R}\)</span> (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 329 και 342-343).</p>
+<p>Όπου <span class="math inline">\(b, \sigma : I\to \mathbb{R}\)</span> (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 329 και 342-343). Ο αναγνώστης ας παρατηρήσει ότι οι συναρτήσεις <span class="math inline">\(b\)</span> και <span class="math inline">\(\sigma\)</span> δεν έχουν πλέον δύο ορίσματα, αλλά ένα.</p>
 <p>Θα μάς απασχολήσει ο χρόνος όπου η διαδικασία μας (<span class="math inline">\(X_t\)</span>) χρειάζεται για να ξεφύγει εκτός του προκαθορισμένου διαστήματος <span class="math inline">\(I\)</span>. Πιο φορμαλιστικά (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 343):</p>
 <p><span class="math display">\[
 S=\inf\{t\geq 0: X_t\notin I\}
 \]</span></p>
-<p>Αρχικά ορίζουμε (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 339) τη scale function:</p>
+<p>Αρχικά ορίζουμε (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 339) τη <em>scale function</em>:</p>
 <p><span class="math display">\[
 p(x)=\int_{c}^{x}\exp\left(-2\int_{c}^{\xi}\dfrac{b(\zeta)}{\sigma^2(\zeta)}d\zeta\right)d\xi
 \]</span></p>
@@ -471,7 +557,7 @@ v(x)=\int_{c}^{x}p'(y)\left(\int_{c}^{y}\dfrac{2dz}{p'(z)\sigma^2 (z)}\right)dy.
 <p><span class="math display">\[
 v(\ell+)=v(r-)=\infty,
 \]</span></p>
-<p>αλλιώς, έχουμε.</p>
+<p>αλλιώς έχουμε έκρηξη.</p>
 
 
 
@@ -483,6 +569,9 @@ Allen, Linda J. S. 2010. <em>An Introduction to Stochastic Processes with Applic
 </div>
 <div id="ref-karatzas1991" class="csl-entry" role="listitem">
 Karatzas, Ioannis, and Steven E. Shreve. 1991. <em>Brownian Motion and Stochastic Calculus</em>. Springer.
+</div>
+<div id="ref-ross2019" class="csl-entry" role="listitem">
+Ross, Sheldon M. 2019. <em>Introduction to Probability Models</em>. Academic Press.
 </div>
 <div id="ref-steele2001" class="csl-entry" role="listitem">
 Steele, J. Michael. 2001. <em>Stochastic Calculus and Financial Applications</em>. Springer.
