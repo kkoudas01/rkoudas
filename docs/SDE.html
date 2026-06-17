@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Κώστας Κούδας">
-<meta name="dcterms.date" content="2026-02-15">
+<meta name="dcterms.date" content="2026-06-17">
 
-<title>Σιλούρια υπόθεση – r-koudas</title>
+<title>Στοχαστικές Διαφορικές Εξισώσεις – r-koudas</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,7 +22,62 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -73,6 +128,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta property="og:title" content="r-koudas: Στοχαστικά Μαθηματικά χωρίς… μαθηματικά για κοινωνικούς επιστήμονες">
 <meta property="og:description" content="Η σελίδα RΚούδας είναι μια σελίδα κατά βάση ανάλυσης κοινωνικών φαινομένων. Σε αυτήν αναλύονται κάποια κοινωνικά φαινόμενα ή επιδεικνύεται ο τρόπος να αναλυθούν.">
@@ -123,7 +207,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./SilurianHypothesis.html">Σιλούρια υπόθεση</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./SDE.html">Στοχαστικές Διαφορικές Εξισώσεις</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -209,7 +293,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./SDE.html" class="sidebar-item-text sidebar-link">
+  <a href="./SDE.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Στοχαστικές Διαφορικές Εξισώσεις</span></a>
   </div>
 </li>
@@ -239,7 +323,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./SilurianHypothesis.html" class="sidebar-item-text sidebar-link active">
+  <a href="./SilurianHypothesis.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Σιλούρια υπόθεση</span></a>
   </div>
 </li>
@@ -248,15 +332,32 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#γενική-μορφή-σ.δ.ε." id="toc-γενική-μορφή-σ.δ.ε." class="nav-link active" data-scroll-target="#γενική-μορφή-σ.δ.ε."><span class="header-section-number">1</span> Γενική μορφή Σ.Δ.Ε.</a></li>
+  <li><a href="#το-λήμα-itô" id="toc-το-λήμα-itô" class="nav-link" data-scroll-target="#το-λήμα-itô"><span class="header-section-number">2</span> Το λήμα Itô</a></li>
+  <li><a href="#μέση-τιμή-και-διασπορά" id="toc-μέση-τιμή-και-διασπορά" class="nav-link" data-scroll-target="#μέση-τιμή-και-διασπορά"><span class="header-section-number">3</span> Μέση τιμή και διασπορά</a></li>
+  <li><a href="#η-εξίσωση-fokker-plank-για-τη-σ.π.π." id="toc-η-εξίσωση-fokker-plank-για-τη-σ.π.π." class="nav-link" data-scroll-target="#η-εξίσωση-fokker-plank-για-τη-σ.π.π."><span class="header-section-number">4</span> Η εξίσωση Fokker-Plank για τη σ.π.π.</a></li>
+  <li><a href="#διάφορες-λύσεις" id="toc-διάφορες-λύσεις" class="nav-link" data-scroll-target="#διάφορες-λύσεις"><span class="header-section-number">5</span> Διάφορες λύσεις</a>
+  <ul>
+  <li><a href="#γκαουσιανές-λύσεις" id="toc-γκαουσιανές-λύσεις" class="nav-link" data-scroll-target="#γκαουσιανές-λύσεις"><span class="header-section-number">5.1</span> Γκαουσιανές λύσεις</a></li>
+  <li><a href="#διαδικασία-ornstein-uhlenbeck" id="toc-διαδικασία-ornstein-uhlenbeck" class="nav-link" data-scroll-target="#διαδικασία-ornstein-uhlenbeck"><span class="header-section-number">5.2</span> Διαδικασία Ornstein-Uhlenbeck</a></li>
+  <li><a href="#γεωμετρική-κίνηση-brown" id="toc-γεωμετρική-κίνηση-brown" class="nav-link" data-scroll-target="#γεωμετρική-κίνηση-brown"><span class="header-section-number">5.3</span> Γεωμετρική κίνηση Brown</a></li>
+  <li><a href="#λογιστικό-μοντέλο" id="toc-λογιστικό-μοντέλο" class="nav-link" data-scroll-target="#λογιστικό-μοντέλο"><span class="header-section-number">5.4</span> Λογιστικό μοντέλο</a></li>
+  </ul></li>
+  <li><a href="#τεστ-feller-για-εκρήξεις" id="toc-τεστ-feller-για-εκρήξεις" class="nav-link" data-scroll-target="#τεστ-feller-για-εκρήξεις"><span class="header-section-number">6</span> Τεστ Feller για εκρήξεις</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Σιλούρια υπόθεση</h1>
+<h1 class="title">Στοχαστικές Διαφορικές Εξισώσεις</h1>
 </div>
 
 
@@ -273,7 +374,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 15, 2026</p>
+      <p class="date">June 17, 2026</p>
     </div>
   </div>
   
@@ -285,33 +386,111 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="alert-danger">
-⚠️️ΥΠΟ ΚΑΤΑΣΚΕΥΗ⚠️
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Καθαρισμός μνήμης R.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Μεταφραστικές τροποποιήσεις</p>
-<blockquote class="blockquote">
-<p>Συνάντησα έναν ταξιδιώτη από χώρα αρχαία. Είπε: τεράστια, δίχως κορμό, δυο πόδια πέτρινα υψώνονται στην έρημο. Πλάι τους, μισοβυθισμένο στην άμμο κείτεται ένα πρόσωπο φαγωμένο, με βλέμμα βλοσυρό, με χείλια σουφρωμένα κι ένα περιφρονητικό χαμόγελο ψυχρής κυριαρχίας, λένε ο γλύπτης τους πως διάβασε σωστά τα πάθη που ακόμη ζούνε, χαραγμένα στ’ άψυχα ετούτα πράγματα, αφού χάθηκαν το χέρι που τα αποτύπωσε και η καρδιά που τα ‘θρεψε. Και πάνω στο κρηπίδι αυτές οι λέξεις αχνοφαίνονται: «Οζυμανδίας τ’ όνομά μου, ο Βασιλεύς των Βασιλέων, κοιτάξτε τα έργα μου, ω ισχυροί, κι απελπιστείτε!» Άλλο τίποτα δεν μένει. Γύρω από τη φθορά των κολοσσιαίων ερειπίων, απέραντη, γυμνή, μόνη η έρημος, κι επίπεδη, απλώνεται μακριά</p>
-<p><em>Percy Bysshe Shelley</em></p>
-</blockquote>
-<p>καθημερινή</p>
-<blockquote class="blockquote">
-<p>Συνάντησα έναν ταξιδιώτη από χώρα αρχαία. Είπε: τεράστια, δίχως κορμό, δυο πόδια πέτρινα υψώνονται στην έρημο. Κοντά τους, μες στην άμμο βυθισμένο, ένα θρυμματισμένο πρόσωπο· τα σκυθρωπά του χείλη, πτυχωμένα σ’ ένα χαμόγελο ψυχρής υπεροχής, λένε ο γλύπτης τους πως διάβασε σωστά αυτά τα πάθη που ακόμη ζούνε χαραγμένα στ’ άψυχα ετούτα πράγματα το χέρι που τα περιγέλασε και την καρδιά που τα ‘θρεψε. Και πάνω στο κρηπίδι αυτές οι λέξεις αχνοφαίνονται: «Οζυμανδίας τ’ όνομά μου, ο Βασιλεύς των Βασιλέων, κοιτάξτε τα έργα μου, ω ισχυροί, κι απελπιστείτε!» Άλλο τίποτα δεν μένει. Γύρω από τη φθορά των κολοσσιαίων ερειπίων, απέραντη, γυμνή, μόνη η έρημος, κι επίπεδη, απλώνεται μακριά</p>
-<p><em>Percy Bysshe Shelley</em></p>
-</blockquote>
-<p>Βασική ιδέα αυτή: https://ourworldindata.org/wild-mammals-birds-biomass</p>
-<p>Σε κάθε πληθυσμό υπό κατάρευση, θα υπάρχουν 2 ομάδες όντων:</p>
-<ul>
-<li><p>Μια πολύ μεγάλη με την τροφή του κυρίαρχου.</p></li>
-<li><p>Μια μεγάλη, ο κυρίαρχος.</p></li>
-<li><p>Κάποια μικρά υπολείματα των άγριων μορφών ζωής.</p></li>
-</ul>
-<p>Τα παραπάνω μεγάθη μετριώνται σε ποσότητες άνθρακα.</p>
-<p>Ίσως να είναι χρήσιμη και η ποικιλότητα Shannon</p>
-<p>Η πυκνότητα πληθυσμού ίσως να είναι επίσης ένδειξη</p>
+<section id="γενική-μορφή-σ.δ.ε." class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Γενική μορφή Σ.Δ.Ε.</h1>
+<p>Μια απλή Διαφορική Εξίσωση είναι η <span class="math inline">\(x'=b(x,t)\)</span> ή, κάνωντας χρήση διαφορικών, <span class="math inline">\(dx=b(x,t)dt\)</span>. Αυτό μάς λέει με ποιον τρόπο μεταβάλλεται το <span class="math inline">\(x\)</span> μετά από κάποιο μικρό χρονικό διάστημα <span class="math inline">\(dt\)</span>. Τι γίνεται, όμως, αν θέλουμε να βάλουμε έναν παράγοντα τυχαιότητας στον εν λόγω κανόνα μεταβολής;</p>
+<p>Διαδικασία Itô</p>
+<p><span class="math display">\[
+dX_t = b(X_t, t)dt+\sigma(X_t, t)dW_t
+\]</span></p>
+<p>Όπου <span class="math inline">\(W_t\)</span> μια διαδικασία Wiener (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 284 και <span class="citation" data-cites="tsay2010">(<a href="#ref-tsay2010" role="doc-biblioref">Tsay 2010</a>)</span> σελ. 290).</p>
+<p>Μια διακριτοποιημένη εκδοχή της διαδικασίας Itô είναι η (βλ. <span class="citation" data-cites="tsay2010">(<a href="#ref-tsay2010" role="doc-biblioref">Tsay 2010</a>)</span> σελ. 291):</p>
+<p><span class="math display">\[
+\Delta X=b(X_t,t)\Delta t+ \eta\sigma(X_t,t)\sqrt{\Delta t}
+\]</span></p>
+<p>Όπου <span class="math inline">\(\Delta X=X_{t+\Delta t}-X_t\)</span> και <span class="math inline">\(\eta\sim N(0,1)\)</span>.</p>
+</section>
+<section id="το-λήμα-itô" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Το λήμα Itô</h1>
+<p>(βλ. <span class="citation" data-cites="allen2010">(<a href="#ref-allen2010" role="doc-biblioref">Allen 2010</a>)</span> σελ. 383)</p>
+<p>(βλ. <span class="citation" data-cites="tsay2010">(<a href="#ref-tsay2010" role="doc-biblioref">Tsay 2010</a>)</span> σελ. 292)</p>
+</section>
+<section id="μέση-τιμή-και-διασπορά" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Μέση τιμή και διασπορά</h1>
+</section>
+<section id="η-εξίσωση-fokker-plank-για-τη-σ.π.π." class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Η εξίσωση Fokker-Plank για τη σ.π.π.</h1>
+<p>Η συνάρτηση πυκνότητας πιθανότητας της <span class="math inline">\(X_t\)</span> (έστω <span class="math inline">\(p(x,t)\)</span>) είναι λύση της κάτωθι Μερικής Διαφορικής Εξίσωσης (βλ. <span class="citation" data-cites="allen2010">(<a href="#ref-allen2010" role="doc-biblioref">Allen 2010</a>)</span> σελ. 380 και 382):</p>
+<p><span class="math display">\[
+\dfrac{\partial p(x,t)}{\partial t}=-\dfrac{\partial\left(b(x,t)p(x,t)\right)}{\partial x}+\dfrac{1}{2}\dfrac{\partial^2\left(\sigma^2(x,t)p(x,t)\right)}{\partial x^2}
+\]</span></p>
+</section>
+<section id="διάφορες-λύσεις" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Διάφορες λύσεις</h1>
+<section id="γκαουσιανές-λύσεις" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="γκαουσιανές-λύσεις"><span class="header-section-number">5.1</span> Γκαουσιανές λύσεις</h2>
+<p>(βλ. <span class="citation" data-cites="steele2001">(<a href="#ref-steele2001" role="doc-biblioref">Steele 2001</a>)</span> σελ. 139-140)</p>
+</section>
+<section id="διαδικασία-ornstein-uhlenbeck" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="διαδικασία-ornstein-uhlenbeck"><span class="header-section-number">5.2</span> Διαδικασία Ornstein-Uhlenbeck</h2>
+</section>
+<section id="γεωμετρική-κίνηση-brown" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="γεωμετρική-κίνηση-brown"><span class="header-section-number">5.3</span> Γεωμετρική κίνηση Brown</h2>
+<p>(βλ. <span class="citation" data-cites="allen2010">(<a href="#ref-allen2010" role="doc-biblioref">Allen 2010</a>)</span> σελ. 384-385)</p>
+</section>
+<section id="λογιστικό-μοντέλο" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="λογιστικό-μοντέλο"><span class="header-section-number">5.4</span> Λογιστικό μοντέλο</h2>
+<p>(βλ. <span class="citation" data-cites="allen2010">(<a href="#ref-allen2010" role="doc-biblioref">Allen 2010</a>)</span> σελ. 386-387)</p>
+</section>
+</section>
+<section id="τεστ-feller-για-εκρήξεις" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Τεστ Feller για εκρήξεις</h1>
+<p>Η μελέτη μας θα γίνει σε ένα διάστημα:</p>
+<p><span class="math display">\[
+I=(\ell,r)\text{, με }-\infty\leq \ell, r\leq+\infty
+\]</span></p>
+<p>Συγκεκριμένα, εν προκειμένω θα ασχοληθούμε με Σ.Δ.Ε. του τύπου:</p>
+<p><span class="math display">\[
+dX_t = b(X_t)dt+\sigma(X_t)dW_t
+\]</span></p>
+<p>Όπου <span class="math inline">\(b, \sigma : I\to \mathbb{R}\)</span> (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 329 και 342-343).</p>
+<p>Θα μάς απασχολήσει ο χρόνος όπου η διαδικασία μας (<span class="math inline">\(X_t\)</span>) χρειάζεται για να ξεφύγει εκτός του προκαθορισμένου διαστήματος <span class="math inline">\(I\)</span>. Πιο φορμαλιστικά (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 343):</p>
+<p><span class="math display">\[
+S=\inf\{t\geq 0: X_t\notin I\}
+\]</span></p>
+<p>Αρχικά ορίζουμε (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 339) τη scale function:</p>
+<p><span class="math display">\[
+p(x)=\int_{c}^{x}\exp\left(-2\int_{c}^{\xi}\dfrac{b(\zeta)}{\sigma^2(\zeta)}d\zeta\right)d\xi
+\]</span></p>
+<p>με <span class="math inline">\(c\in\mathbb{R}\)</span> αυθαίρετη σταθερά και υπό τις συνθήκες (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 343):</p>
+<p><span class="math display">\[
+\forall x \in I \left(\sigma^2 (x)&gt;0\right)
+\]</span> και:</p>
+<p><span class="math display">\[
+\forall x \in I , \exists  \varepsilon&gt;0\text{ τέτοιο, ώστε }\int_{x-\varepsilon}^{x+\varepsilon}\dfrac{1+|b(y)|}{\sigma^2(y)}dy&lt;+\infty
+\]</span></p>
+<p>Ακολούθως ορίζουμε (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 347):</p>
+<p><span class="math display">\[
+v(x)=\int_{c}^{x}p'(y)\left(\int_{c}^{y}\dfrac{2dz}{p'(z)\sigma^2 (z)}\right)dy.
+\]</span></p>
+<p>Το τεστ Feller (βλ. <span class="citation" data-cites="karatzas1991">(<a href="#ref-karatzas1991" role="doc-biblioref">Karatzas and Shreve 1991</a>)</span> σελ. 348) μάς λέει αν είναι πιθανό να έχουμε έκρηξη (με την έννοια ότι βγαίνει η <span class="math inline">\(X_t\)</span> εκτός του <span class="math inline">\(I\)</span>), δηλαδή αν η πιθανότητα <span class="math inline">\(\mathbb{P}(S&lt;+\infty)\)</span> είναι μη-μηδενική. Έτσι, <strong>δεν</strong> έχουμε έκρηξη (ήτοι <span class="math inline">\(\mathbb{P}(S&lt;+\infty)=0\)</span>), όταν:</p>
+<p><span class="math display">\[
+v(\ell+)=v(r-)=\infty,
+\]</span></p>
+<p>αλλιώς, έχουμε.</p>
 
 
 
-</main> <!-- /main -->
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-allen2010" class="csl-entry" role="listitem">
+Allen, Linda J. S. 2010. <em>An Introduction to Stochastic Processes with Applications to Biology</em>. CRC Press.
+</div>
+<div id="ref-karatzas1991" class="csl-entry" role="listitem">
+Karatzas, Ioannis, and Steven E. Shreve. 1991. <em>Brownian Motion and Stochastic Calculus</em>. Springer.
+</div>
+<div id="ref-steele2001" class="csl-entry" role="listitem">
+Steele, J. Michael. 2001. <em>Stochastic Calculus and Financial Applications</em>. Springer.
+</div>
+<div id="ref-tsay2010" class="csl-entry" role="listitem">
+Tsay, Ruey S. 2010. <em>Ανάλυση Χρονοσειρών</em>. Εκδόσεις Τζιόλα.
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

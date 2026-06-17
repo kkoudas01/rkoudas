@@ -180,6 +180,8 @@ website:
           href: sentimentErgasia.qmd
         - text: "Θέσεις αριστεράς για μεταναστευτικό"
           href: metanastes.qmd
+        - text: "Στοχαστικές Διαφορικές Εξισώσεις"
+          href: SDE.qmd
         - text: "Απεργιακές κινητοποιήσεις"
           href: strikes.qmd
         - text: "Εξέταση τιμών ακινήτων"

@@ -1,0 +1,167 @@
+---
+title: "Στοχαστικές Διαφορικές Εξισώσεις"
+author: "Κώστας Κούδας"
+cache: TRUE
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    number-sections: true
+    fig-cap: true
+references:
+  - id: karatzas1991
+    type: book
+    title: "Brownian Motion and Stochastic Calculus"
+    author:
+      - family: Karatzas
+        given: Ioannis
+      - family: Shreve
+        given: Steven E.
+    issued:
+      - year: 1991
+    publisher: "Springer"
+
+  - id: tsay2010
+    type: book
+    title: "Ανάλυση Χρονοσειρών"
+    author:
+      - family: Tsay
+        given: Ruey S.
+    issued:
+      - year: 2010
+    publisher: "Εκδόσεις Τζιόλα"
+
+  - id: steele2001
+    type: book
+    title: "Stochastic Calculus and Financial Applications"
+    author:
+      - family: Steele
+        given: J. Michael
+    issued:
+      - year: 2001
+    publisher: "Springer"
+
+  - id: allen2010
+    type: book
+    title: "An Introduction to Stochastic Processes with Applications to Biology"
+    author:
+      - family: Allen
+        given: Linda J. S.
+    issued:
+      - year: 2010
+    publisher: "CRC Press"
+---
+
+```{r}
+# Καθαρισμός μνήμης R.
+rm(list = ls())
+```
+
+# Γενική μορφή Σ.Δ.Ε.
+
+Μια απλή Διαφορική Εξίσωση είναι η $x'=b(x,t)$ ή, κάνωντας χρήση διαφορικών, $dx=b(x,t)dt$. Αυτό μάς λέει με ποιον τρόπο μεταβάλλεται το $x$ μετά από κάποιο μικρό χρονικό διάστημα $dt$. Τι γίνεται, όμως, αν θέλουμε να βάλουμε έναν παράγοντα τυχαιότητας στον εν λόγω κανόνα μεταβολής;
+
+Διαδικασία Itô
+
+$$
+dX_t = b(X_t, t)dt+\sigma(X_t, t)dW_t
+$$
+
+Όπου $W_t$ μια διαδικασία Wiener (βλ. [@karatzas1991] σελ. 284 και [@tsay2010] σελ. 290).
+
+Μια διακριτοποιημένη εκδοχή της διαδικασίας Itô είναι η (βλ. [@tsay2010] σελ. 291):
+
+$$
+\Delta X=b(X_t,t)\Delta t+ \eta\sigma(X_t,t)\sqrt{\Delta t}
+$$
+
+Όπου $\Delta X=X_{t+\Delta t}-X_t$ και $\eta\sim N(0,1)$.
+
+
+# Το λήμα Itô
+
+(βλ. [@allen2010] σελ. 383)
+
+(βλ. [@tsay2010] σελ. 292)
+
+# Μέση τιμή και διασπορά
+
+# Η εξίσωση Fokker-Plank για τη σ.π.π.
+
+Η συνάρτηση πυκνότητας πιθανότητας της $X_t$ (έστω $p(x,t)$) είναι λύση της κάτωθι Μερικής Διαφορικής Εξίσωσης (βλ. [@allen2010] σελ. 380 και 382):
+
+$$
+\dfrac{\partial p(x,t)}{\partial t}=-\dfrac{\partial\left(b(x,t)p(x,t)\right)}{\partial x}+\dfrac{1}{2}\dfrac{\partial^2\left(\sigma^2(x,t)p(x,t)\right)}{\partial x^2}
+$$
+
+# Διάφορες λύσεις
+
+## Γκαουσιανές λύσεις
+
+(βλ. [@steele2001] σελ. 139-140)
+
+## Διαδικασία Ornstein-Uhlenbeck
+
+## Γεωμετρική κίνηση Brown
+
+(βλ. [@allen2010] σελ. 384-385)
+
+
+## Λογιστικό μοντέλο
+
+(βλ. [@allen2010] σελ. 386-387)
+
+
+# Τεστ Feller για εκρήξεις
+
+Η μελέτη μας θα γίνει σε ένα διάστημα:
+
+$$
+I=(\ell,r)\text{, με }-\infty\leq \ell, r\leq+\infty
+$$
+
+Συγκεκριμένα, εν προκειμένω θα ασχοληθούμε με Σ.Δ.Ε. του τύπου:
+
+$$
+dX_t = b(X_t)dt+\sigma(X_t)dW_t
+$$
+
+Όπου $b, \sigma : I\to \mathbb{R}$ (βλ. [@karatzas1991] σελ. 329 και 342-343).
+
+Θα μάς απασχολήσει ο χρόνος όπου η διαδικασία μας ($X_t$) χρειάζεται για να ξεφύγει εκτός του προκαθορισμένου διαστήματος $I$. Πιο φορμαλιστικά (βλ. [@karatzas1991] σελ. 343):
+
+$$
+S=\inf\{t\geq 0: X_t\notin I\}
+$$
+
+Αρχικά ορίζουμε  (βλ. [@karatzas1991] σελ. 339) τη scale function:
+
+$$
+p(x)=\int_{c}^{x}\exp\left(-2\int_{c}^{\xi}\dfrac{b(\zeta)}{\sigma^2(\zeta)}d\zeta\right)d\xi
+$$
+
+με $c\in\mathbb{R}$ αυθαίρετη σταθερά και υπό τις συνθήκες (βλ. [@karatzas1991] σελ. 343):
+
+$$
+\forall x \in I \left(\sigma^2 (x)>0\right)
+$$
+και:
+
+$$
+\forall x \in I , \exists  \varepsilon>0\text{ τέτοιο, ώστε }\int_{x-\varepsilon}^{x+\varepsilon}\dfrac{1+|b(y)|}{\sigma^2(y)}dy<+\infty
+$$
+
+Ακολούθως ορίζουμε (βλ. [@karatzas1991] σελ. 347):
+
+$$
+v(x)=\int_{c}^{x}p'(y)\left(\int_{c}^{y}\dfrac{2dz}{p'(z)\sigma^2 (z)}\right)dy.
+$$
+
+Το τεστ Feller (βλ. [@karatzas1991] σελ. 348) μάς λέει αν είναι πιθανό να έχουμε έκρηξη (με την έννοια ότι βγαίνει η $X_t$ εκτός του $I$), δηλαδή αν η πιθανότητα $\mathbb{P}(S<+\infty)$ είναι μη-μηδενική. Έτσι, **δεν** έχουμε έκρηξη (ήτοι $\mathbb{P}(S<+\infty)=0$), όταν:
+
+$$
+v(\ell+)=v(r-)=\infty,
+$$
+
+αλλιώς, έχουμε.
